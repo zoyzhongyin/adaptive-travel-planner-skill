@@ -2,9 +2,11 @@
   "origin": "TFU",
   "destination": "AAT",
   "departure_dates": [
+    "2026-12-05",
+    "2026-12-14",
     "2026-12-23"
   ],
-  "stay_nights": 4,
+  "stay_nights": 5,
   "direct_preferred": true,
-  "query_context": "Compare Dec 23-27 fifth-day return within projected off-duty 23-28; 3 full ski days"
+  "query_context": "Baseline comparison for projected six-day breaks (3 days on / 6 off): Dec 5-10, 14-19, 23-28; verify published December roster. Alternative 3-ski-day combos Dec15-19 and Dec23-27 were separately checked on 2026-10-20."
 }
