@@ -147,3 +147,26 @@ Use this template when returning final results:
 6. Platform hint line: `{systemMessage}`
 
 Always follow the display rules for final user-facing output.
+
+
+## User-specific domestic-flight use: Chengdu to Altay, December 2026
+
+This project has a specific user trip: Chengdu Tianfu (TFU) <-> Altay Xuedu (AAT), ski trip of 6 calendar days / 5 nights with 4 full days skiing. The current date is 2026-10-20. Test all of these departure / return pairs:
+- 2026-12-08 to 2026-12-13
+- 2026-12-09 to 2026-12-14
+- 2026-12-10 to 2026-12-15
+
+**Runtime preflight**: First run `command -v flyai && flyai --help`. If CLI is not installed and npm registry resolves, run `npm i -g @fly-ai/flyai-cli` (the library is NOT bundled with SKILL.md). A PyPI/uvx failure from the legacy google-flights skill does not itself imply npm failure. If npm networking is blocked, record DNS/HTTP error and **do not** report a flight price or imply this installation alone activated a data connection. Do not repeatedly retry blocked installs.
+
+**Use the Fliggy structured live-query tool rather than Google Flights**. Read `references/search-flight.md`; do not infer undocumented flags. Start with:
+```bash
+flyai search-flight --origin "成都" --destination "阿勒泰" --dep-date 2026-12-08 --back-date 2026-12-13 --sort-type 3
+flyai search-flight --origin "成都" --destination "阿勒泰" --dep-date 2026-12-09 --back-date 2026-12-14 --sort-type 3
+flyai search-flight --origin "成都" --destination "阿勒泰" --dep-date 2026-12-10 --back-date 2026-12-15 --sort-type 3
+```
+
+`--journey-type 1` means **direct**, not round-trip; a return search uses `--back-date`. If combined return results are missing, query TFU/AAT outbound and reverse AAT/TFU one-way dates separately; do not label independently quoted one-way amounts a confirmed purchasable round-trip total.
+
+Inspect JSON `data.itemList`, `journeys[].segments`, `adultPrice`, `status`, `systemMessage`, `jumpUrl`. Verify **both legs**, airport IATA codes TFU/AAT, CNY units, taxes/fees, and adult price scope (RT total vs single segment). Filter to nonstops when actually returned; compare Sichuan Airlines and Spring Airlines if present, without inventing routes. Flag carry-on/check baggage, ski gear, and published flight-time uncertainties.
+
+Return the cheapest **verified** round-trip option per date pair with source, date/time and booking URL; mark `未核实` for any missing fare or leg. If three pairs all fail, report the specific API/network/permission problem and whether results exist for a common route as a sanity check. A zero-result response is not proof that no flights exist; an unauthenticated trial may be incomplete. Never send passenger details or make a booking.
