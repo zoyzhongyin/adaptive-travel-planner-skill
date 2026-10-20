@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 from urllib import request, parse, error
 
-ALLOWED_DOMAINS = ("router.feizhu.com", "feizhu.com", "fliggy.com")
+ALLOWED_DOMAINS = ("router.feizhu.com", "feizhu.com", "fliggy.com", "outfliggys.m.taobao.com")
 MAX_BYTES = 150000
 
 
