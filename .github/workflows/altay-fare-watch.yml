@@ -1,0 +1,64 @@
+name: Altay Fare Watch (30-min rotation)
+
+on:
+  schedule:
+    - cron: "13,43 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Use simulated prices for a no-alert functional test"
+        type: boolean
+        default: false
+  push:
+    paths:
+      - ".github/workflows/altay-fare-watch.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: altay-fare-watch
+  cancel-in-progress: false
+
+jobs:
+  fare-watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out project
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install FlyAI CLI
+        if: github.event_name != 'push' && !inputs.dry_run
+        run: npm install -g @fly-ai/flyai-cli --no-audit --no-fund
+      - name: Run route check (one pair each 30 minutes)
+        id: price_watch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "push" || "${{ inputs.dry_run }}" == "true" ]]; then
+            python3 scripts/flight_price_watch.py --test
+          else
+            python3 scripts/flight_price_watch.py
+          fi
+      - name: Save diagnostic output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flight-watch-check
+          path: fare-results/
+          if-no-files-found: ignore
+          retention-days: 5
+      - name: Flag a price alert for GitHub notification
+        if: steps.price_watch.outputs.price_alert == 'true'
+        run: |
+          echo "::error title=阿勒泰机票候选价已达标::请打开本次工作流 Summary，核实是否符合真实含税价及托运行李。"
+          echo "This job intentionally fails ONLY on a NEW deal; configure GitHub Actions failure notifications."
+          exit 1
