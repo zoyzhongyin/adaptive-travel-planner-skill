@@ -33,6 +33,7 @@ on:
       - "flight-requests/current.json"
       - ".github/workflows/universal-flight-fares.yml"
       - "scripts/flight_checkout_probe.py"
+      - "scripts/flight_fare_query.py"
 
 permissions:
   contents: read
