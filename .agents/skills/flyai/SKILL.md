@@ -197,3 +197,19 @@ When a user asks for a fresh fare search in an ordinary ChatGPT conversation, pr
 6. Confirm bookability/checkout including taxes, baggage and ski gear before advising purchase. Never create orders or handle payments without a separate explicit user request.
 
 Verified end-to-end example on 2026-10-20: ChatGPT created flight-requests/current.json, commit 078d60f027a6b318a526f8b0412db3f1142441b5, automatically starting GitHub Actions run 39407116042. FlyAI returned 2026-12-10 TFU-AAT nonstop 3U6573, reference 900 CNY; 2026-12-15 AAT-TFU nonstop 9C6686, reference 910 CNY. Those amounts were only raw API reference fares, not confirmed full checkout prices. Refresh for every later search.
+
+
+## Checkout, taxes and baggage verification limits — confirmed 2026-10-20
+
+The universal-flight-fares workflow now executes scripts/flight_checkout_probe.py, a non-booking test of public FlyAI booking URLs, and scripts/flight_fare_query.py adds a clearly labeled, route-specific hypothetical fee model.
+
+A real GitHub Actions test confirmed booking links for TFU/AAT redirect through outfliggys.m.taobao.com and sjipiao.fliggy.com to login.taobao.com. Thus public, unauthenticated access does **not** reveal the final ticket price, whether flight ticketPrice includes the 50 CNY domestic development fund / 90 CNY current fuel surcharge per >800km leg, or the fare product's actual included baggage. Do not bypass login or ask the user for cookies/passwords. Do not call the raw ticketPrice a verified after-tax total.
+
+For TFU/AAT route 3U6573 outbound and 9C6686 inbound, the current raw API return sum was 1810 CNY. Conditional examples based on public 2026-10-20 fee rules, **not a quote, bound, or guarantee**:
+- Assuming the Spring return ticket has no free checked bag and 20kg is purchased online for CNY159, AND both raw ticketPrice values already include tax/fees: 1969 CNY.
+- The same bag assumption, AND neither raw ticketPrice includes the CNY50 civil-aviation development fee plus CNY90 fuel surcharge per leg: 2249 CNY.
+- Mixed fee-inclusion, a different Spring fare bundle, excess sports-baggage charges, intermediary services, and fee changes may produce other totals.
+
+Evidence: https://news.springairlines.cn/news/2026-06-16-00-00.html ; https://webresource.airchina.com.cn/zh-CN/content/c/2026-10-08/30592.shtml ; https://www.mof.gov.cn/gkml/caizhengwengao/caizhengbuwengao2008/caizhengbuwengao20083/200805/t20080519_29156.htm . Spring's own terms generally cap skis at 180cm; check exact ski bag eligibility and cost with the fare before travel. Sichuan Airlines has separate special baggage rules, and actual fare inclusions require verification.
+
+The user must view a logged-in provider checkout page to confirm real all-in and luggage prices; a redacted fee-detail screenshot is enough to have the assistant audit figures, with no need to share payment or identity data.
