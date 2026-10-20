@@ -4,5 +4,7 @@
   "no_fare_query": true,
   "no_state_change": true,
   "triggered_from": "ChatGPT after user confirmed ServerChan secret set",
-  "date": "2026-10-20"
+  "date": "2026-10-20",
+  "attempt": 2,
+  "detail": "Second user-requested one-time WeChat push test, do not query fare or alter alert state"
 }
