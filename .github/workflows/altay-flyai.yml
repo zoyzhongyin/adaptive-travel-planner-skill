@@ -91,6 +91,35 @@ jobs:
           if os.environ.get("GITHUB_STEP_SUMMARY"):
               with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:f.write(result)
           PY
+      - name: Inspect code-based round trip and return leg
+        shell: bash
+        run: |
+          mkdir -p fare-results
+          set +e
+          flyai search-flight --origin TFU --destination AAT --dep-date 2026-12-08 --back-date 2026-12-13 --sort-type 3 >fare-results/code-roundtrip.json 2>fare-results/code-roundtrip.stderr
+          flyai search-flight --origin AAT --destination TFU --dep-date 2026-12-13 --sort-type 3 >fare-results/code-return.json 2>fare-results/code-return.stderr
+          set -e
+          python3 - <<'PY'
+          import json,pathlib,os
+          lines=["## IATA-coded flight responses"]
+          for stem in ("probe_airport", "code-roundtrip", "code-return"):
+              p=pathlib.Path("fare-results")/(stem+".json")
+              try:
+                  doc=json.loads(p.read_text(encoding="utf-8"))
+                  dat=doc.get("data") if isinstance(doc.get("data"),dict) else {}
+                  items=dat.get("itemList") if isinstance(dat.get("itemList"),list) else []
+                  lines.append(f"{stem}: status={doc.get('status')} message={doc.get('message')} items={len(items)}")
+                  if items:
+                      first=items[0]
+                      lines.append("keys: "+str(list(first.keys())))
+                      lines.append("first_item: "+json.dumps(first,ensure_ascii=False)[:8500])
+              except Exception as exc:
+                  lines.append(f"{stem}: {type(exc).__name__}: {exc}")
+          out="\n".join(lines)+"\n"
+          print(out)
+          if os.environ.get("GITHUB_STEP_SUMMARY"):
+              with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:f.write(out)
+          PY
       - name: Summarize API responses
         if: always()
         shell: bash
