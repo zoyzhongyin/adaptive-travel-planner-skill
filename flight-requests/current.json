@@ -1,8 +1,12 @@
 {
   "origin": "TFU",
   "destination": "AAT",
-  "departure_start": "2026-12-08",
-  "departure_end": "2026-12-10",
+  "departure_dates": [
+    "2026-12-05",
+    "2026-12-14",
+    "2026-12-23"
+  ],
   "stay_nights": 5,
-  "direct_preferred": true
+  "direct_preferred": true,
+  "query_context": "Projected off-duty blocks from repeating 3-on 6-off schedule in Oct 2026; verify Dec shifts before booking"
 }
