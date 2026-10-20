@@ -15,6 +15,6 @@
   "check_interval_minutes": 30,
   "rotation": "one_date_pair_per_run",
   "currency": "CNY",
-  "stop_after": "2026-12-05",
+  "stop_after": "2026-12-23",
   "note": "Inferred work-roster windows; verify December official shifts. API ticketPrice is NOT confirmed checkout all-in fare. Enabled during trial; monitor may throttle."
 }
