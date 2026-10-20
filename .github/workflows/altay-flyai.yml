@@ -52,6 +52,45 @@ jobs:
             echo "Query exit code: $exit_code"
             echo "::endgroup::"
           done
+      - name: Diagnose FlyAI using control routes
+        shell: bash
+        run: |
+          mkdir -p fare-results
+          probe() {
+            label="$1"
+            origin="$2"
+            destination="$3"
+            dep="$4"
+            set +e
+            flyai search-flight --origin "$origin" --destination "$destination" --dep-date "$dep" --sort-type 3 >"fare-results/probe_$label.json" 2>"fare-results/probe_$label.stderr"
+            result=$?
+            set -e
+            echo "$result" >"fare-results/probe_$label.exit"
+          }
+          probe common Chengdu Beijing 2026-11-10
+          probe target Chengdu Altay 2026-12-08
+          probe reverse Altay Chengdu 2026-12-13
+          probe airport TFU AAT 2026-12-08
+          python3 - <<'PY'
+          import json, pathlib, os
+          lines=["## API diagnostic probes (one way)"]
+          for label in ("common","target","reverse","airport"):
+            file=pathlib.Path(f"fare-results/probe_{label}.json")
+            try:
+                data=json.loads(file.read_text(encoding="utf-8"))
+                section=data.get("data") if isinstance(data.get("data"),dict) else {}
+                items=section.get("itemList") if isinstance(section.get("itemList"),list) else []
+                lines.append(f"- {label}: status={data.get('status')}; message={data.get('message')}; items={len(items)}")
+                for item in items[:3]:lines.append(f"  - quoted adultPrice={item.get('adultPrice')} (scope and checkout unverified)")
+                if data.get("systemMessage"):lines.append(f"  - systemMessage={str(data.get('systemMessage'))[:350]}")
+            except Exception as e:
+                err=pathlib.Path(f"fare-results/probe_{label}.stderr")
+                lines.append(f"- {label}: JSON parse error {type(e).__name__}; stderr={(err.read_text(errors='replace') if err.exists() else '')[:350]}")
+          result="\n".join(lines)+"\n"
+          print(result)
+          if os.environ.get("GITHUB_STEP_SUMMARY"):
+              with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:f.write(result)
+          PY
       - name: Summarize API responses
         if: always()
         shell: bash
