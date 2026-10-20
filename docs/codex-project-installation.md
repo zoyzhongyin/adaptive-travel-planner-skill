@@ -1,8 +1,9 @@
 # Codex project installation
 
-The tracked `.agents/skills/adaptive-travel-planner` symlink points to the
-repository root (`../..`). This exposes the existing `SKILL.md`, `references/`,
-`templates/`, and `scripts/` as one project skill without duplicating them.
+The tracked `.agents/skills/adaptive-travel-planner/SKILL.md` symlink points to
+the canonical root `SKILL.md` (`../../../SKILL.md`). Codex resolves its canonical
+path, so resource paths continue to refer to the root `references/`, `templates/`,
+and `scripts/` without duplicating them.
 Keep symlinks enabled when checking out this repository. Start a new Codex task
 in this checkout or a child directory, then invoke `$adaptive-travel-planner`.
 Do not create a separate worktree merely to use the skill; cloud tasks already
@@ -29,10 +30,10 @@ From the repository root:
 # Only this test process needs the conventional umask: two fixtures assume 0755.
 (umask 022; AMAP_API_KEY='' /workspace/.venvs/adaptive-travel-planner/bin/python -m unittest discover -s tests)
 /workspace/.venvs/adaptive-travel-planner/bin/python scripts/release_checks.py
-/workspace/.venvs/adaptive-travel-planner/bin/python .agents/skills/adaptive-travel-planner/scripts/validate_itinerary.py tests/fixtures/itinerary_valid.json
+/workspace/.venvs/adaptive-travel-planner/bin/python scripts/validate_itinerary.py tests/fixtures/itinerary_valid.json
 ```
 
-The final command exercises the installed script path with fictional fixture
+The final command exercises the canonical skill script with fictional fixture
 data; expect `ok: true`, `issue_count: 0`. It is not by itself proof of Codex
 discovery. In a new task, invoke the skill explicitly and ask Codex to read its
 planning contract and run that command to verify discovery and execution.
