@@ -12,6 +12,7 @@ on:
   push:
     paths:
       - ".github/workflows/altay-fare-watch.yml"
+      - "scripts/flight_price_watch.py"
 
 permissions:
   contents: write
