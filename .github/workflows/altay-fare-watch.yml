@@ -13,6 +13,7 @@ on:
     paths:
       - ".github/workflows/altay-fare-watch.yml"
       - "scripts/flight_price_watch.py"
+      - "scripts/serverchan_push.py"
 
 permissions:
   contents: write
@@ -41,6 +42,7 @@ jobs:
         id: price_watch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
         shell: bash
         run: |
           set -euo pipefail
