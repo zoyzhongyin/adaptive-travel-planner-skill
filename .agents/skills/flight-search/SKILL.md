@@ -22,6 +22,20 @@ metadata:
   }
 ---
 
+## China flights: network-resistant execution (priority override)
+
+For China domestic routes such as TFU ↔ AAT, do not make package installation a prerequisite for answering. First use the connected assistant's **already available browser/web search tools** and date-specific carrier/OTA results when those tools are available. The `uvx flight-search` command below is an optional enhancement, not mandatory. Never treat a published route-page lowest fare as a date-specific bookable quote.
+
+If `uvx` exists but package download fails (PyPI DNS/connectivity, blocked internet, SSL error, timeout), **do not retry the same package install repeatedly**. Immediately switch to the following browser-only workflow; do not claim the CLI executed or that prices were scraped:
+
+1. Compare the user's exact requested dates using flight search pages that allow date filters (first airline direct sites Spring Airlines and Sichuan Airlines; then Ctrip/Trip.com, Qunar, Google Flights or Skyscanner as coverage permits). Use the real 2026 dates and route `TFU → AAT → TFU`; check `CTU` separately if useful.
+2. Search outbound and inbound legs independently when round-trip search pages are inaccessible, but never add generic teaser fares and present the sum as a bookable quote. A verified amount requires **date-specific selectable inventory**, per-person taxes and fees, same currency, route, itinerary, and observation time.
+3. Look for airport mismatch, overnight layovers, flight time changes, ski-equipment allowance, prepaid hold baggage, ski board dimensions/fees, and winter-weather disruption risks. Direct flight is preferred over overnight/Urumqi transfer for a short ski trip unless meaningful savings are verified.
+4. Show a compact comparison: dates, exact flight/airports/stops, fare (RMB per person round trip where actually verified), baggage/ski-gear costs, and evidence/link/time. If any price cannot be verified write `未核实`; cite the source of each flight/schedule detail and flag advertised `¥XXX起` as **not an actual price for these dates**.
+5. If web sources cannot expose the dynamic booking page, clearly explain that quote data is unavailable. Give the user ready-to-open official booking entry points and say which date pairs to check. Never suggest that a failed CLI run proves the route has no flights.
+
+For the user's Altay ski vacation: evaluate **2026-12-08 → 2026-12-13**, **2026-12-09 → 2026-12-14**, **2026-12-10 → 2026-12-15** and adjacent pairs yielding four full skiing days; default to one adult economy traveler unless another party size is supplied. Avoid booking without explicit separate approval.
+
 # Flight Search
 
 Search Google Flights from the command line. Get prices, times, and airlines - no API key needed.
