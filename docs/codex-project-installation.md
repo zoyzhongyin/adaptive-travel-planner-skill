@@ -1,10 +1,9 @@
 # Codex project installation
 
-The tracked `.agents/skills/adaptive-travel-planner/SKILL.md` symlink points to
-the canonical root `SKILL.md` (`../../../SKILL.md`). Codex resolves its canonical
-path, so resource paths continue to refer to the root `references/`, `templates/`,
-and `scripts/` without duplicating them.
-Keep symlinks enabled when checking out this repository. Start a new Codex task
+The tracked `.agents/skills/adaptive-travel-planner/SKILL.md` is the project
+entry, mirroring the root instructions with resource paths adjusted to reach
+the canonical repository resources. Keep both instruction bodies synchronized.
+Start a new Codex task
 in this checkout or a child directory, then invoke `$adaptive-travel-planner`.
 Do not create a separate worktree merely to use the skill; cloud tasks already
 have isolated checkouts. Existing sessions may need to restart discovery.
