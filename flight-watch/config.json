@@ -1,0 +1,20 @@
+{
+  "enabled": true,
+  "origin": "TFU",
+  "destination": "AAT",
+  "departure_dates": [
+    "2026-12-05",
+    "2026-12-14",
+    "2026-12-23"
+  ],
+  "stay_nights": 5,
+  "direct_only": true,
+  "alert_price_cny": 1500,
+  "ideal_price_cny": 1200,
+  "min_drop_cny": 50,
+  "check_interval_minutes": 30,
+  "rotation": "one_date_pair_per_run",
+  "currency": "CNY",
+  "stop_after": "2026-12-05",
+  "note": "Inferred work-roster windows; verify December official shifts. API ticketPrice is NOT confirmed checkout all-in fare. Enabled during trial; monitor may throttle."
+}
