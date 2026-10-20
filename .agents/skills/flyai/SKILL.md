@@ -183,3 +183,17 @@ If Codex encounters npm `connect EPERM` or an unreachable proxy, do NOT retry lo
 - The actual JSON fare field was **`ticketPrice`** in returned items, NOT `adultPrice`. Parse `data.itemList[].ticketPrice`, `journeys[].segments`, `jumpUrl`, status/message. Include exact dates, departure/arrival airports and full connecting itinerary; never flatten an overnight transfer into a direct flight.
 - Verified example raw query output (2026-10-20, not a booking guarantee): TFU→AAT on 2026-12-10 direct 3U6573 at 14:15–18:05 had `ticketPrice=900.00`; AAT→TFU on 2026-12-15 direct 9C6686 at 16:00–20:00 had `ticketPrice=910.00`. Separate one-way quotes total 1810 CNY before confirming price scope, taxes, check-in baggage and skis.
 - All old benchmark fares are merely targets. Checkout availability, total price, luggage and winter-weather disruption must be confirmed in the airline or Fliggy booking view.
+
+
+## ChatGPT chat direct flight search — verified 2026-10-20
+
+When a user asks for a fresh fare search in an ordinary ChatGPT conversation, prefer the connected GitHub tool flow. Codex local npm installation is not required.
+
+1. Read flight-requests/current.json with GitHub fetch_file to get the exact blob SHA.
+2. Extract requested origin and destination (IATA codes preferred), outbound date range (at most 7 consecutive dates), and stay_nights (1 through 14). Retain existing unstated constraints.
+3. Write new JSON to the same path with GitHub update_file and the current blob SHA. Required keys: origin, destination, departure_start, departure_end, stay_nights; optional key direct_preferred. Updating this file triggers the workflow .github/workflows/universal-flight-fares.yml on push. No manual GitHub webpage interaction needed.
+4. Find the new GitHub Actions run named Universal Flight Fare Search (FlyAI) by the commit SHA from the update. Read current run jobs and logs via the GitHub connector. Do not quote stale prices from an older completed run. An in-progress job has not yet provided its complete results.
+5. Read the output for each date: API status, raw offer count, lowest direct flight, lowest overall one-way offer, and combined sum of two one-way reference fares if both returned. Actual JSON field is ticketPrice, not adultPrice. Treat incomplete results as missing, not flights unavailable.
+6. Confirm bookability/checkout including taxes, baggage and ski gear before advising purchase. Never create orders or handle payments without a separate explicit user request.
+
+Verified end-to-end example on 2026-10-20: ChatGPT created flight-requests/current.json, commit 078d60f027a6b318a526f8b0412db3f1142441b5, automatically starting GitHub Actions run 39407116042. FlyAI returned 2026-12-10 TFU-AAT nonstop 3U6573, reference 900 CNY; 2026-12-15 AAT-TFU nonstop 9C6686, reference 910 CNY. Those amounts were only raw API reference fares, not confirmed full checkout prices. Refresh for every later search.
