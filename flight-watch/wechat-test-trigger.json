@@ -1,0 +1,8 @@
+{
+  "test": "wechat_push_channel",
+  "purpose": "send_one_non_price_test_to_user",
+  "no_fare_query": true,
+  "no_state_change": true,
+  "triggered_from": "ChatGPT after user confirmed ServerChan secret set",
+  "date": "2026-10-20"
+}
