@@ -130,7 +130,7 @@ This skill is installed in a travel-planning Codex repository, sourced from http
 
 For a Chengdu -> Altay ski trip:
 1. Search **TFU** (Chengdu Tianfu) to **AAT** (Altay Xuedu) for each desired outbound and return date combination. If needed, search **CTU** (Shuangliu) separately, but never conflate city code CTU with the Tianfu airport TFU.
-2. Prefer direct flights. Compare departure dates near Dec 7-11, 2026 and return dates 5-6 calendar days after departure, ensuring at least four on-slope days if feasible.
+2. Prefer direct flights. Compare departure dates near Dec 7-11, 2026 and return dates 4-5 calendar days after departure (5-6 total calendar days), ensuring at least four on-slope days if feasible.
 3. Run a real query, for example: `uvx flight-search TFU AAT --date 2026-12-08 --return 2026-12-14 --output json`. If uvx is missing, request permission to install uv/flight-search; do not claim live search succeeded.
 4. Compare **bookable, date-specific, round-trip total fares** only in the same currency; verify luggage allowance, ski equipment/bag charges, airport, times, routing, and refund rules. Do not confuse a carrier's generic advertised starting fare with the user's dates.
 5. Treat Google Flights scraping as fallible: CAPTCHA, regional access limits, or missing mainland-China domestic inventory may cause incomplete results. Cross-check at least one Chinese OTA or airline booking site (Spring Airlines, Sichuan Airlines, Trip.com/Ctrip) before recommending any purchase.
