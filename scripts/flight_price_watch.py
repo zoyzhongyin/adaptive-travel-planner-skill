@@ -80,6 +80,20 @@ def github_commit_state(state):
         _ = json.load(r)
 
 
+def maybe_heartbeat(state, now):
+    """Keep a dated state heartbeat at most once in 21 days. Bot commits may not prevent GitHub schedule auto-disable, so alert the user about the 60-day risk."""
+    seen = state.get("last_heartbeat_bjt")
+    if seen:
+        try:
+            if now - datetime.fromisoformat(seen) < timedelta(days=21):
+                return False
+        except (TypeError, ValueError):
+            pass
+    state["last_heartbeat_bjt"] = now.isoformat(timespec="seconds")
+    github_commit_state(state)
+    return True
+
+
 def write_summary(message, result, alert=False):
     OUT_DIR.mkdir(exist_ok=True)
     out = "# 阿勒泰机票价格监控\n\n" + message + "\n"
@@ -137,6 +151,8 @@ def perform(config, state, *, index=None, live=True):
     best = best_direct_price(outbound, inbound)
     if best is None:
         result["status"] = "incomplete_no_reliable_roundtrip_price"
+        if live:
+            maybe_heartbeat(state, now)
         write_summary(
             "检查日期：" + pair_key + "\n\n去程接口状态：" + str(result["outbound_status"])
             + "；返程接口状态：" + str(result["inbound_status"])
@@ -171,10 +187,14 @@ def perform(config, state, *, index=None, live=True):
         state.setdefault("alerts", {})[pair_key] = {
             "best_alert_cny": str(price), "last_alert_at_bjt": now.isoformat(timespec="seconds"),
         }
+        state["last_heartbeat_bjt"] = now.isoformat(timespec="seconds")
         github_commit_state(state)
     elif alert and not live:
         result["test_only_no_notification"] = True
         alert = False
+
+    if live and not alert:
+        maybe_heartbeat(state, now)
 
     ideal = price <= Decimal(str(config["ideal_price_cny"]))
     lines = [
