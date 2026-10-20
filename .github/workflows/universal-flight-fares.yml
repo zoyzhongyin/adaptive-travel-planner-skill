@@ -31,6 +31,7 @@ on:
   push:
     paths:
       - "flight-requests/current.json"
+      - ".github/workflows/universal-flight-fares.yml"
 
 permissions:
   contents: read
@@ -79,6 +80,9 @@ jobs:
           fi
       - name: Fetch current flight prices by each travel date
         run: python3 scripts/flight_fare_query.py --request "$RUNNER_TEMP/flight-request.json"
+      - name: Check public booking URLs without submitting passenger information
+        if: always()
+        run: python3 scripts/flight_checkout_probe.py
       - name: Upload structured results and query logs
         if: always()
         uses: actions/upload-artifact@v4
