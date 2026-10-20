@@ -1,0 +1,8 @@
+{
+  "origin": "TFU",
+  "destination": "AAT",
+  "departure_start": "2026-12-08",
+  "departure_end": "2026-12-10",
+  "stay_nights": 5,
+  "direct_preferred": true
+}
