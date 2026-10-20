@@ -120,6 +120,40 @@ jobs:
           if os.environ.get("GITHUB_STEP_SUMMARY"):
               with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:f.write(out)
           PY
+      - name: Show all priced offers and test alternate dates
+        shell: bash
+        run: |
+          mkdir -p fare-results
+          for spec in 09:TFU:AAT:2026-12-09 10:TFU:AAT:2026-12-10 r14:AAT:TFU:2026-12-14 r15:AAT:TFU:2026-12-15 rctu:AAT:CTU:2026-12-13 rcn:阿勒泰:成都:2026-12-13; do
+            IFS=: read -r tag origin dest date <<< "$spec"
+            set +e
+            flyai search-flight --origin "$origin" --destination "$dest" --dep-date "$date" --sort-type 3 >"fare-results/extra_$tag.json" 2>"fare-results/extra_$tag.stderr"
+            set -e
+          done
+          python3 - <<'PY'
+          import json,pathlib,os
+          names=("probe_airport","extra_09","extra_10","extra_r14","extra_r15","extra_rctu","extra_rcn")
+          lines=["## All candidate fare details and return alternatives"]
+          for name in names:
+              p=pathlib.Path("fare-results")/(name+".json")
+              try:
+                  d=json.loads(p.read_text(encoding="utf-8"))
+                  content=d.get("data") if isinstance(d.get("data"),dict) else {}
+                  items=content.get("itemList") if isinstance(content.get("itemList"),list) else []
+                  lines.append(f"### {name}: API status {d.get('status')}, results {len(items)}, message {d.get('message')}")
+                  for offer in items[:12]:
+                      routes=[]
+                      for journey in offer.get("journeys",[]):
+                          segments=journey.get("segments",[])
+                          if isinstance(segments,list):
+                              routes.append(" / ".join(f"{s.get('depStationCode')}({s.get('depDateTime')}) → {s.get('arrStationCode')}({s.get('arrDateTime')}) {s.get('marketingTransportNo')}" for s in segments))
+                      lines.append(f"- ticketPrice={offer.get('ticketPrice')} CNY?; route {' | '.join(routes)}; jumpUrl={offer.get('jumpUrl')}")
+              except Exception as e:lines.append(f"### {name}: error {type(e).__name__}")
+          summary="\n".join(lines)+"\n"
+          print(summary)
+          if os.environ.get("GITHUB_STEP_SUMMARY"):
+              with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as fh:fh.write(summary)
+          PY
       - name: Summarize API responses
         if: always()
         shell: bash
