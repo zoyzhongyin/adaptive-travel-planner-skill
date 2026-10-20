@@ -1,0 +1,89 @@
+name: Universal Flight Fare Search (FlyAI)
+
+on:
+  workflow_dispatch:
+    inputs:
+      origin:
+        description: "Departure city or IATA airport code (TFU recommended)"
+        type: string
+        required: true
+        default: TFU
+      destination:
+        description: "Arrival city or IATA airport code (AAT)"
+        type: string
+        required: true
+        default: AAT
+      departure_start:
+        description: "Earliest outbound date (YYYY-MM-DD)"
+        type: string
+        required: true
+        default: "2026-12-08"
+      departure_end:
+        description: "Latest outbound date (YYYY-MM-DD), <= 7-day range"
+        type: string
+        required: true
+        default: "2026-12-10"
+      stay_nights:
+        description: "Nights between outbound and return flights (1-14)"
+        type: string
+        required: true
+        default: "5"
+  push:
+    paths:
+      - "flight-requests/current.json"
+
+permissions:
+  contents: read
+
+jobs:
+  query:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out request and query script
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install official FlyAI CLI
+        run: npm install -g @fly-ai/flyai-cli --no-audit --no-fund
+      - name: Build request from workflow inputs or committed JSON
+        shell: bash
+        env:
+          INPUT_ORIGIN: ${{ inputs.origin }}
+          INPUT_DESTINATION: ${{ inputs.destination }}
+          INPUT_START: ${{ inputs.departure_start }}
+          INPUT_END: ${{ inputs.departure_end }}
+          INPUT_NIGHTS: ${{ inputs.stay_nights }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            python3 - <<'PY'
+          import json, os
+          dest = os.path.join(os.environ["RUNNER_TEMP"], "flight-request.json")
+          with open(dest, "w", encoding="utf-8") as fh:
+              json.dump({
+                  "origin": os.environ["INPUT_ORIGIN"],
+                  "destination": os.environ["INPUT_DESTINATION"],
+                  "departure_start": os.environ["INPUT_START"],
+                  "departure_end": os.environ["INPUT_END"],
+                  "stay_nights": int(os.environ["INPUT_NIGHTS"]),
+                  "direct_preferred": True,
+              }, fh, ensure_ascii=False, indent=2)
+          PY
+          else
+            cp flight-requests/current.json "$RUNNER_TEMP/flight-request.json"
+          fi
+      - name: Fetch current flight prices by each travel date
+        run: python3 scripts/flight_fare_query.py --request "$RUNNER_TEMP/flight-request.json"
+      - name: Upload structured results and query logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: universal-flight-fares
+          path: fare-results/
+          if-no-files-found: ignore
+          retention-days: 7
