@@ -1,0 +1,21 @@
+name: Fare Alert Email Test (Intentional Failure)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fare-alert-email-test.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-notification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Simulate a new low-fare notification
+        run: |
+          echo "::error title=测试提醒-非真实降价::模拟阿勒泰机票达到提醒阈值。本工作流仅用于检测 GitHub 邮件通知，无真实价格、无订票操作。"
+          echo "EXPECTED FAILURE: Test the GitHub Actions failed-workflow notification channel."
+          exit 1
