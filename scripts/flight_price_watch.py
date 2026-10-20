@@ -24,7 +24,7 @@ from scripts.flight_fare_query import query, OUT_DIR  # noqa: E402
 CONFIG_PATH = ROOT / "flight-watch/config.json"
 STATE_PATH = ROOT / "flight-watch/state.json"
 GH_REPO = os.environ.get("GITHUB_REPOSITORY", "")
-GH_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+GH_TOKEN = os.environ.pop("GITHUB_TOKEN", "")  # Do NOT pass repository credential to subprocesses (FlyAI CLI).
 
 
 def json_read(path):
