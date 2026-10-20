@@ -11,6 +11,24 @@ have isolated checkouts. Existing sessions may need to restart discovery.
 Codex's documented project discovery directory is `.agents/skills/`:
 https://developers.openai.com/codex/skills/
 
+## Cloud environment with `/workspace` as the task directory
+
+If the cloud task starts in `/workspace` and checks out this repository beneath
+it, merge this installer into the branch used by the environment, add this
+command to the cloud environment **Install script**, and publish the updated
+environment:
+
+```bash
+bash /workspace/adaptive-travel-planner-skill/scripts/install_cloud_skill.sh
+```
+
+The script must run before the agent starts. It links the repository root at
+`/workspace/.agents/skills/adaptive-travel-planner`, so the root `SKILL.md` and
+its relative `references/`, `scripts/`, and `templates/` paths stay together.
+It is safe to rerun and refuses to replace a different existing installation.
+Start a new cloud task after publishing to check automatic Skill registration;
+running the command during an existing task cannot redo startup discovery.
+
 ## Development checks
 
 No Node.js installer or running service is required for this local installation.
