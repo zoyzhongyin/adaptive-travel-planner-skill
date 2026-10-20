@@ -17,7 +17,7 @@ PAIR_LIMIT = 7
 
 def checked_request(path: Path) -> dict:
     obj = json.loads(path.read_text(encoding="utf-8"))
-    required = ("origin", "destination", "departure_start", "departure_end", "stay_nights")
+    required = ("origin", "destination", "stay_nights")
     for key in required:
         if key not in obj:
             raise ValueError("Missing required request field: " + key)
@@ -26,10 +26,23 @@ def checked_request(path: Path) -> dict:
         if not isinstance(value, str) or not re.fullmatch(r"[\w\u4e00-\u9fff -]{2,40}", value):
             raise ValueError("Invalid origin/destination; use an airport IATA code or city name")
         obj[key] = value.strip()
-    start = dt.date.fromisoformat(obj["departure_start"])
-    end = dt.date.fromisoformat(obj["departure_end"])
-    if start > end or (end - start).days >= PAIR_LIMIT:
-        raise ValueError("Date range must contain 1 to 7 dates")
+    if "departure_dates" in obj:
+        days = obj["departure_dates"]
+        if not isinstance(days, list) or not 1 <= len(days) <= PAIR_LIMIT or any(not isinstance(day, str) for day in days):
+            raise ValueError("departure_dates must be an array containing 1 to 7 ISO dates")
+        dates = sorted({dt.date.fromisoformat(day) for day in days})
+        if len(dates) != len(days):
+            raise ValueError("departure_dates must not have duplicate dates")
+        start, end = dates[0], dates[-1]
+        obj["departure_dates"] = [day.isoformat() for day in dates]
+    else:
+        for key in ("departure_start", "departure_end"):
+            if key not in obj:
+                raise ValueError("Missing required request field: " + key)
+        start = dt.date.fromisoformat(obj["departure_start"])
+        end = dt.date.fromisoformat(obj["departure_end"])
+        if start > end or (end - start).days >= PAIR_LIMIT:
+            raise ValueError("Date range must contain 1 to 7 dates")
     stay = obj["stay_nights"]
     if type(stay) is not int or not 1 <= stay <= 14:
         raise ValueError("stay_nights must be an integer from 1 to 14")
@@ -132,10 +145,11 @@ def brief_option(offer: dict) -> str:
 
 def summarize(req: dict, results: list[dict]) -> str:
     now = dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
+    date_text = "、".join(req["departure_dates"]) if "departure_dates" in req else f"{req['departure_start']} 至 {req['departure_end']}"
     lines = [
         "# 机票查询结果（飞猪 FlyAI 接口）",
         f"查询时间：{now}（北京时间）",
-        f"航线：{req['origin']} ⇄ {req['destination']}；出发范围 {req['departure_start']} 至 {req['departure_end']}；住宿 {req['stay_nights']} 晚",
+        f"航线：{req['origin']} ⇄ {req['destination']}；出发日期 {date_text}；住宿 {req['stay_nights']} 晚",
         "**注意：价格来自 FlyAI ticketPrice 字段，是单程参考报价，并非已核实的最终含税或包含托运行李的成交价。**",
         "体验模式结果可能不完整；返回 status=1 或 0 条不能证明无航班。最终须打开平台核实票价、剩余座位、退改规则与雪具行李费用。",
         "",
@@ -197,11 +211,14 @@ def main():
     OUT_DIR.mkdir(exist_ok=True)
     req = checked_request(args.request)
     (OUT_DIR / "request.json").write_text(json.dumps(req, ensure_ascii=False, indent=2), encoding="utf-8")
-    start = dt.date.fromisoformat(req["departure_start"])
-    end = dt.date.fromisoformat(req["departure_end"])
+    if "departure_dates" in req:
+        departure_days = [dt.date.fromisoformat(day) for day in req["departure_dates"]]
+    else:
+        start = dt.date.fromisoformat(req["departure_start"])
+        end = dt.date.fromisoformat(req["departure_end"])
+        departure_days = [start + dt.timedelta(days=i) for i in range((end - start).days + 1)]
     results = []
-    for day_offset in range((end - start).days + 1):
-        dep = start + dt.timedelta(days=day_offset)
+    for dep in departure_days:
         ret = dep + dt.timedelta(days=req["stay_nights"])
         outward = query(req["origin"], req["destination"], dep, f"{dep}_outbound")
         inward = query(req["destination"], req["origin"], ret, f"{ret}_return")
