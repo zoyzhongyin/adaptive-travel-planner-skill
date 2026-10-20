@@ -15,7 +15,8 @@ Repository-local Codex Skill based on the verified FlyAI (Fliggy) domestic-fligh
 - User-controlled configuration: flight-watch/config.json
 - Durable notification state: flight-watch/state.json, updated via GitHub Contents API only for a confirmed new qualifying alert
 - Results: workflow Summary and flight-watch-check artifact (5-day retention)
-- NOTE: GitHub Issues is disabled for this fork (HTTP 410), so the Issue-based notification plan is unsupported. A new qualifying low fare instead triggers a deliberately failed GitHub Actions run. The user must configure GitHub Actions failure notifications to receive a push/email.
+- WeChat push: official ServerChan Turbo skill .agents/skills/serverchan/SKILL.md and scripts/serverchan_push.py. On a NEW qualifying fare, the watcher attempts ServerChan WeChat delivery first. On missing/unusable credential or failed delivery, it falls back to the previously validated GitHub Actions failure-email notification. The user must personally configure the SERVERCHAN_SENDKEY repository Actions secret; never ask them to put the SendKey in chat or in tracked files.
+- NOTE: GitHub Issues is disabled for this fork (HTTP 410), so Issue-based notification is unsupported. The previously validated GitHub Actions failure notification now works as fallback only when WeChat isn't available.
 - Automatic runs never invoke a ChatGPT model, so normal monitoring consumes 0 ChatGPT model tokens.
 
 ## Current query and alert rules
@@ -28,6 +29,10 @@ Repository-local Codex Skill based on the verified FlyAI (Fliggy) domestic-fligh
 - ticketPrice is NOT confirmed all-in cost: tax, check-in baggage and ski-equipment costs require a logged-in checkout.
 - API errors, empty trial-mode results and a status=1 message mean missing data, not no flights.
 - No booking or payment ever. Do not attempt to evade access rules or rate controls.
+- ServerChan Turbo free tier allows 5 messages per day, and the SendKey must start with SCT. A SCT key is for WeChat; sctp keys from ServerChan³ are a different App-only service and not applicable to WeChat.
+- Notification workflow: .github/workflows/altay-fare-watch.yml reads GitHub Actions secret SERVERCHAN_SENDKEY; authenticated push is a POST to https://sctapi.ftqq.com/{SendKey}.send with title and Markdown body, requiring JSON code=0. Credential is removed from the environment before running third-party FlyAI CLI. Never emit request URLs or secret values in logs.
+- WeChat sender has offline unit tests in tests/test_serverchan_push.py. A manual one-message end-to-end test workflow is available at .github/workflows/flight-wechat-test.yml. It only sends when triggered and the user has configured the secret, without calling the airfare API.
+
 
 ## How to use from ChatGPT
 
