@@ -170,3 +170,16 @@ flyai search-flight --origin "成都" --destination "阿勒泰" --dep-date 2026-
 Inspect JSON `data.itemList`, `journeys[].segments`, `adultPrice`, `status`, `systemMessage`, `jumpUrl`. Verify **both legs**, airport IATA codes TFU/AAT, CNY units, taxes/fees, and adult price scope (RT total vs single segment). Filter to nonstops when actually returned; compare Sichuan Airlines and Spring Airlines if present, without inventing routes. Flag carry-on/check baggage, ski gear, and published flight-time uncertainties.
 
 Return the cheapest **verified** round-trip option per date pair with source, date/time and booking URL; mark `未核实` for any missing fare or leg. If three pairs all fail, report the specific API/network/permission problem and whether results exist for a common route as a sanity check. A zero-result response is not proof that no flights exist; an unauthenticated trial may be incomplete. Never send passenger details or make a booking.
+
+## Verified GitHub Actions workaround for restricted Codex networks (2026-10-20)
+
+If Codex encounters npm `connect EPERM` or an unreachable proxy, do NOT retry local installation or treat the Skill as unusable. The official `@fly-ai/flyai-cli` has been installed and run successfully on a separate GitHub Actions runner in this repository:
+
+- Workflow: `.github/workflows/altay-flyai.yml`
+- Runs page: https://github.com/zoyzhongyin/adaptive-travel-planner-skill/actions/workflows/altay-flyai.yml
+- Latest run JSON can be read via GitHub Actions jobs and logs; the workflow also uploads `altay-flyai-response` for 7 days.
+- To refresh, run it manually with **Actions -> Altay Fare Lookup (FlyAI) -> Run workflow** (from GitHub web). Do not confuse reading an old run with performing a fresh price query.
+- Query **airport codes** `TFU` and `AAT` for a route-specific search. In 2026-10-20 tests, the CLI successfully returned flight offers for `--origin TFU --destination AAT --dep-date 2026-12-08`; city-name and multi-leg `--back-date` queries sometimes returned API status 1 ("搜索机票低价行业失败"). Search each leg independently and do not infer any dates' absence of flights from status 1.
+- The actual JSON fare field was **`ticketPrice`** in returned items, NOT `adultPrice`. Parse `data.itemList[].ticketPrice`, `journeys[].segments`, `jumpUrl`, status/message. Include exact dates, departure/arrival airports and full connecting itinerary; never flatten an overnight transfer into a direct flight.
+- Verified example raw query output (2026-10-20, not a booking guarantee): TFU→AAT on 2026-12-10 direct 3U6573 at 14:15–18:05 had `ticketPrice=900.00`; AAT→TFU on 2026-12-15 direct 9C6686 at 16:00–20:00 had `ticketPrice=910.00`. Separate one-way quotes total 1810 CNY before confirming price scope, taxes, check-in baggage and skis.
+- All old benchmark fares are merely targets. Checkout availability, total price, luggage and winter-weather disruption must be confirmed in the airline or Fliggy booking view.
