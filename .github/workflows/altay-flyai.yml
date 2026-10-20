@@ -1,0 +1,110 @@
+name: Altay Fare Lookup (FlyAI)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/altay-flyai.yml
+
+permissions:
+  contents: read
+
+jobs:
+  fare-search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install official FlyAI CLI
+        run: |
+          set -euo pipefail
+          npm --version
+          npm install -g @fly-ai/flyai-cli --no-audit --no-fund
+          command -v flyai
+          flyai --help
+      - name: Query three six-day round trips
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p fare-results
+          for dates in 2026-12-08:2026-12-13 2026-12-09:2026-12-14 2026-12-10:2026-12-15; do
+            dep="${dates%%:*}"
+            ret="${dates##*:}"
+            echo "::group::Flight search $dep to $ret"
+            set +e
+            flyai search-flight \
+              --origin "成都" \
+              --destination "阿勒泰" \
+              --dep-date "$dep" \
+              --back-date "$ret" \
+              --sort-type 3 \
+              >"fare-results/${dep}_${ret}.json" 2>"fare-results/${dep}_${ret}.stderr"
+            exit_code=$?
+            set -e
+            echo "$exit_code" >"fare-results/${dep}_${ret}.exit"
+            echo "Query exit code: $exit_code"
+            echo "::endgroup::"
+          done
+      - name: Summarize API responses
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, datetime
+          root = pathlib.Path("fare-results")
+          lines = [
+              "# Chengdu ↔ Altay — FlyAI query results",
+              f"Checked (UTC): {datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='minutes')}",
+              "Raw API fares are **not confirmed checkout totals**; verify TFU/AAT, both flight legs, taxes, luggage and snow sports equipment.",
+              "",
+          ]
+          for dep, ret in [("2026-12-08", "2026-12-13"), ("2026-12-09", "2026-12-14"), ("2026-12-10", "2026-12-15")]:
+              name = f"{dep}_{ret}"
+              lines.append(f"## {dep} — {ret}")
+              exit_file = root / f"{name}.exit"
+              lines.append("Exit code: " + (exit_file.read_text().strip() if exit_file.exists() else "not executed"))
+              try:
+                  payload = json.loads((root / f"{name}.json").read_text(encoding="utf-8"))
+              except Exception as exc:
+                  lines.append(f"No parseable API JSON: {type(exc).__name__}")
+                  err = root / f"{name}.stderr"
+                  if err.exists():
+                      lines.append("Error: " + err.read_text(errors="replace")[:600])
+                  lines.append("")
+                  continue
+              lines.append(f"API status: {payload.get('status')}; message: {payload.get('message')}")
+              if payload.get("systemMessage"):
+                  lines.append("Platform note: " + str(payload["systemMessage"])[:300])
+              data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+              flights = data.get("itemList") if isinstance(data.get("itemList"), list) else []
+              lines.append(f"Offers: {len(flights)}")
+              for item in flights[:8]:
+                  routes = []
+                  for journey in item.get("journeys", [])[:2]:
+                      segs = journey.get("segments", [])
+                      if not isinstance(segs, list): continue
+                      routes.append(" / ".join(f"{s.get('depStationCode')} {s.get('depDateTime')} → {s.get('arrStationCode')} {s.get('arrDateTime')} {s.get('marketingTransportNo')}" for s in segs))
+                  lines.append(f"- Quoted adultPrice: {item.get('adultPrice')}; segments: {' | '.join(routes) or 'unavailable'}")
+              if not flights:
+                  lines.append("No bookable offers verified — does not imply no flights exist.")
+              lines.append("")
+          output = "\n".join(lines) + "\n"
+          print(output)
+          if os.environ.get("GITHUB_STEP_SUMMARY"):
+              with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f: f.write(output)
+          PY
+      - name: Save flight responses
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: altay-flyai-response
+          path: fare-results/
+          if-no-files-found: ignore
+          retention-days: 7
