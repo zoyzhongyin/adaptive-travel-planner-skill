@@ -2,11 +2,9 @@
   "origin": "TFU",
   "destination": "AAT",
   "departure_dates": [
-    "2026-12-06",
-    "2026-12-15",
-    "2026-12-24"
+    "2026-12-23"
   ],
   "stay_nights": 4,
   "direct_preferred": true,
-  "query_context": "Five-day/four-night alternatives within projected Dec 2026 off-duty blocks; preserves return on Dec10, Dec19, Dec28; 3 complete ski days"
+  "query_context": "Compare Dec 23-27 fifth-day return within projected off-duty 23-28; 3 full ski days"
 }
