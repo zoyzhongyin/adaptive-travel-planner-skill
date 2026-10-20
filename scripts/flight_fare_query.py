@@ -164,6 +164,21 @@ def summarize(req: dict, results: list[dict]) -> str:
             lines.append(f"- **最低已返回双程直飞参考报价合计：¥{price}**（两张单程相加，非已核实往返出票价）")
             lines.append(f"  - 去程：[预订入口]({a['booking_url']}) / 返程：[预订入口]({b['booking_url']})")
             summary.append({"departure": pair["departure"], "return": pair["return"], "direct_combined_reference_cny": str(price)})
+            # Route-specific hypothetical budget, NOT a verified checkout quote.
+            # Sources: Spring Airlines 2026-08-18 baggage table (2000-2999 km),
+            # official October 2026 domestic fuel charge (90 CNY per >800km leg)
+            # and domestic adult passenger civil aviation development fee (50 CNY/leg).
+            if (req["origin"].upper(), req["destination"].upper()) == ("TFU", "AAT") and any(str(s.get("flight") or "").upper().startswith("9C") for s in b["legs"]):
+                baggage_20kg = Decimal("159")
+                fee_each_leg = Decimal("140")  # hypothetical 50 + 90, if NOT included
+                incl = price + baggage_20kg
+                excl = incl + fee_each_leg * 2
+                lines.append("  - **费用敏感性示例，非实际含税报价：**按春秋返程基础票不含托运、另提前购买20kg行李（+159元）假设：")
+                lines.append(f"    - 若 FlyAI 报价已包含机建及燃油：¥{incl}（仅加20kg行李）")
+                lines.append(f"    - 若 FlyAI 两段报价均未包含机建及燃油：¥{excl}（再加每段50元民航发展基金与90元燃油费）")
+                lines.append("    - 这两种是假设情景，**不是报价区间或价格承诺**。不可重复添加已含税费。春秋票型是否含行李、川航实际托运额度、滑雪板尺寸/手续费、平台服务费，必须以订单确认为准。")
+                lines.append("    - 规则依据：[春秋2026行李价格](https://news.springairlines.cn/news/2026-06-16-00-00.html)、[燃油附加费通知](https://webresource.airchina.com.cn/zh-CN/content/c/2026-10-08/30592.shtml)、[财政部民航收费规定](https://www.mof.gov.cn/gkml/caizhengwengao/caizhengbuwengao2008/caizhengbuwengao20083/200805/t20080519_29156.htm)。")
+                lines.append("    - 当前飞猪预订链接会跳转 login.taobao.com，自动程序不能查看登录后的结算页面。")
         if possible:
             a, b = depart["offers"][0], ret["offers"][0]
             price = Decimal(a["price_cny_reference"]) + Decimal(b["price_cny_reference"])
