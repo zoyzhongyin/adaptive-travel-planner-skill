@@ -115,13 +115,16 @@ def perform(config, state, *, index=None, live=True):
     nights = int(config["stay_nights"])
     if not 1 <= nights <= 14:
         raise ValueError("stay_nights out of bounds")
+    now = datetime.now(timezone(timedelta(hours=8)))
     if index is None:
-        index = int(datetime.now(timezone.utc).timestamp() // 1800) % len(dates)
+        remaining = [i for i, day in enumerate(dates) if date.fromisoformat(day) >= now.date()]
+        if not remaining:
+            remaining = list(range(len(dates)))
+        index = remaining[int(datetime.now(timezone.utc).timestamp() // 1800) % len(remaining)]
     index = int(index) % len(dates)
     dep = date.fromisoformat(dates[index])
     ret = dep + timedelta(days=nights)
     pair_key = dep.isoformat() + "_" + ret.isoformat()
-    now = datetime.now(timezone(timedelta(hours=8)))
     result = {"query_time_bjt": now.isoformat(timespec="seconds"), "pair": pair_key, "index": index, "alert": False}
 
     if not config.get("enabled") or now.date() > date.fromisoformat(config["stop_after"]) or dep < now.date():
