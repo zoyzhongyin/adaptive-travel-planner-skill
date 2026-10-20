@@ -20,11 +20,13 @@ import urllib.error
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from scripts.flight_fare_query import query, OUT_DIR  # noqa: E402
+from scripts.serverchan_push import send_wechat, DeliveryError  # noqa: E402
 
 CONFIG_PATH = ROOT / "flight-watch/config.json"
 STATE_PATH = ROOT / "flight-watch/state.json"
 GH_REPO = os.environ.get("GITHUB_REPOSITORY", "")
 GH_TOKEN = os.environ.pop("GITHUB_TOKEN", "")  # Do NOT pass repository credential to subprocesses (FlyAI CLI).
+WECHAT_KEY = os.environ.pop("SERVERCHAN_SENDKEY", "")  # Do NOT pass SendKey to FlyAI subprocesses.
 
 
 def json_read(path):
@@ -185,10 +187,38 @@ def perform(config, state, *, index=None, live=True):
     alert = should_alert(price, prior, config)
     result["alert"] = alert
     result["prior_alert_cny"] = prior
+    delivery_channel = "none"
     if alert and live:
-        # Commit first, so a retry does not generate duplicate alerts.
+        # Attempt WeChat BEFORE marking as notified, so delivery failures
+        # do not silently consume the alert. Fall back to GitHub email.
+        delivery_channel = "github_email_fallback"
+        if WECHAT_KEY:
+            mark = "理想价" if price <= Decimal(str(config["ideal_price_cny"])) else "目标价"
+            title = "阿勒泰机票" + mark + " ¥" + str(price)
+            msg = "\n\n".join([
+                "**两段直飞单程参考报价合计：¥" + str(price) + "**",
+                "往返日期：" + dep.isoformat() + " → " + ret.isoformat(),
+                "去程：" + str(result["outbound"]["flight"]) + "，¥" + result["outbound"]["price_cny_reference"]
+                + "；返程：" + str(result["return"]["flight"]) + "，¥" + result["return"]["price_cny_reference"],
+                "价格未经订单核验，可能不含机建燃油、行李及雪具费用，请先在官方订票页面确认。",
+                "[查看去程](" + str(outward.get("booking_url") or "https://sct.ftqq.com") + ")"
+                + " / [查看返程](" + str(return_flight.get("booking_url") or "https://sct.ftqq.com") + ")",
+                "仅作降价线索，未购买机票。",
+            ])
+            try:
+                send_wechat(WECHAT_KEY, title, msg)
+                delivery_channel = "wechat"
+            except DeliveryError as exc:
+                result["wechat_error_code"] = str(exc)
+            except Exception:
+                result["wechat_error_code"] = "unexpected_push_failure"
+        result["notification_channel"] = delivery_channel
+        # Persist the best notified price only AFTER a successful WeChat
+        # or a deliberate GitHub-email fallback signal.
         state.setdefault("alerts", {})[pair_key] = {
-            "best_alert_cny": str(price), "last_alert_at_bjt": now.isoformat(timespec="seconds"),
+            "best_alert_cny": str(price),
+            "last_alert_at_bjt": now.isoformat(timespec="seconds"),
+            "delivery_channel": delivery_channel,
         }
         state["last_heartbeat_bjt"] = now.isoformat(timespec="seconds")
         github_commit_state(state)
@@ -210,7 +240,7 @@ def perform(config, state, *, index=None, live=True):
         "去程订票链接：" + str(outward.get("booking_url")),
         "返程订票链接：" + str(return_flight.get("booking_url")),
     ]
-    write_summary("\n\n".join(lines), result, alert=alert)
+    write_summary("\n\n".join(lines), result, alert=(alert and delivery_channel != "wechat"))
     return alert
 
 
