@@ -34,7 +34,7 @@ jobs:
         with:
           node-version: "22"
       - name: Install FlyAI CLI
-        if: github.event_name != 'push' && !inputs.dry_run
+        if: inputs.dry_run != true
         run: npm install -g @fly-ai/flyai-cli --no-audit --no-fund
       - name: Run route check (one pair each 30 minutes)
         id: price_watch
@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$GITHUB_EVENT_NAME" == "push" || "${{ inputs.dry_run }}" == "true" ]]; then
+          if [[ "${{ inputs.dry_run }}" == "true" ]]; then
             python3 scripts/flight_price_watch.py --test
           else
             python3 scripts/flight_price_watch.py
