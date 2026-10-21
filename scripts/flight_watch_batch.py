@@ -11,7 +11,10 @@ import json
 import os
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+import sys
 
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 from scripts import flight_price_watch as watch
 
 BJT = timezone(timedelta(hours=8))
