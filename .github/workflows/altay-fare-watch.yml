@@ -1,8 +1,8 @@
-name: Altay Fare Watch (30-min rotation)
+name: Altay Fare Watch (adaptive)
 
 on:
   schedule:
-    - cron: "13,43 * * * *"
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -13,6 +13,8 @@ on:
     paths:
       - ".github/workflows/altay-fare-watch.yml"
       - "scripts/flight_price_watch.py"
+      - "scripts/flight_watch_batch.py"
+      - "flight-watch/config.json"
       - "scripts/serverchan_push.py"
 
 permissions:
@@ -38,7 +40,7 @@ jobs:
       - name: Install FlyAI CLI
         if: inputs.dry_run != true
         run: npm install -g @fly-ai/flyai-cli --no-audit --no-fund
-      - name: Run route check (one pair each 30 minutes)
+      - name: Check overdue itineraries (oldest first, max 3 per run)
         id: price_watch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,7 +51,7 @@ jobs:
           if [[ "${{ inputs.dry_run }}" == "true" ]]; then
             python3 scripts/flight_price_watch.py --test
           else
-            python3 scripts/flight_price_watch.py
+            python3 scripts/flight_watch_batch.py
           fi
       - name: Save diagnostic output
         if: always()
