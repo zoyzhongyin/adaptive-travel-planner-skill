@@ -12,9 +12,11 @@
   "alert_price_cny": 1500,
   "ideal_price_cny": 1200,
   "min_drop_cny": 50,
-  "check_interval_minutes": 30,
-  "rotation": "one_date_pair_per_run",
+  "check_interval_minutes": 15,
+  "rotation": "prioritize_all_overdue_itineraries_using_persisted_last_scan",
   "currency": "CNY",
   "stop_after": "2026-12-23",
-  "note": "Inferred work-roster windows; verify December official shifts. API ticketPrice is NOT confirmed checkout all-in fare. Enabled during trial; monitor may throttle."
+  "note": "GitHub scheduled triggers are best effort; each 15-min attempt checks up to 3 pairs overdue for at least 90 min, prioritizing oldest scan. Nominal per-pair target 90 minutes only if triggers execute; no guarantee. Official shift roster still unconfirmed. FlyAI ticketPrice excludes guaranteed all-in checkout verification.",
+  "each_pair_interval_minutes": 90,
+  "max_pairs_per_run": 3
 }
