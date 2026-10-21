@@ -10,10 +10,10 @@ Repository-local Codex Skill based on the verified FlyAI (Fliggy) domestic-fligh
 ## Installed components
 
 - GitHub Actions: .github/workflows/altay-fare-watch.yml
-- Monitor: scripts/flight_price_watch.py
+- Monitor: scripts/flight_price_watch.py; delay-tolerant batch runner: scripts/flight_watch_batch.py
 - Provider: existing FlyAI CLI, deployed into each GitHub Actions run rather than the restricted Codex cloud shell
 - User-controlled configuration: flight-watch/config.json
-- Durable notification state: flight-watch/state.json, updated via GitHub Contents API only for a confirmed new qualifying alert
+- Durable notification state and monitoring log: flight-watch/state.json; alert deduplication plus last_scan_bjt / last_scan_results updated on live checks
 - Results: workflow Summary and flight-watch-check artifact (5-day retention)
 - WeChat push: official ServerChan Turbo skill .agents/skills/serverchan/SKILL.md and scripts/serverchan_push.py. On a NEW qualifying fare, the watcher attempts ServerChan WeChat delivery first. On missing/unusable credential or failed delivery, it falls back to the previously validated GitHub Actions failure-email notification. The user must personally configure the SERVERCHAN_SENDKEY repository Actions secret; never ask them to put the SendKey in chat or in tracked files.
 - NOTE: GitHub Issues is disabled for this fork (HTTP 410), so Issue-based notification is unsupported. The previously validated GitHub Actions failure notification now works as fallback only when WeChat isn't available.
@@ -23,7 +23,7 @@ Repository-local Codex Skill based on the verified FlyAI (Fliggy) domestic-fligh
 
 - Route: TFU ↔ AAT, 5 nights, 4 complete ski days.
 - Candidate outbound dates: Dec 5, Dec 14, Dec 23, 2026, each returning five days later. These are based on a tentative 3-on/6-off work shift pattern and are NOT a confirmed December schedule.
-- Frequency: every 30 minutes, rotating one outbound/return pair per run; each date pair is nominally checked every 90 minutes. GitHub Actions scheduled runs may be delayed or dropped.
+- Frequency: GitHub attempts a trigger every 15 minutes, and the batch runner checks up to 3 dates overdue for at least 90 minutes, oldest first. Because GitHub Actions scheduled runs may be delayed or dropped, a 90-minute interval is a target, not a guarantee. The full batch is bounded to 6 single-leg requests per run. Optional independent Cloudflare Cron code exists in flight-watch/cloudflare-dispatch/ but is NOT deployed.
 - Both direct legs must have a usable ticketPrice reference fare; notify to CHECK actual bookability if the sum is at most CNY 1500 (ideal price CNY 1200).
 - Suppress repeats unless that pair's already alerted lowest quote drops at least CNY 50 or crosses into the ideal band.
 - ticketPrice is NOT confirmed all-in cost: tax, check-in baggage and ski-equipment costs require a logged-in checkout.
@@ -36,10 +36,10 @@ Repository-local Codex Skill based on the verified FlyAI (Fliggy) domestic-fligh
 
 ## How to use from ChatGPT
 
-Read and edit flight-watch/config.json through the connected GitHub tools. To stop monitoring, set enabled=false. Do not overwrite the saved work-rest dates without confirmation of the user's official roster. Do not rely on a Codex-side npm install. To view current status, use GitHub Actions latest Altay Fare Watch run; a SUCCESS run means no new qualifying alert, not necessarily a valid price, and a FAILED run should be inspected for the expected price-alert marker versus a program failure.
+Read and edit flight-watch/config.json through the connected GitHub tools. To audit real monitoring coverage, read flight-watch/state.json last_scan_results and inspect GitHub Actions watch-batch.md. To stop monitoring, set enabled=false. Do not overwrite the saved work-rest dates without confirmation of the user's official roster. Do not rely on a Codex-side npm install. To view current status, use GitHub Actions latest Altay Fare Watch run; a SUCCESS run means no new qualifying alert, not necessarily a valid price, and a FAILED run should be inspected for the expected price-alert marker versus a program failure.
 
 If the user wants more frequent scans, explain GitHub's theoretical minimum 5-minute cron and best-effort scheduling and the unverified rate capacity of FlyAI's free trial API. Never guarantee real-time notifications or switch to high-frequency scraping without assessing rate limits. For a reliable faster service, connect a suitable explicitly quota-approved official source.
 
 ## Test
 
-The command python3 scripts/flight_price_watch.py --test exercises the watcher with simulated prices, no live flight lookup or persistent state writes.
+The command python3 scripts/flight_price_watch.py --test exercises the single-route watcher with simulated prices, no live flight lookup or persistent state writes. Run unittest discovery to test scripts/flight_watch_batch.py fair catch-up scheduling. Cloudflare setup is described in flight-watch/UPGRADE.md and requires the user to connect their external account and store a separate GH_ACTIONS_TOKEN as a Cloudflare secret.
