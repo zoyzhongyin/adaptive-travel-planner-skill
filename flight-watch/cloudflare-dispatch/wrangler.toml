@@ -1,0 +1,9 @@
+name = "altay-fare-cron"
+main = "worker.js"
+compatibility_date = "2026-10-21"
+
+[triggers]
+crons = ["7,22,37,52 * * * *"]
+
+# Never include GH_ACTIONS_TOKEN here.
+# Add a secret via Cloudflare Workers dashboard or Wrangler secret put.
