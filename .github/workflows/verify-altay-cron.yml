@@ -1,0 +1,59 @@
+name: Verify deployed Altay Cron (read only)
+
+on:
+  push:
+    paths:
+      - ".github/workflows/verify-altay-cron.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Check actual Cloudflare schedule and preserved trigger secret
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError
+          acct = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          token = os.environ["CLOUDFLARE_API_TOKEN"].strip()
+          if not re.fullmatch(r"[a-fA-F0-9]{32}",acct) or not token:
+              raise RuntimeError("Cloudflare authorization not configured")
+          headers={"Authorization":"Bearer "+token, "Accept":"application/json"}
+          prefix="https://api.cloudflare.com/client/v4/accounts/"+acct+"/workers/scripts/altay-fare-cron/"
+          def read(endpoint):
+              try:
+                  with urlopen(Request(prefix+endpoint, headers=headers), timeout=20) as resp:
+                      data=json.load(resp)
+              except HTTPError as e:
+                  raise RuntimeError("Cloudflare endpoint HTTP "+str(e.code)) from None
+              if data.get("success") is not True:
+                  raise RuntimeError("Cloudflare API did not confirm "+endpoint)
+              return data.get("result")
+          settings=read("settings") or {}
+          bindings=settings.get("bindings",[])
+          secret_ok=any(b.get("name")=="GH_ACTIONS_TOKEN" and b.get("type")=="secret_text" for b in bindings)
+          print("Existing GitHub dispatch secret binding: "+("PRESENT" if secret_ok else "MISSING"))
+          if not secret_ok: raise RuntimeError("GH_ACTIONS_TOKEN secret binding missing")
+          schedules=read("schedules")
+          if isinstance(schedules,dict):
+              raw=schedules.get("schedules",[])
+          elif isinstance(schedules,list):
+              raw=schedules
+          else:
+              raw=[]
+          crons=[s.get("cron") for s in raw if isinstance(s,dict)]
+          expected="7,22,37,52 * * * *"
+          print("Cloudflare remote cron schedules: "+str(crons))
+          if expected not in crons: raise RuntimeError("Expected 15-minute cron not present")
+          print("Verified remote existing Worker cron and binding. This does not itself prove that GitHub accepted a scheduled dispatch.")
+          PY
