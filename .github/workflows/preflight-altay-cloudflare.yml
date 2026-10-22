@@ -1,0 +1,37 @@
+name: Preflight Altay Cloudflare Access
+
+on:
+  push:
+    paths:
+      - ".github/workflows/preflight-altay-cloudflare.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Checkout existing project
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Validate secret and variable wiring without disclosing values
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, re
+          account = os.environ.get("CLOUDFLARE_ACCOUNT_ID","")
+          token = os.environ.get("CLOUDFLARE_API_TOKEN","")
+          print("Account ID is "+("VALID 32 hex characters" if re.fullmatch(r"[0-9a-fA-F]{32}",account) else "MISSING OR INVALID"))
+          print("Cloudflare API Token is "+("PRESENT" if token else "MISSING"))
+          PY
+      - name: Verify existing Worker and GH_ACTIONS_TOKEN binding
+        run: python3 flight-watch/cloudflare-dispatch/check-existing.py
+      - name: Report preflight success
+        run: echo "Preflight passed; no Worker was modified." >> "$GITHUB_STEP_SUMMARY"
