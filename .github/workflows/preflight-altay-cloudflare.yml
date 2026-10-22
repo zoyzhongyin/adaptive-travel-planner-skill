@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - ".github/workflows/preflight-altay-cloudflare.yml"
+      - "flight-watch/cloudflare-dispatch/check-existing.py"
   workflow_dispatch:
 
 permissions:
