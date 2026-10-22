@@ -17,8 +17,15 @@ try:
         payload = json.load(response)
 except HTTPError as exc:
     sys.exit(f"Existing Worker check failed: HTTP {exc.code}; deployment stopped.")
-except (URLError, TimeoutError, ValueError):
-    sys.exit("Existing Worker check failed: network or invalid response; deployment stopped.")
+except URLError as exc:
+    cause = getattr(exc, "reason", None)
+    typ = type(cause).__name__ if cause is not None else "unknown"
+    # Log exception CLASS only; never print headers, token, request, or raw body.
+    sys.exit("Existing Worker check failed: network transport category=" + typ + "; deployment stopped.")
+except TimeoutError:
+    sys.exit("Existing Worker check failed: request timeout; deployment stopped.")
+except (ValueError, UnicodeDecodeError) as exc:
+    sys.exit("Existing Worker check failed: invalid response payload type=" + type(exc).__name__ + "; deployment stopped.")
 if payload.get("success") is not True:
     sys.exit("Cloudflare did not confirm existing Worker; deployment stopped.")
 bindings = payload.get("result", {}).get("bindings", [])
