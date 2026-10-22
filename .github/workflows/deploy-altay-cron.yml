@@ -27,6 +27,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Diagnose Cloudflare authorization wiring without revealing values
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, re
+          account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
+          token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
+          print("Cloudflare account ID: " + ("present / valid 32-hex format" if re.fullmatch(r"[0-9a-fA-F]{32}",account) else "MISSING OR INVALID FORMAT"))
+          print("Cloudflare API token: " + ("PRESENT" if token else "MISSING"))
+          print("Credentials values are intentionally not printed.")
+          PY
       - name: Require existing Worker and GitHub dispatch secret
         run: python3 flight-watch/cloudflare-dispatch/check-existing.py
       - name: Test scheduler offline
