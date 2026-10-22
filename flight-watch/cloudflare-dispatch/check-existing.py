@@ -8,7 +8,9 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
-token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
+token = os.environ.get("CLOUDFLARE_API_TOKEN", "").strip()  # Remove accidental copy/paste boundary whitespace; never log value.
+if any(ch.isspace() for ch in token):
+    sys.exit("Deployment secret has internal whitespace/control characters. Replace the GitHub Actions secret with the unmodified single-line token.")
 if not re.fullmatch(r"[a-fA-F0-9]{32}", account) or not token:
     sys.exit("Configure CLOUDFLARE_ACCOUNT_ID variable and CLOUDFLARE_API_TOKEN secret in GitHub Settings.")
 url = f"https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts/altay-fare-cron/settings"
