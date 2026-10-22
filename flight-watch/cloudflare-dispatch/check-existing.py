@@ -12,9 +12,14 @@ token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
 if not re.fullmatch(r"[a-fA-F0-9]{32}", account) or not token:
     sys.exit("Configure CLOUDFLARE_ACCOUNT_ID variable and CLOUDFLARE_API_TOKEN secret in GitHub Settings.")
 url = f"https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts/altay-fare-cron/settings"
+stage = "request_setup"
 try:
-    with urlopen(Request(url, headers={"Authorization": "Bearer " + token}), timeout=20) as response:
+    req = Request(url, headers={"Authorization": "Bearer " + token})
+    stage = "http_connect"
+    with urlopen(req, timeout=20) as response:
+        stage = "json_decode"
         payload = json.load(response)
+        stage = "response_shape"
 except HTTPError as exc:
     sys.exit(f"Existing Worker check failed: HTTP {exc.code}; deployment stopped.")
 except URLError as exc:
@@ -25,7 +30,7 @@ except URLError as exc:
 except TimeoutError:
     sys.exit("Existing Worker check failed: request timeout; deployment stopped.")
 except (ValueError, UnicodeDecodeError) as exc:
-    sys.exit("Existing Worker check failed: invalid response payload type=" + type(exc).__name__ + "; deployment stopped.")
+    sys.exit("Existing Worker check failed: stage=" + stage + ", error_type=" + type(exc).__name__ + "; deployment stopped.")
 if payload.get("success") is not True:
     sys.exit("Cloudflare did not confirm existing Worker; deployment stopped.")
 bindings = payload.get("result", {}).get("bindings", [])
