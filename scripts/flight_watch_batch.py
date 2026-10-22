@@ -69,7 +69,7 @@ def main():
         print(message)
         report_output(False)
         return
-    due = select_due_dates(config, state, now)
+    due = select_due_dates(config, {} if os.environ.get("FORCE_SCAN") == "true" else state, now)
     batch = []
     fallback_needed = False
     watch.OUT_DIR.mkdir(exist_ok=True)
@@ -103,6 +103,7 @@ def main():
                 "inbound_api_status": outcome.get("inbound_status"),
                 "reference_total_cny": outcome.get("reference_sum_cny"),
                 "notification_channel": channel,
+                "query_diagnostics": outcome.get("query_diagnostics"),
             }
             state.setdefault("last_scan_bjt", {})[dep] = record["checked_at_bjt"]
             state.setdefault("last_scan_results", {})[dep] = record
@@ -116,9 +117,10 @@ def main():
         watch.github_commit_state(state)
 
     timestamp = datetime.now(BJT).isoformat(timespec="seconds")
-    completed = sum(1 for b in batch if b.get("status") != "runner_error")
-    incomplete = sum(1 for b in batch if b.get("status") == "incomplete_no_reliable_roundtrip_price")
-    records = {"run_time_bjt": timestamp, "scanned": batch, "completed": completed, "incomplete": incomplete}
+    completed = sum(1 for b in batch if b.get("status") not in ("runner_error", "missing_output"))
+    incomplete = sum(1 for b in batch if b.get("status") not in ("priced_reference", "runner_error", "missing_output"))
+    health = "degraded" if incomplete or completed < len(batch) else "ok"
+    records = {"health": health, "run_time_bjt": timestamp, "scanned": batch, "completed": completed, "incomplete": incomplete}
     (watch.OUT_DIR / "watch-batch.json").write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     lines = ["# 机票监控批次", "检查时间（北京时间）：" + timestamp, "本次检查 " + str(completed) + " 组；报价不全 " + str(incomplete) + " 组。"]
     for record in batch:
@@ -133,6 +135,8 @@ def main():
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
             f.write(summary)
     print(summary, flush=True)
+    if health == "degraded":
+        print("::warning title=Fare query degraded::Incomplete quotes or query errors; see batch summary and artifacts.")
     report_output(fallback_needed)
     if completed == 0:
         raise RuntimeError("All due itinerary checks failed; no coverage recorded")

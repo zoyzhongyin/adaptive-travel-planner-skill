@@ -153,9 +153,14 @@ def perform(config, state, *, index=None, live=True):
 
     result["outbound_status"] = outbound.get("api_status")
     result["inbound_status"] = inbound.get("api_status")
+    result["query_diagnostics"] = {
+        name: {key: leg.get(key) for key in ("cli_exit", "api_status", "raw_offer_count", "error", "api_message", "platform_message")}
+        for name, leg in (("outbound", outbound), ("inbound", inbound))
+    }
     best = best_direct_price(outbound, inbound)
     if best is None:
         result["status"] = "incomplete_no_reliable_roundtrip_price"
+        print("Query diagnostics: " + json.dumps(result["query_diagnostics"], ensure_ascii=False), flush=True)
         if live:
             maybe_heartbeat(state, now)
         write_summary(

@@ -1,4 +1,5 @@
 name: Altay Fare Watch (adaptive)
+run-name: "Altay fares · ${{ github.event_name }} · ${{ inputs.trigger_source || 'github' }}"
 
 on:
   schedule:
@@ -9,6 +10,15 @@ on:
         description: "Use simulated prices for a no-alert functional test"
         type: boolean
         default: false
+      force_scan:
+        description: "One-off live verification: bypass the 90-minute scan cooldown"
+        type: boolean
+        default: false
+      trigger_source:
+        description: "Diagnostic source label (not an authentication claim)"
+        type: choice
+        options: [manual, cloudflare]
+        default: manual
   push:
     paths:
       - ".github/workflows/altay-fare-watch.yml"
@@ -37,13 +47,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Record trigger
+        env:
+          EVENT: ${{ github.event_name }}
+          SOURCE: ${{ inputs.trigger_source || 'github' }}
+        run: |
+          echo "Trigger: $EVENT / $SOURCE; run $GITHUB_RUN_ID" >> "$GITHUB_STEP_SUMMARY"
       - name: Install FlyAI CLI
         if: inputs.dry_run != true
-        run: npm install -g @fly-ai/flyai-cli --no-audit --no-fund
+        run: npm install -g @fly-ai/flyai-cli@1.0.16 --no-audit --no-fund
       - name: Check overdue itineraries (oldest first, max 3 per run)
         id: price_watch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORCE_SCAN: ${{ inputs.force_scan }}
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
         shell: bash
         run: |

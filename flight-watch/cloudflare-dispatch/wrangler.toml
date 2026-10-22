@@ -2,6 +2,12 @@ name = "altay-fare-cron"
 main = "worker.js"
 compatibility_date = "2026-10-21"
 
+# Preserve existing dashboard variables when updating this Worker.
+keep_vars = true
+
+[observability]
+enabled = true
+
 [triggers]
 crons = ["7,22,37,52 * * * *"]
 
