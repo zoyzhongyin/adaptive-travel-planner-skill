@@ -60,6 +60,7 @@ jobs:
         id: price_watch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FLYAI_API_KEY: ${{ secrets.FLYAI_API_KEY }}
           FORCE_SCAN: ${{ inputs.force_scan }}
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
         shell: bash
