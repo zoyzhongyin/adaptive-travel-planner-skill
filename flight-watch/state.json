@@ -3,39 +3,13 @@
   "alerts": {},
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
-    "2026-12-05": "2026-10-23T09:37:35+08:00",
-    "2026-12-14": "2026-10-23T09:37:37+08:00",
-    "2026-12-23": "2026-10-23T09:37:40+08:00"
+    "2026-12-05": "2026-10-23T11:22:46+08:00",
+    "2026-12-14": "2026-10-23T11:22:50+08:00",
+    "2026-12-23": "2026-10-23T11:22:52+08:00"
   },
   "last_scan_results": {
     "2026-12-05": {
-      "checked_at_bjt": "2026-10-23T09:37:35+08:00",
-      "status": "incomplete_no_reliable_roundtrip_price",
-      "outbound_api_status": 1,
-      "inbound_api_status": 1,
-      "reference_total_cny": null,
-      "notification_channel": null,
-      "query_diagnostics": {
-        "outbound": {
-          "cli_exit": 0,
-          "api_status": 1,
-          "raw_offer_count": 0,
-          "error": null,
-          "api_message": "搜索机票低价行业失败",
-          "platform_message": null
-        },
-        "inbound": {
-          "cli_exit": 0,
-          "api_status": 1,
-          "raw_offer_count": 0,
-          "error": null,
-          "api_message": "搜索机票低价行业失败",
-          "platform_message": null
-        }
-      }
-    },
-    "2026-12-14": {
-      "checked_at_bjt": "2026-10-23T09:37:37+08:00",
+      "checked_at_bjt": "2026-10-23T11:22:46+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 0,
@@ -60,12 +34,12 @@
         }
       }
     },
-    "2026-12-23": {
-      "checked_at_bjt": "2026-10-23T09:37:40+08:00",
-      "status": "incomplete_no_reliable_roundtrip_price",
+    "2026-12-14": {
+      "checked_at_bjt": "2026-10-23T11:22:50+08:00",
+      "status": "priced_reference",
       "outbound_api_status": 0,
-      "inbound_api_status": 1,
-      "reference_total_cny": null,
+      "inbound_api_status": 0,
+      "reference_total_cny": "2000.00",
       "notification_channel": null,
       "query_diagnostics": {
         "outbound": {
@@ -78,10 +52,36 @@
         },
         "inbound": {
           "cli_exit": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
+          "error": null,
+          "api_message": "success",
+          "platform_message": null
+        }
+      }
+    },
+    "2026-12-23": {
+      "checked_at_bjt": "2026-10-23T11:22:52+08:00",
+      "status": "incomplete_no_reliable_roundtrip_price",
+      "outbound_api_status": 1,
+      "inbound_api_status": 0,
+      "reference_total_cny": null,
+      "notification_channel": null,
+      "query_diagnostics": {
+        "outbound": {
+          "cli_exit": 0,
           "api_status": 1,
           "raw_offer_count": 0,
           "error": null,
           "api_message": "搜索机票低价行业失败",
+          "platform_message": null
+        },
+        "inbound": {
+          "cli_exit": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
+          "error": null,
+          "api_message": "success",
           "platform_message": null
         }
       }
