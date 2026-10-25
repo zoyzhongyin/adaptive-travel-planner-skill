@@ -5,7 +5,7 @@
   "last_scan_bjt": {
     "2026-12-05": "2026-10-25T10:52:39+08:00",
     "2026-12-14": "2026-10-25T10:52:41+08:00",
-    "2026-12-23": "2026-10-25T09:22:37+08:00"
+    "2026-12-23": "2026-10-25T11:07:37+08:00"
   },
   "last_scan_results": {
     "2026-12-05": {
@@ -61,19 +61,19 @@
       }
     },
     "2026-12-23": {
-      "checked_at_bjt": "2026-10-25T09:22:37+08:00",
+      "checked_at_bjt": "2026-10-25T11:07:37+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
-      "outbound_api_status": 0,
+      "outbound_api_status": 1,
       "inbound_api_status": 1,
       "reference_total_cny": null,
       "notification_channel": null,
       "query_diagnostics": {
         "outbound": {
           "cli_exit": 0,
-          "api_status": 0,
-          "raw_offer_count": 10,
+          "api_status": 1,
+          "raw_offer_count": 0,
           "error": null,
-          "api_message": "success",
+          "api_message": "搜索机票低价行业失败",
           "platform_message": null
         },
         "inbound": {
