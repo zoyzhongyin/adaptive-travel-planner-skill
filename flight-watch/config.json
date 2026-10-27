@@ -16,7 +16,9 @@
   "rotation": "prioritize_all_overdue_itineraries_using_persisted_last_scan",
   "currency": "CNY",
   "stop_after": "2026-12-23",
-  "note": "GitHub scheduled triggers are best effort; each 15-min attempt checks up to 3 pairs overdue for at least 90 min, prioritizing oldest scan. Nominal per-pair target 90 minutes only if triggers execute; no guarantee. Official shift roster still unconfirmed. FlyAI ticketPrice excludes guaranteed all-in checkout verification.",
-  "each_pair_interval_minutes": 90,
+  "note": "Cloudflare triggers about every 15 minutes. A successful pair waits 60 minutes before the next quote. A data gap retries after 20 minutes, then 40, then backs off to 60. Each leg may use up to 3 official FlyAI attempts. ticketPrice is a reference fare; tax, baggage and ski fees are unverified. Official shift roster still unconfirmed.",
+  "each_pair_interval_minutes": 60,
+  "failure_retry_minutes": 20,
+  "max_leg_attempts": 3,
   "max_pairs_per_run": 3
 }

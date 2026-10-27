@@ -9,10 +9,16 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import time
 from decimal import Decimal, InvalidOperation
 
 OUT_DIR = Path("fare-results")
 PAIR_LIMIT = 7
+# Official search-flight sort codes. Sort 3 is price-ascending and is the
+# call that historically returns status=1 "搜索机票低价行业失败". Later
+# attempts change sort, then city name, still on the same official API.
+RETRY_PAUSES_SECONDS = (2, 4)
+AIRPORT_CITY_NAMES = {"TFU": "成都", "AAT": "阿勒泰"}
 
 
 def checked_request(path: Path) -> dict:
@@ -66,27 +72,71 @@ def parse_price(value):
         return None
 
 
-def route_option(item: dict, origin: str, destination: str) -> dict | None:
+def city_label(place: str) -> str:
+    return AIRPORT_CITY_NAMES.get(place.upper(), place)
+
+
+def attempt_plan(origin: str, destination: str, direct_only: bool) -> list[dict]:
+    """Three official FlyAI shapes. Stop early once a usable quote is parsed."""
+    return [
+        {"label": "iata_price_asc", "origin": origin, "destination": destination, "sort_type": "3", "journey_type": None},
+        {"label": "iata_direct_first", "origin": origin, "destination": destination, "sort_type": "8", "journey_type": None},
+        {
+            "label": "city_direct_first",
+            "origin": city_label(origin),
+            "destination": city_label(destination),
+            "sort_type": "8",
+            "journey_type": "1" if direct_only else None,
+        },
+    ]
+
+
+def build_search_command(spec: dict, date: dt.date) -> list[str]:
+    cmd = [
+        "flyai", "search-flight",
+        "--origin", spec["origin"], "--destination", spec["destination"],
+        "--dep-date", date.isoformat(), "--sort-type", spec["sort_type"],
+    ]
+    if spec.get("journey_type"):
+        cmd.extend(["--journey-type", spec["journey_type"]])
+    return cmd
+
+
+def route_option(item: dict, origin: str, destination: str, expected_date: dt.date | None = None) -> dict | None:
     journeys = item.get("journeys")
-    if not isinstance(journeys, list) or len(journeys) != 1:
+    if not isinstance(journeys, list) or len(journeys) != 1 or not isinstance(journeys[0], dict):
         return None
     segments = journeys[0].get("segments")
     if not isinstance(segments, list) or not segments:
         return None
     if not all(isinstance(s, dict) for s in segments):
         return None
+    if any(s.get("transportType") not in (None, "", "飞机") for s in segments):
+        return None
     first, last = segments[0], segments[-1]
     start_code = str(first.get("depStationCode") or "")
     end_code = str(last.get("arrStationCode") or "")
     # Strictly match requested airport codes, when the request used IATA code.
-    if re.fullmatch(r"[A-Z]{3}", origin.upper()) and start_code != origin.upper():
+    if re.fullmatch(r"[A-Z]{3}", origin.upper()) and start_code.upper() != origin.upper():
         return None
-    if re.fullmatch(r"[A-Z]{3}", destination.upper()) and end_code != destination.upper():
+    if re.fullmatch(r"[A-Z]{3}", destination.upper()) and end_code.upper() != destination.upper():
         return None
+    departure_text = str(first.get("depDateTime") or "")
+    if expected_date is not None and not departure_text.startswith(expected_date.isoformat()):
+        return None
+    # adultPrice is a different, unverified field. Only ticketPrice is a reference fare.
     price = parse_price(item.get("ticketPrice"))
-    if price is None:
+    if price is None or price <= 0:
         return None
-    direct = len(segments) == 1 and str(journeys[0].get("journeyType", "")).strip() != "中转"
+    flight_no = str(first.get("marketingTransportNo") or "").strip()
+    stops = first.get("stopInfos")
+    has_stop = isinstance(stops, (list, dict)) and len(stops) > 0
+    direct = (
+        len(segments) == 1
+        and str(journeys[0].get("journeyType") or "").strip() != "中转"
+        and not has_stop
+        and bool(flight_no)
+    )
     legs = [
         {
             "flight": s.get("marketingTransportNo"),
@@ -100,6 +150,10 @@ def route_option(item: dict, origin: str, destination: str) -> dict | None:
     ]
     return {
         "price_cny_reference": str(price),
+        "price_basis": "ticketPrice_reference",
+        "taxes_verified": False,
+        "baggage_verified": False,
+        "ski_equipment_verified": False,
         "direct": direct,
         "start": start_code,
         "end": end_code,
@@ -110,30 +164,113 @@ def route_option(item: dict, origin: str, destination: str) -> dict | None:
     }
 
 
-def query(origin: str, destination: str, date: dt.date, file_stub: str) -> dict:
-    cmd = [
-        "flyai", "search-flight",
-        "--origin", origin, "--destination", destination,
-        "--dep-date", date.isoformat(), "--sort-type", "3",
-    ]
-    result = {"date": date.isoformat(), "from": origin, "to": destination}
+def interpret_response(stdout: str, origin: str, destination: str, expected_date: dt.date | None) -> dict:
     try:
-        done = subprocess.run(cmd, text=True, capture_output=True, timeout=50, check=False)
-        (OUT_DIR / (file_stub + ".json")).write_text(done.stdout, encoding="utf-8")
-        (OUT_DIR / (file_stub + ".stderr")).write_text(done.stderr, encoding="utf-8")
-        result["cli_exit"] = done.returncode
-        data = json.loads(done.stdout)
-        result["api_status"] = data.get("status")
-        result["api_message"] = data.get("message")
-        result["platform_message"] = data.get("systemMessage")
-        entries = data.get("data", {}).get("itemList", []) if isinstance(data.get("data"), dict) else []
-        options = [route_option(entry, origin, destination) for entry in entries if isinstance(entry, dict)]
-        result["offers"] = sorted((o for o in options if o is not None), key=lambda x: Decimal(x["price_cny_reference"]))
-        result["raw_offer_count"] = len(entries)
-    except (subprocess.TimeoutExpired, json.JSONDecodeError, FileNotFoundError) as exc:
-        result["error"] = type(exc).__name__ + ": " + str(exc)[:250]
-        result["offers"] = []
+        data = json.loads(stdout)
+    except json.JSONDecodeError:
+        return {"offers": [], "raw_offer_count": 0, "error": "JSONDecodeError"}
+    if not isinstance(data, dict):
+        return {"offers": [], "raw_offer_count": 0, "error": "ResponseNotObject"}
+    result = {
+        "api_status": data.get("status"),
+        "api_message": data.get("message"),
+        "platform_message": data.get("systemMessage"),
+    }
+    payload = data.get("data")
+    entries = payload.get("itemList", []) if isinstance(payload, dict) else []
+    if not isinstance(entries, list):
+        entries = []
+    options = []
+    for entry in entries:
+        if isinstance(entry, dict):
+            parsed = route_option(entry, origin, destination, expected_date)
+            if parsed is not None:
+                options.append(parsed)
+    result["offers"] = sorted(options, key=lambda x: Decimal(x["price_cny_reference"]))
+    result["raw_offer_count"] = len(entries)
     return result
+
+
+def leg_ready(result: dict, direct_only: bool) -> bool:
+    """A usable one-way quote. status=1 or a missing direct leg is not ready."""
+    if result.get("error"):
+        return False
+    offers = result.get("offers") or []
+    if direct_only:
+        return any(offer.get("direct") for offer in offers)
+    return bool(offers) and result.get("api_status") == 0
+
+
+def _prefer(candidate: dict, current: dict | None, direct_only: bool) -> bool:
+    if current is None:
+        return True
+    if leg_ready(candidate, direct_only) and not leg_ready(current, direct_only):
+        return True
+    if leg_ready(current, direct_only):
+        return False
+    return len(candidate.get("offers") or []) >= len(current.get("offers") or [])
+
+
+def default_runner(cmd: list[str]) -> tuple[int, str, str]:
+    done = subprocess.run(cmd, text=True, capture_output=True, timeout=30, check=False)
+    return done.returncode, done.stdout, done.stderr
+
+
+def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direct_only: bool = False,
+          max_attempts: int | None = None, runner=None, sleeper=None) -> dict:
+    limit = 3 if max_attempts is None else max(1, min(3, int(max_attempts)))
+    plan = attempt_plan(origin, destination, direct_only)[:limit]
+    run = runner or default_runner
+    pause = sleeper or time.sleep
+    OUT_DIR.mkdir(exist_ok=True)
+    chosen = None
+    history = []
+    for index, spec in enumerate(plan):
+        cmd = build_search_command(spec, date)
+        parsed: dict
+        cli_exit = None
+        stdout = ""
+        stderr = ""
+        try:
+            cli_exit, stdout, stderr = run(cmd)
+            parsed = interpret_response(stdout, origin, destination, date)
+        except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
+            parsed = {"offers": [], "raw_offer_count": 0, "error": type(exc).__name__}
+        label = spec["label"]
+        (OUT_DIR / (file_stub + "_" + label + ".json")).write_text(stdout or "", encoding="utf-8")
+        if stderr:
+            (OUT_DIR / (file_stub + "_" + label + ".stderr")).write_text(stderr, encoding="utf-8")
+        history.append({
+            "label": label,
+            "cli_exit": cli_exit,
+            "api_status": parsed.get("api_status"),
+            "raw_offer_count": parsed.get("raw_offer_count", 0),
+            "api_message": parsed.get("api_message"),
+            "error": parsed.get("error"),
+        })
+        candidate = {
+            "date": date.isoformat(),
+            "from": origin,
+            "to": destination,
+            "cli_exit": cli_exit,
+            "query_strategy": label,
+            **parsed,
+        }
+        if _prefer(candidate, chosen, direct_only):
+            chosen = candidate
+            (OUT_DIR / (file_stub + ".json")).write_text(stdout or "", encoding="utf-8")
+            (OUT_DIR / (file_stub + ".stderr")).write_text(stderr or "", encoding="utf-8")
+        if chosen is not None and leg_ready(chosen, direct_only):
+            break
+        if index < len(plan) - 1:
+            pause(RETRY_PAUSES_SECONDS[min(index, len(RETRY_PAUSES_SECONDS) - 1)])
+    if chosen is None:
+        chosen = {
+            "date": date.isoformat(), "from": origin, "to": destination,
+            "offers": [], "raw_offer_count": 0, "error": "NoAttempt",
+        }
+    chosen["attempts"] = history
+    return chosen
 
 
 def brief_option(offer: dict) -> str:
@@ -150,8 +287,8 @@ def summarize(req: dict, results: list[dict]) -> str:
         "# 机票查询结果（飞猪 FlyAI 接口）",
         f"查询时间：{now}（北京时间）",
         f"航线：{req['origin']} ⇄ {req['destination']}；出发日期 {date_text}；住宿 {req['stay_nights']} 晚",
-        "**注意：价格来自 FlyAI ticketPrice 字段，是单程参考报价，并非已核实的最终含税或包含托运行李的成交价。**",
-        "体验模式结果可能不完整；返回 status=1 或 0 条不能证明无航班。最终须打开平台核实票价、剩余座位、退改规则与雪具行李费用。",
+        "**注意：价格来自 FlyAI ticketPrice 字段，是单程参考报价，并非已核实的最终含税或包含托运行李的成交价。税费、托运行李、雪具费用均未核实。**",
+        "status=1、超时或 0 条有效报价是数据缺口。单程会换官方排序和城市名重试。仍失败时不能判断为没有航班，也不能判断为价格高于预算。",
         "",
     ]
     summary = []

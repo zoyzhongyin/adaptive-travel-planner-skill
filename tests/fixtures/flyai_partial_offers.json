@@ -1,0 +1,86 @@
+{
+  "data": {
+    "itemList": [
+      {
+        "journeys": [
+          {
+            "journeyType": "直达",
+            "segments": [
+              {
+                "depStationCode": "CTU",
+                "arrStationCode": "AAT",
+                "depDateTime": "2026-12-14 09:00:00",
+                "arrDateTime": "2026-12-14 13:00:00",
+                "marketingTransportNo": "XX100",
+                "transportType": "飞机"
+              }
+            ]
+          }
+        ],
+        "ticketPrice": "100.00",
+        "jumpUrl": "https://example.com/wrong-airport"
+      },
+      {
+        "journeys": [
+          {
+            "journeyType": "直达",
+            "segments": [
+              {
+                "depStationCode": "TFU",
+                "arrStationCode": "AAT",
+                "depDateTime": "2026-12-15 09:00:00",
+                "arrDateTime": "2026-12-15 13:00:00",
+                "marketingTransportNo": "XX200",
+                "transportType": "飞机"
+              }
+            ]
+          }
+        ],
+        "ticketPrice": "200.00",
+        "jumpUrl": "https://example.com/wrong-date"
+      },
+      {
+        "journeys": [
+          {
+            "journeyType": "直达",
+            "segments": [
+              {
+                "depStationCode": "TFU",
+                "arrStationCode": "AAT",
+                "depDateTime": "2026-12-14 09:00:00",
+                "arrDateTime": "2026-12-14 13:00:00",
+                "marketingTransportNo": "XX300",
+                "transportType": "飞机"
+              }
+            ]
+          }
+        ],
+        "adultPrice": "¥300.0",
+        "jumpUrl": "https://example.com/adult-only"
+      },
+      {
+        "journeys": [
+          {
+            "journeyType": "直达",
+            "segments": [
+              {
+                "depStationCode": "TFU",
+                "arrStationCode": "AAT",
+                "depDateTime": "2026-12-14 11:00:00",
+                "arrDateTime": "2026-12-14 16:00:00",
+                "marketingTransportNo": "9C6685",
+                "transportType": "飞机",
+                "stopInfos": [{"stopCity": "URC"}]
+              }
+            ]
+          }
+        ],
+        "ticketPrice": "400.00",
+        "jumpUrl": "https://example.com/technical-stop"
+      }
+    ]
+  },
+  "message": "success",
+  "status": 0,
+  "systemMessage": null
+}
