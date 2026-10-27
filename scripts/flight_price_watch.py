@@ -14,6 +14,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import time
 from urllib import request
 import urllib.error
 
@@ -55,6 +56,60 @@ def should_alert(price, previous, config):
         return True
     previous = Decimal(str(previous))
     return (price <= previous - drop) or (price <= ideal < previous)
+
+
+def pause(seconds):
+    time.sleep(seconds)
+
+
+def format_captured(iso_text):
+    text = str(iso_text or "")
+    if "T" in text:
+        text = text[:16].replace("T", " ")
+    return text + "（北京时间）"
+
+
+def nonstop_label(offer):
+    return "直飞" if offer.get("direct") else "非直飞"
+
+
+def leg_diag(leg):
+    attempts = leg.get("attempts") or []
+    diag = {key: leg.get(key) for key in ("cli_exit", "api_status", "raw_offer_count", "error", "api_message", "platform_message")}
+    diag["query_strategy"] = leg.get("query_strategy")
+    diag["attempt_count"] = len(attempts)
+    diag["attempt_statuses"] = [item.get("api_status") for item in attempts]
+    diag["attempt_labels"] = [item.get("label") for item in attempts]
+    return diag
+
+
+def build_wechat_message(price, dep, ret, outward, inbound, captured_iso, *, ideal):
+    """Reference-price alert. Taxes, baggage and ski fees stay unverified."""
+    mark = "理想价" if ideal else "目标价"
+    title = "阿勒泰机票" + mark + " ¥" + str(price)
+    out_flight = str(outward["legs"][0].get("flight"))
+    back_flight = str(inbound["legs"][0].get("flight"))
+    out_url = outward.get("booking_url") or ""
+    back_url = inbound.get("booking_url") or ""
+    lines = [
+        "**往返参考价合计：¥" + str(price) + " / 人**",
+        "这是两张单程票的 ticketPrice 相加，不是已核实的往返结算价。",
+        "出发：" + dep.isoformat() + "　返回：" + ret.isoformat(),
+        "去程：" + nonstop_label(outward) + " " + out_flight + "，参考价 ¥" + str(outward["price_cny_reference"]),
+        "返程：" + nonstop_label(inbound) + " " + back_flight + "，参考价 ¥" + str(inbound["price_cny_reference"]),
+        "采集时间：" + format_captured(captured_iso),
+        "税费、机建燃油：未核实",
+        "托运行李：未核实",
+        "雪具运输：未核实",
+        "去程订票入口：" + (out_url or "接口未返回链接，请在飞猪按航班号搜索"),
+        "返程订票入口：" + (back_url or "接口未返回链接，请在飞猪按航班号搜索"),
+        "请打开订票页面确认含税总价、行李和雪具后再决定是否购买。监控不会自动购票。",
+    ]
+    if out_url:
+        lines.append("[去程订票入口](" + out_url + ")")
+    if back_url:
+        lines.append("[返程订票入口](" + back_url + ")")
+    return title, "\n\n".join(lines)
 
 
 def github_commit_state(state):
@@ -135,9 +190,18 @@ def perform(config, state, *, index=None, live=True):
         return False
 
     OUT_DIR.mkdir(exist_ok=True)
+    direct_only = config.get("direct_only", True) is not False
+    max_attempts = int(config.get("max_leg_attempts", 3))
     if live:
-        outbound = query(config["origin"], config["destination"], dep, "watch_" + dep.isoformat() + "_out")
-        inbound = query(config["destination"], config["origin"], ret, "watch_" + ret.isoformat() + "_back")
+        outbound = query(
+            config["origin"], config["destination"], dep, "watch_" + dep.isoformat() + "_out",
+            direct_only=direct_only, max_attempts=max_attempts,
+        )
+        pause(1)
+        inbound = query(
+            config["destination"], config["origin"], ret, "watch_" + ret.isoformat() + "_back",
+            direct_only=direct_only, max_attempts=max_attempts,
+        )
     else:
         # Fixture for a deterministic installation test; never considered market data.
         def mock_one(o, d, day, amount, no):
@@ -154,26 +218,32 @@ def perform(config, state, *, index=None, live=True):
     result["outbound_status"] = outbound.get("api_status")
     result["inbound_status"] = inbound.get("api_status")
     result["query_diagnostics"] = {
-        name: {key: leg.get(key) for key in ("cli_exit", "api_status", "raw_offer_count", "error", "api_message", "platform_message")}
-        for name, leg in (("outbound", outbound), ("inbound", inbound))
+        name: leg_diag(leg) for name, leg in (("outbound", outbound), ("inbound", inbound))
     }
+    result["taxes_verified"] = False
+    result["baggage_verified"] = False
+    result["ski_equipment_verified"] = False
     best = best_direct_price(outbound, inbound)
     if best is None:
         result["status"] = "incomplete_no_reliable_roundtrip_price"
+        result["data_gap"] = True
         print("Query diagnostics: " + json.dumps(result["query_diagnostics"], ensure_ascii=False), flush=True)
         if live:
             maybe_heartbeat(state, now)
         write_summary(
             "检查日期：" + pair_key + "\n\n去程接口状态：" + str(result["outbound_status"])
             + "；返程接口状态：" + str(result["inbound_status"])
-            + "。**尚无可比较的两段直飞价格，不代表没有航班。**",
+            + "。\n\n**这是报价数据缺口：还没有两段可相加的直飞参考价。"
+            + "不能据此判断没有航班，也不能据此判断价格高于预算。**",
             result,
         )
         return False
 
     price, outward, return_flight = best
     result["status"] = "priced_reference"
+    result["data_gap"] = False
     result["reference_sum_cny"] = str(price)
+    result["price_basis"] = "sum_of_two_one_way_ticketPrice_references"
     result["outbound"] = {
         "flight": outward["legs"][0].get("flight"),
         "departure": outward.get("departure"),
@@ -190,6 +260,7 @@ def perform(config, state, *, index=None, live=True):
     seen = state.get("alerts", {}).get(pair_key)
     prior = seen.get("best_alert_cny") if isinstance(seen, dict) else None
     alert = should_alert(price, prior, config)
+    ideal = price <= Decimal(str(config["ideal_price_cny"]))
     result["alert"] = alert
     result["prior_alert_cny"] = prior
     delivery_channel = "none"
@@ -198,18 +269,9 @@ def perform(config, state, *, index=None, live=True):
         # do not silently consume the alert. Fall back to GitHub email.
         delivery_channel = "github_email_fallback"
         if WECHAT_KEY:
-            mark = "理想价" if price <= Decimal(str(config["ideal_price_cny"])) else "目标价"
-            title = "阿勒泰机票" + mark + " ¥" + str(price)
-            msg = "\n\n".join([
-                "**两段直飞单程参考报价合计：¥" + str(price) + "**",
-                "往返日期：" + dep.isoformat() + " → " + ret.isoformat(),
-                "去程：" + str(result["outbound"]["flight"]) + "，¥" + result["outbound"]["price_cny_reference"]
-                + "；返程：" + str(result["return"]["flight"]) + "，¥" + result["return"]["price_cny_reference"],
-                "价格未经订单核验，可能不含机建燃油、行李及雪具费用，请先在官方订票页面确认。",
-                "[查看去程](" + str(outward.get("booking_url") or "https://sct.ftqq.com") + ")"
-                + " / [查看返程](" + str(return_flight.get("booking_url") or "https://sct.ftqq.com") + ")",
-                "仅作降价线索，未购买机票。",
-            ])
+            title, msg = build_wechat_message(
+                price, dep, ret, outward, return_flight, result["query_time_bjt"], ideal=ideal,
+            )
             try:
                 send_wechat(WECHAT_KEY, title, msg)
                 delivery_channel = "wechat"
@@ -234,16 +296,18 @@ def perform(config, state, *, index=None, live=True):
     if live and not alert:
         maybe_heartbeat(state, now)
 
-    ideal = price <= Decimal(str(config["ideal_price_cny"]))
     lines = [
         "查询日期：" + pair_key,
+        "采集时间：" + format_captured(result["query_time_bjt"]),
         "**两张直飞单程票参考报价合计：¥" + str(price) + "**",
-        "去程：" + str(result["outbound"]["flight"]) + "，¥" + str(result["outbound"]["price_cny_reference"]) + "；返程："
-        + str(result["return"]["flight"]) + "，¥" + str(result["return"]["price_cny_reference"]),
-        "**重要：飞猪 API 的 ticketPrice 不能当作已含税、行李和雪具的最终结算价。**",
+        "去程：" + nonstop_label(outward) + " " + str(result["outbound"]["flight"])
+        + "，参考价 ¥" + str(result["outbound"]["price_cny_reference"]),
+        "返程：" + nonstop_label(return_flight) + " " + str(result["return"]["flight"])
+        + "，参考价 ¥" + str(result["return"]["price_cny_reference"]),
+        "税费、机建燃油、托运行李、雪具运输：未核实。ticketPrice 不是最终结算价。",
         "状态：" + ("命中理想目标，请尽快核实" if alert and ideal else "达到提醒阈值，请核实" if alert else "未产生新提醒（未达标或重复）"),
-        "去程订票链接：" + str(outward.get("booking_url")),
-        "返程订票链接：" + str(return_flight.get("booking_url")),
+        "去程订票链接：" + str(outward.get("booking_url") or "接口未返回"),
+        "返程订票链接：" + str(return_flight.get("booking_url") or "接口未返回"),
     ]
     write_summary("\n\n".join(lines), result, alert=(alert and delivery_channel != "wechat"))
     return alert

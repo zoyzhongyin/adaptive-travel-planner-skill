@@ -1,0 +1,61 @@
+{
+  "data": {
+    "itemList": [
+      {
+        "journeys": [
+          {
+            "journeyType": "中转",
+            "segments": [
+              {
+                "depStationCode": "TFU",
+                "arrStationCode": "TCG",
+                "depDateTime": "2026-12-05 15:40:00",
+                "arrDateTime": "2026-12-05 19:55:00",
+                "marketingTransportNo": "EU1815",
+                "marketingTransportName": "成都航",
+                "transportType": "飞机",
+                "stopInfos": null
+              },
+              {
+                "depStationCode": "TCG",
+                "arrStationCode": "AAT",
+                "depDateTime": "2026-12-06 11:40:00",
+                "arrDateTime": "2026-12-06 13:00:00",
+                "marketingTransportNo": "EU3025",
+                "marketingTransportName": "成都航",
+                "transportType": "飞机",
+                "stopInfos": null
+              }
+            ]
+          }
+        ],
+        "jumpUrl": "https://example.com/connection",
+        "ticketPrice": "540.00"
+      },
+      {
+        "journeys": [
+          {
+            "journeyType": "直达",
+            "segments": [
+              {
+                "depStationCode": "TFU",
+                "arrStationCode": "AAT",
+                "depDateTime": "2026-12-05 09:50:00",
+                "arrDateTime": "2026-12-05 14:05:00",
+                "marketingTransportNo": "9C6685",
+                "marketingTransportName": "春秋",
+                "transportType": "飞机",
+                "stopInfos": null
+              }
+            ]
+          }
+        ],
+        "jumpUrl": "https://example.com/direct-out",
+        "ticketPrice": "848.00"
+      }
+    ]
+  },
+  "message": "success",
+  "status": 0,
+  "systemMessage": null
+}

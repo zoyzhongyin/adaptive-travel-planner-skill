@@ -5,14 +5,15 @@
 
 ## 调度与查价
 
-- Cloudflare 与 GitHub 均为 UTC `7,22,37,52 * * * *`，北京时间每小时 07、22、37、52 分尝试触发。
+- Cloudflare 仍为 UTC `7,22,37,52 * * * *`。GitHub 自己的 schedule 只作备份，错开到 UTC `14,44 * * * *`，避免和 Cloudflare 在同一分钟排队。
+- 两组触发共用 concurrency `altay-fare-watch`，不取消正在运行的任务。没有到期行程时不安装 FlyAI CLI。
 - Cloudflare 用 Worker Secret `GH_ACTIONS_TOKEN` 调用 `altay-fare-watch.yml`，输入 `dry_run=false`、`trigger_source=cloudflare`。
-- GitHub schedule 保留作备用；共享 concurrency 和持久化的每组 90 分钟冷却，一次最多补查 3 组。
+- 成功拿到往返参考价的日期，60 分钟内不再查询。报价数据缺口先隔 20 分钟重试，再 40 分钟，之后回到 60 分钟，避免失败被当成一次有效检查。一次最多补查 3 组。每一段航程最多 3 次官方 FlyAI 请求。
 - `trigger_source` 只是诊断标签，任何有 Actions 写权限的调用者均可设置；需和 Cloudflare 日志交叉验证来源。
 - Worker 请求限时 10 秒；网络异常、429、5xx 最多尝试 3 次，401/403/404/422 立即失败。模糊超时可能重复排队，冷却减少重复查询，不承诺严格只执行一次。
 - Worker 日志仅记录事件、HTTP 状态、尝试次数、预定时间；不记录请求头、响应体或密钥。公网 HTTP 仍返回 404，不能触发工作流。
 - 监控于北京时间 2026-12-23 结束；Worker 从 12-24 零点起不再 dispatch。
-- FlyAI CLI 固定为 1.0.16；报价不全在批次 JSON 中标为 `health=degraded` 并发出 Actions warning。绿色任务仅表示脚本执行完毕，不表示获得有效价格。
+- FlyAI CLI 固定为 1.0.16。报价不全标为 `health=degraded`；连续 8 小时没有有效往返参考价标为 `health=anomaly`。绿色任务只表示脚本执行完毕，不表示获得有效价格。
 - 正式提醒条件保持：两段直飞参考价合计不高于 1500 元，1200 元为理想价，按既有规则去重。参考价未核实税费、行李及可出票性。
 
 ## 一次性敏感配置（由用户在平台完成）
@@ -35,7 +36,19 @@ GitHub Secrets 不可读取；不得把 `GH_ACTIONS_TOKEN` 放入普通变量。
 4. 查看 `watch-batch.json` 的 health、每组去返程 API 状态、查询诊断及参考价。`status=1`、0 条、无完整双程价格都不能推断无航班。原始响应留在本次 artifact；先解决上游查询问题再宣称查价正常。
 5. 手动运行 [ServerChan WeChat Push Test](https://github.com/zoyzhongyin/adaptive-travel-planner-skill/actions/workflows/flight-wechat-test.yml)，查看 `ServerChan API accepted` 并在微信确认收件。测试消息明确不是降价。
 6. GitHub 401/403：检查 Worker Secret 的 token 有效期、选定仓库及 Actions 写权限；404：检查仓库访问权限；422：检查 main 分支上 workflow_dispatch 和 inputs 是否匹配。
-7. 本地离线验证：`node flight-watch/cloudflare-dispatch/worker.test.mjs` 和 `python3 -m unittest tests.test_flight_watch_batch tests.test_flight_watch_health tests.test_serverchan_push -v`。
+7. 本地离线验证：`node flight-watch/cloudflare-dispatch/worker.test.mjs` 和 `python3 -m unittest tests.test_flight_fare_query tests.test_flight_price_watch tests.test_flight_watch_batch tests.test_flight_watch_health tests.test_serverchan_push -v`。
+
+## 2026-10-27 报价数据缺口
+
+最近 226 次不重复扫描里，去程 TFU→AAT 大约 65% 返回 status=0，返程 AAT→TFU 大约 24% 返回 status=0。失败体是 `{"status":1,"message":"搜索机票低价行业失败","data":null}`，通常 1 秒内返回，同一日期稍后又能成功。所以缺的是飞猪低价行业查询的单次结果，不是“这天没有航班”。
+
+旧逻辑每段只请求一次，而且失败也写入 `last_scan_bjt`，之后 90 分钟不再查。只要返程撞上 status=1，去程即使已经成功也会被丢掉，往返总价无法计算。
+
+本次只在官方 `search-flight` 上重试：先按价格排序，失败再改为直飞优先，仍失败再用「成都 / 阿勒泰」城市名并加上直飞筛选。报价会核对机场、出发日期、航班号和经停；`adultPrice` 不会被当成票价。没有加入第二个数据源。Google Flights 抓取不符合使用规则，SerpAPI 需要付费，航司和 OTA 页面也没有可用的免费正式接口。
+
+`flight-watch/cloudflare-dispatch/worker.js` 没有修改。合并到 `main` 后，现有 Worker 继续触发同一条 workflow 即可，不需要重新部署 Cloudflare。只有以后改了 Worker 代码，才需要主人在 Cloudflare 授权后运行 Deploy existing Altay Cloudflare scheduler。
+
+微信降价提醒现在包含出发/返回日期、航班号和直飞情况、两段参考价、往返合计、北京时间采集时间、订票入口，并写明税费、行李和雪具都未核实。某一组日期连续 8 小时没有有效往返参考价时，发送一条监控异常（12 小时内不重复）。微信失败时才让 GitHub Actions 失败，从而走邮件备用通道。
 
 ## 2026-10-22 北京时间实测记录
 

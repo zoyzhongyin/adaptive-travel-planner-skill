@@ -51,3 +51,11 @@ class BatchHealthTests(unittest.TestCase):
     def test_missing_output_fails_batch(self):
         with self.assertRaisesRegex(RuntimeError, 'All due itinerary checks failed'):
             self.run_batch(None)
+
+    def test_workflow_skips_idle_installs_and_names_the_anomaly_channel(self):
+        text = Path(__file__).resolve().parents[1].joinpath(".github/workflows/altay-fare-watch.yml").read_text(encoding="utf-8")
+        self.assertIn("cancel-in-progress: false", text)
+        self.assertIn("14,44 * * * *", text)
+        self.assertIn("--select-only", text)
+        self.assertIn("anomaly_alert", text)
+        self.assertIn("steps.due.outputs.due == 'true'", text)
