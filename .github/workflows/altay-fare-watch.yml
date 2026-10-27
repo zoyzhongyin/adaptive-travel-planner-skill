@@ -13,7 +13,7 @@ on:
         type: boolean
         default: false
       force_scan:
-        description: "One-off live verification: bypass the 90-minute scan cooldown"
+        description: "One-off live verification: bypass the per-pair scan cooldown"
         type: boolean
         default: false
       trigger_source:
