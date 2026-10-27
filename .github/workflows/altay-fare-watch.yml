@@ -21,14 +21,6 @@ on:
         type: choice
         options: [manual, cloudflare]
         default: manual
-  push:
-    paths:
-      - ".github/workflows/altay-fare-watch.yml"
-      - "scripts/flight_price_watch.py"
-      - "scripts/flight_watch_batch.py"
-      - "scripts/flight_fare_query.py"
-      - "flight-watch/config.json"
-      - "scripts/serverchan_push.py"
 
 permissions:
   contents: write

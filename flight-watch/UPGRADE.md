@@ -6,7 +6,7 @@
 ## 调度与查价
 
 - Cloudflare 仍为 UTC `7,22,37,52 * * * *`。GitHub 自己的 schedule 只作备份，错开到 UTC `14,44 * * * *`，避免和 Cloudflare 在同一分钟排队。
-- 两组触发共用 concurrency `altay-fare-watch`，不取消正在运行的任务。没有到期行程时不安装 FlyAI CLI。
+- 两组触发共用 concurrency `altay-fare-watch`，不取消正在运行的任务。没有到期行程时不安装 FlyAI CLI。推送代码不再自动查价，避免用分支上的旧状态重复请求飞猪并覆盖 main 的监控记录。手动复查用 workflow_dispatch。
 - Cloudflare 用 Worker Secret `GH_ACTIONS_TOKEN` 调用 `altay-fare-watch.yml`，输入 `dry_run=false`、`trigger_source=cloudflare`。
 - 成功拿到往返参考价的日期，60 分钟内不再查询。报价数据缺口先隔 20 分钟重试，再 40 分钟，之后回到 60 分钟，避免失败被当成一次有效检查。一次最多补查 3 组。每一段航程最多 3 次官方 FlyAI 请求。
 - `trigger_source` 只是诊断标签，任何有 Actions 写权限的调用者均可设置；需和 Cloudflare 日志交叉验证来源。
@@ -44,7 +44,9 @@ GitHub Secrets 不可读取；不得把 `GH_ACTIONS_TOKEN` 放入普通变量。
 
 旧逻辑每段只请求一次，而且失败也写入 `last_scan_bjt`，之后 90 分钟不再查。只要返程撞上 status=1，去程即使已经成功也会被丢掉，往返总价无法计算。
 
-本次只在官方 `search-flight` 上重试：先按价格排序，失败再改为直飞优先，仍失败再用「成都 / 阿勒泰」城市名并加上直飞筛选。报价会核对机场、出发日期、航班号和经停；`adultPrice` 不会被当成票价。没有加入第二个数据源。Google Flights 抓取不符合使用规则，SerpAPI 需要付费，航司和 OTA 页面也没有可用的免费正式接口。
+本次只在官方 `search-flight` 上重试：先按价格排序，失败再改为直飞优先，仍失败再用「成都 / 阿勒泰」城市名并加上直飞筛选。报价会核对机场、出发日期、航班号和经停；`adultPrice` 不会被当成票价。只有一段直飞查到时，保留该段航班和参考价，往返合计仍标为未计算。没有加入第二个数据源。Google Flights 抓取不符合使用规则，SerpAPI 需要付费，航司和 OTA 页面也没有可用的免费正式接口。
+
+2026-10-27 12:02（北京时间）在本分支实测：12 月 5–10 日两段都一次成功，直飞 9C6685 ¥848 + 9C6686 ¥909，参考价合计 ¥1757。12 月 14 日去程和返程、12 月 23 日返程在三种官方参数下都仍是 status=1。换排序和城市名不能绕过这一次持续失败；下一轮靠更短的缺口重试，而不是把失败当成查完。该次价格高于 1500 元，没有发微信。
 
 `flight-watch/cloudflare-dispatch/worker.js` 没有修改。合并到 `main` 后，现有 Worker 继续触发同一条 workflow 即可，不需要重新部署 Cloudflare。只有以后改了 Worker 代码，才需要主人在 Cloudflare 授权后运行 Deploy existing Altay Cloudflare scheduler。
 

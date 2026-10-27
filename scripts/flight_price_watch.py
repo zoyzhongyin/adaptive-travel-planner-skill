@@ -46,6 +46,16 @@ def best_direct_price(outbound, inbound):
     return (Decimal(a["price_cny_reference"]) + Decimal(b["price_cny_reference"]), a, b)
 
 
+def snapshot_leg(offer):
+    return {
+        "flight": offer["legs"][0].get("flight"),
+        "direct": bool(offer.get("direct")),
+        "departure": offer.get("departure"),
+        "price_cny_reference": offer["price_cny_reference"],
+        "booking_url": offer.get("booking_url"),
+    }
+
+
 def should_alert(price, previous, config):
     limit = Decimal(str(config["alert_price_cny"]))
     ideal = Decimal(str(config["ideal_price_cny"]))
@@ -227,13 +237,23 @@ def perform(config, state, *, index=None, live=True):
     if best is None:
         result["status"] = "incomplete_no_reliable_roundtrip_price"
         result["data_gap"] = True
+        found = []
+        outs, ins = only_direct(outbound), only_direct(inbound)
+        if outs:
+            result["outbound"] = snapshot_leg(outs[0])
+            found.append("去程已取得直飞参考价 " + str(result["outbound"]["flight"]) + " ¥" + str(result["outbound"]["price_cny_reference"]))
+        if ins:
+            result["return"] = snapshot_leg(ins[0])
+            found.append("返程已取得直飞参考价 " + str(result["return"]["flight"]) + " ¥" + str(result["return"]["price_cny_reference"]))
+        held = "。".join(found) + "。" if found else "两段都没有可用的直飞参考价。"
         print("Query diagnostics: " + json.dumps(result["query_diagnostics"], ensure_ascii=False), flush=True)
         if live:
             maybe_heartbeat(state, now)
         write_summary(
             "检查日期：" + pair_key + "\n\n去程接口状态：" + str(result["outbound_status"])
             + "；返程接口状态：" + str(result["inbound_status"])
-            + "。\n\n**这是报价数据缺口：还没有两段可相加的直飞参考价。"
+            + "。\n\n" + held
+            + "\n\n**这是报价数据缺口：还没有两段可相加的直飞参考价，往返合计未计算。"
             + "不能据此判断没有航班，也不能据此判断价格高于预算。**",
             result,
         )
