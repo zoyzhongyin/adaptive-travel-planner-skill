@@ -46,7 +46,7 @@ def pair_interval_minutes(config: dict, state: dict, dep: str) -> int:
 
 
 def select_due_dates(config: dict, state: dict, now: datetime) -> list[tuple[int, str]]:
-    dates = config["departure_dates"]
+    dates = watch.monitored_departure_dates(config)
     last = state.get("last_scan_bjt", {})
     _, _, cap = validated_schedule(config)
     due = []
@@ -202,11 +202,18 @@ def main():
         print(message)
         report_output(False)
         return
+    active = watch.monitored_departure_dates(config)
+    removed = watch.prune_retired_itineraries(state, active)
+    if removed:
+        print("Retired itinerary state removed: " + ", ".join(removed), flush=True)
     due = select_due_dates(config, {} if os.environ.get("FORCE_SCAN") == "true" else state, now)
     batch = []
+    scanned_prices = set()
     fallback_needed = False
     watch.OUT_DIR.mkdir(exist_ok=True)
     if not due:
+        if removed:
+            watch.github_commit_state(state)
         print("No itinerary due. All remaining dates were checked recently; no API request.")
         report_output(False, due=False)
         return
@@ -214,7 +221,7 @@ def main():
     for i, dep in due:
         print("Checking overdue itinerary: " + dep, flush=True)
         try:
-            hit = watch.perform(config, state, index=i, live=True)
+            watch.perform(config, state, index=i, live=True, notify=False)
             result_path = watch.OUT_DIR / "watch-result.json"
             if result_path.exists():
                 outcome = json.loads(result_path.read_text(encoding="utf-8"))
@@ -227,8 +234,6 @@ def main():
             else:
                 outcome = {"status": "missing_output", "alert": False}
             channel = outcome.get("notification_channel")
-            if hit and channel != "wechat":
-                fallback_needed = True
             outbound_leg = outcome.get("outbound") if isinstance(outcome.get("outbound"), dict) else {}
             return_leg = outcome.get("return") if isinstance(outcome.get("return"), dict) else {}
             record = {
@@ -237,16 +242,24 @@ def main():
                 "outbound_api_status": outcome.get("outbound_status"),
                 "inbound_api_status": outcome.get("inbound_status"),
                 "reference_total_cny": outcome.get("reference_sum_cny"),
+                "return_date": outcome.get("return_date"),
                 "outbound_flight": outbound_leg.get("flight"),
                 "return_flight": return_leg.get("flight"),
+                "outbound_airline": outbound_leg.get("airline"),
+                "return_airline": return_leg.get("airline"),
                 "outbound_price_cny": outbound_leg.get("price_cny_reference"),
                 "return_price_cny": return_leg.get("price_cny_reference"),
+                "outbound_url": outbound_leg.get("booking_url"),
+                "return_url": return_leg.get("booking_url"),
                 "taxes_verified": False,
                 "baggage_verified": False,
                 "notification_channel": channel,
                 "query_diagnostics": outcome.get("query_diagnostics"),
                 "data_gap": outcome.get("data_gap"),
+                "annotations": outcome.get("annotations"),
             }
+            if record["status"] == "priced_reference":
+                scanned_prices.add(dep)
             state.setdefault("last_scan_bjt", {})[dep] = record["checked_at_bjt"]
             state.setdefault("last_scan_results", {})[dep] = record
             note_quote_health(state, dep, record.get("status"), record["checked_at_bjt"])
@@ -256,14 +269,22 @@ def main():
             batch.append({"departure": dep, "status": "runner_error", "error_type": type(exc).__name__})
             print("Scan failed for " + dep + ": " + type(exc).__name__, flush=True)
 
-    active_dates = [dep for dep in config["departure_dates"] if date.fromisoformat(dep) >= now.date()]
+    active_dates = [dep for dep in active if date.fromisoformat(dep) >= now.date()]
     observed = datetime.now(BJT)
+    fallback_needed = watch.notify_window_winners(config, state, scanned_prices, observed)
+    alert_stamp = observed.isoformat(timespec="seconds")
+    for item in batch:
+        for payload in (state.get("window_alerts") or {}).values():
+            if not isinstance(payload, dict):
+                continue
+            if payload.get("departure") == item.get("departure") and payload.get("last_alert_at_bjt") == alert_stamp:
+                item["notification_channel"] = payload.get("delivery_channel")
     gaps = monitor_gaps(state, active_dates, observed)
     anomaly_email = False
     if gaps and not anomaly_on_cooldown(state, observed):
         anomaly_email = notify_anomaly(state, gaps, observed)
 
-    if any(b.get("status") != "runner_error" for b in batch):
+    if removed or any(b.get("status") != "runner_error" for b in batch):
         watch.github_commit_state(state)
 
     timestamp = datetime.now(BJT).isoformat(timespec="seconds")
@@ -282,15 +303,29 @@ def main():
     (watch.OUT_DIR / "watch-batch.json").write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     lines = ["# 机票监控批次", "检查时间（北京时间）：" + timestamp, "本次检查 " + str(completed) + " 组；报价数据缺口 " + str(incomplete) + " 组。"]
     for record in batch:
+        # Fare text lives in the one-combo-per-window section. These lines stay diagnostic.
+        if config.get("rest_windows"):
+            lines.append("- " + record["departure"] + ": " + record.get("status", "unknown") +
+                         "；去程接口=" + str(record.get("outbound_api_status")) +
+                         "；返程接口=" + str(record.get("inbound_api_status")))
+            continue
         price = "；往返参考价 ¥" + str(record.get("reference_total_cny")) if record.get("reference_total_cny") else "；往返参考价：未取得"
         flights = ""
         if record.get("outbound_flight") or record.get("return_flight"):
-            flights = "；去程 " + str(record.get("outbound_flight")) + " ¥" + str(record.get("outbound_price_cny")) + "；返程 " + str(record.get("return_flight")) + " ¥" + str(record.get("return_price_cny"))
+            flights = (
+                "；去程 " + watch.format_carrier(record.get("outbound_airline"), record.get("outbound_flight"))
+                + " ¥" + str(record.get("outbound_price_cny"))
+                + "；返程 " + watch.format_carrier(record.get("return_airline"), record.get("return_flight"))
+                + " ¥" + str(record.get("return_price_cny"))
+            )
         lines.append("- " + record["departure"] + ": " + record.get("status", "unknown") +
                      "；去程接口=" + str(record.get("outbound_api_status")) +
                      "；返程接口=" + str(record.get("inbound_api_status")) + flights + price)
     lines.append("status=1、缺返程或无法相加时，记为监控数据缺口。这不能说明没有航班，也不能说明价格高于预算。")
     lines.append("参考价来自 ticketPrice，税费、机建燃油、托运行李和雪具费用均未核实。")
+    digest = watch.format_window_digest(config, state)
+    if digest:
+        lines.append(digest)
     if gaps:
         lines.append("监控异常：以下日期已长时间没有有效往返参考价：" + "、".join(gaps))
     summary = "\n\n".join(lines) + "\n"

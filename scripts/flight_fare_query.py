@@ -91,7 +91,7 @@ def attempt_plan(origin: str, destination: str, direct_only: bool) -> list[dict]
     ]
 
 
-def build_search_command(spec: dict, date: dt.date) -> list[str]:
+def build_search_command(spec: dict, date: dt.date, seat_class_name: str | None = None) -> list[str]:
     cmd = [
         "flyai", "search-flight",
         "--origin", spec["origin"], "--destination", spec["destination"],
@@ -99,6 +99,9 @@ def build_search_command(spec: dict, date: dt.date) -> list[str]:
     ]
     if spec.get("journey_type"):
         cmd.extend(["--journey-type", spec["journey_type"]])
+    # search-flight has no adults/passenger flag. Cabin is the supported party control.
+    if seat_class_name:
+        cmd.extend(["--seat-class-name", seat_class_name])
     return cmd
 
 
@@ -141,6 +144,7 @@ def route_option(item: dict, origin: str, destination: str, expected_date: dt.da
         {
             "flight": s.get("marketingTransportNo"),
             "airline": s.get("marketingTransportName"),
+            "seat_class": s.get("seatClassName"),
             "from": s.get("depStationCode"),
             "to": s.get("arrStationCode"),
             "departure": s.get("depDateTime"),
@@ -191,6 +195,25 @@ def interpret_response(stdout: str, origin: str, destination: str, expected_date
     return result
 
 
+def offer_matches_cabin(offer: dict, seat_class_name: str | None) -> bool:
+    """Keep unlabeled offers. Drop a labeled cabin that is not the one we asked for.
+
+    Recorded FlyAI payloads often omit seatClassName. Filtering those out would
+    hide every direct, including non-9C flights. The CLI flag is the primary
+    cabin control; this only rejects an explicit other cabin.
+    """
+    if not seat_class_name:
+        return True
+    labels = []
+    for leg in offer.get("legs") or []:
+        label = str((leg or {}).get("seat_class") or "").strip()
+        if label:
+            labels.append(label)
+    if not labels:
+        return True
+    return all(label == seat_class_name for label in labels)
+
+
 def leg_ready(result: dict, direct_only: bool) -> bool:
     """A usable one-way quote. status=1 or a missing direct leg is not ready."""
     if result.get("error"):
@@ -217,7 +240,8 @@ def default_runner(cmd: list[str]) -> tuple[int, str, str]:
 
 
 def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direct_only: bool = False,
-          max_attempts: int | None = None, runner=None, sleeper=None) -> dict:
+          max_attempts: int | None = None, runner=None, sleeper=None,
+          seat_class_name: str | None = None) -> dict:
     limit = 3 if max_attempts is None else max(1, min(3, int(max_attempts)))
     plan = attempt_plan(origin, destination, direct_only)[:limit]
     run = runner or default_runner
@@ -226,7 +250,7 @@ def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direc
     chosen = None
     history = []
     for index, spec in enumerate(plan):
-        cmd = build_search_command(spec, date)
+        cmd = build_search_command(spec, date, seat_class_name)
         parsed: dict
         cli_exit = None
         stdout = ""
@@ -234,6 +258,12 @@ def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direc
         try:
             cli_exit, stdout, stderr = run(cmd)
             parsed = interpret_response(stdout, origin, destination, date)
+            if seat_class_name:
+                parsed["offers"] = [
+                    offer for offer in (parsed.get("offers") or [])
+                    if offer_matches_cabin(offer, seat_class_name)
+                ]
+                parsed["seat_class_filter"] = seat_class_name
         except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
             parsed = {"offers": [], "raw_offer_count": 0, "error": type(exc).__name__}
         label = spec["label"]
