@@ -112,6 +112,62 @@ class RetryTests(unittest.TestCase):
         self.assertIn("--journey-type", calls[2])
         self.assertTrue(any(item["direct"] for item in result["offers"]))
 
+    def test_economy_filter_keeps_cheaper_non_9c_directs(self):
+        def item(flight, price, cabin, airline):
+            return {
+                "ticketPrice": price,
+                "jumpUrl": "https://example.com/" + flight,
+                "journeys": [{
+                    "journeyType": "直达",
+                    "segments": [{
+                        "depStationCode": "TFU",
+                        "arrStationCode": "AAT",
+                        "depDateTime": "2026-12-08 09:50:00",
+                        "arrDateTime": "2026-12-08 14:05:00",
+                        "marketingTransportNo": flight,
+                        "marketingTransportName": airline,
+                        "seatClassName": cabin,
+                        "transportType": "飞机",
+                        "stopInfos": None,
+                    }],
+                }],
+            }
+
+        body = json.dumps({
+            "status": 0,
+            "message": "success",
+            "data": {"itemList": [
+                item("CA9999", "400.00", "公务舱", "中国国航"),
+                item("9C6685", "900.00", "经济舱", "春秋"),
+                item("3U6573", "700.00", "经济舱", "四川航空"),
+            ]},
+        })
+        calls = []
+
+        def runner(cmd):
+            calls.append(cmd)
+            return 0, body, ""
+
+        self.assertFalse(fare.offer_matches_cabin({"legs": [{"seat_class": "公务舱"}]}, "经济舱"))
+        self.assertTrue(fare.offer_matches_cabin({"legs": [{"seat_class": "经济舱"}]}, "经济舱"))
+        self.assertTrue(fare.offer_matches_cabin({"legs": [{"flight": "9C6685"}]}, "经济舱"))
+        with tempfile.TemporaryDirectory() as temp:
+            fare.OUT_DIR = Path(temp)
+            result = fare.query(
+                "TFU", "AAT", dt.date(2026, 12, 8), "out", direct_only=True,
+                seat_class_name="经济舱", runner=runner, sleeper=lambda _s: None,
+            )
+        flights = [offer["legs"][0]["flight"] for offer in result["offers"]]
+        self.assertEqual(flights[0], "3U6573")
+        self.assertEqual(flights, ["3U6573", "9C6685"])
+        self.assertEqual(result["offers"][0]["legs"][0]["airline"], "四川航空")
+        self.assertIn("--seat-class-name", calls[0])
+        self.assertEqual(calls[0][calls[0].index("--seat-class-name") + 1], "经济舱")
+        joined = " ".join(calls[0])
+        self.assertNotIn("--adult", joined)
+        self.assertNotIn("adults", joined)
+        self.assertEqual(len(calls), 1)
+
     def test_three_failures_remain_a_data_gap(self):
         def runner(_cmd):
             return 0, load("flyai_status1.json"), ""

@@ -2,10 +2,42 @@
   "enabled": true,
   "origin": "TFU",
   "destination": "AAT",
+  "destination_label": "阿勒泰将军山（仅 AAT）",
+  "adults": 1,
+  "cabin": "economy",
+  "departure_anchors": [
+    "2026-12-08",
+    "2026-12-17",
+    "2026-12-26"
+  ],
+  "date_flex_days": 1,
+  "rest_windows": [
+    {
+      "id": "dec08",
+      "anchor": "2026-12-08",
+      "start": "2026-12-08",
+      "end": "2026-12-13"
+    },
+    {
+      "id": "dec17",
+      "anchor": "2026-12-17",
+      "start": "2026-12-17",
+      "end": "2026-12-22"
+    },
+    {
+      "id": "dec26",
+      "anchor": "2026-12-26",
+      "start": "2026-12-26",
+      "end": "2026-12-31"
+    }
+  ],
   "departure_dates": [
-    "2026-12-05",
-    "2026-12-14",
-    "2026-12-23"
+    "2026-12-08",
+    "2026-12-09",
+    "2026-12-17",
+    "2026-12-18",
+    "2026-12-26",
+    "2026-12-27"
   ],
   "stay_nights": 5,
   "direct_only": true,
@@ -15,8 +47,16 @@
   "check_interval_minutes": 15,
   "rotation": "prioritize_all_overdue_itineraries_using_persisted_last_scan",
   "currency": "CNY",
-  "stop_after": "2026-12-23",
-  "note": "Cloudflare triggers about every 15 minutes. A successful pair waits 60 minutes before the next quote. A data gap retries after 20 minutes, then 40, then backs off to 60. Each leg may use up to 3 official FlyAI attempts. ticketPrice is a reference fare; tax, baggage and ski fees are unverified. Official shift roster still unconfirmed.",
+  "stop_after": "2026-12-31",
+  "roster_notice": "日期按暂定排班推断（12月正式排班未出）",
+  "calendar_conflicts": [
+    {
+      "date": "2026-12-27",
+      "all_day": true,
+      "title": "复诊评估｜信必可是否停药"
+    }
+  ],
+  "note": "目的地仅阿勒泰 AAT（将军山），direct_only=true，不查富蕴、喀纳斯或中转。锚点 2026-12-08 / 2026-12-17 / 2026-12-26，date_flex_days=1。实际查询 12-08、12-09、12-17、12-18、12-26、12-27：三个锚点加上仍落在各休息窗内的 +1 日。窗前 -1（休息窗开始前一天）因 7 组上限不查。stay_nights=5，大约 12/8–13、12/17–22、12/26–31；+1 出发的返程会比该窗结束日晚一天。去程和返程分开查再相加，每段取最低直飞，不限航司（川航 3U、国航 CA、春秋 9C 及其他谁便宜留谁）。每个休息窗的提醒和摘要只报一条最低组合（航司、航班号、日期、链接）。adults=1，但 FlyAI search-flight 没有成人参数，人数只校验和记录、不传给 CLI。cabin=economy，查询带 --seat-class-name 经济舱；接口没标舱位时不丢弃该报价。日期按暂定排班推断（12月正式排班未出）。行程若含 2026-12-27，标注全天日历冲突「复诊评估｜信必可是否停药」。alert_price_cny=1500，ideal_price_cny=1200，min_drop_cny=50。不自动购票。6 个出发日、max_pairs_per_run=3，大约两轮可扫完。stop_after=2026-12-31。已部署 Worker 仍在 2026-12-24 00:00+08 停止 dispatch；本次不改 worker.js，不重新部署。12-24 之后由 GitHub 备份 cron 继续触发同一条 workflow，直到 stop_after。",
   "each_pair_interval_minutes": 60,
   "failure_retry_minutes": 20,
   "max_leg_attempts": 3,
