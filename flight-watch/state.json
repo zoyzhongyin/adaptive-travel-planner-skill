@@ -3,20 +3,20 @@
   "alerts": {},
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
-    "2026-12-05": "2026-10-27T18:07:38+08:00",
+    "2026-12-05": "2026-10-27T19:22:38+08:00",
     "2026-12-14": "2026-10-27T18:22:42+08:00",
     "2026-12-23": "2026-10-27T18:52:52+08:00"
   },
   "last_scan_results": {
     "2026-12-05": {
-      "checked_at_bjt": "2026-10-27T18:07:38+08:00",
+      "checked_at_bjt": "2026-10-27T19:22:38+08:00",
       "status": "priced_reference",
       "outbound_api_status": 0,
       "inbound_api_status": 0,
-      "reference_total_cny": "1759.00",
+      "reference_total_cny": "1757.00",
       "outbound_flight": "9C6685",
       "return_flight": "9C6686",
-      "outbound_price_cny": "850.00",
+      "outbound_price_cny": "848.00",
       "return_price_cny": "909.00",
       "taxes_verified": false,
       "baggage_verified": false,
@@ -165,7 +165,7 @@
     }
   },
   "last_valid_quote_bjt": {
-    "2026-12-05": "2026-10-27T18:07:38+08:00",
+    "2026-12-05": "2026-10-27T19:22:38+08:00",
     "2026-12-23": "2026-10-27T13:52:37+08:00",
     "2026-12-14": "2026-10-27T18:22:42+08:00"
   },
