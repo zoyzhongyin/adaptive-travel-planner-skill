@@ -4,8 +4,8 @@
   "window_alerts": {},
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
-    "2026-12-08": "2026-10-29T00:22:50+08:00",
-    "2026-12-09": "2026-10-29T00:52:45+08:00",
+    "2026-12-08": "2026-10-29T01:37:39+08:00",
+    "2026-12-09": "2026-10-29T01:37:51+08:00",
     "2026-12-17": "2026-10-29T01:22:47+08:00",
     "2026-12-18": "2026-10-29T01:07:49+08:00",
     "2026-12-26": "2026-10-29T00:38:06+08:00",
@@ -13,7 +13,7 @@
   },
   "last_scan_results": {
     "2026-12-08": {
-      "checked_at_bjt": "2026-10-29T00:22:50+08:00",
+      "checked_at_bjt": "2026-10-29T01:37:39+08:00",
       "status": "priced_reference",
       "outbound_api_status": 0,
       "inbound_api_status": 0,
@@ -25,8 +25,8 @@
       "return_airline": "春秋",
       "outbound_price_cny": "780.00",
       "return_price_cny": "970.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4PTR7R",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2vpMCd",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2rrWml",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1AQDEp",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": "deferred_to_window",
@@ -71,7 +71,7 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-10-29T00:52:45+08:00",
+      "checked_at_bjt": "2026-10-29T01:37:51+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 0,
       "inbound_api_status": 1,
@@ -83,7 +83,7 @@
       "return_airline": null,
       "outbound_price_cny": "780.00",
       "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0854rq",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F22acXg",
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -384,7 +384,7 @@
     }
   },
   "last_valid_quote_bjt": {
-    "2026-12-08": "2026-10-29T00:22:50+08:00",
+    "2026-12-08": "2026-10-29T01:37:39+08:00",
     "2026-12-09": "2026-10-28T23:07:37+08:00",
     "2026-12-27": "2026-10-28T23:22:48+08:00",
     "2026-12-26": "2026-10-29T00:38:06+08:00",
@@ -392,7 +392,7 @@
   },
   "consecutive_incomplete": {
     "2026-12-08": 0,
-    "2026-12-09": 2,
+    "2026-12-09": 3,
     "2026-12-17": 25,
     "2026-12-18": 2,
     "2026-12-26": 0,
