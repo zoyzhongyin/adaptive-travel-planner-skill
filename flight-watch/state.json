@@ -7,9 +7,9 @@
     "2026-12-08": "2026-10-29T01:37:39+08:00",
     "2026-12-09": "2026-10-29T01:37:51+08:00",
     "2026-12-17": "2026-10-29T01:22:47+08:00",
-    "2026-12-18": "2026-10-29T01:07:49+08:00",
-    "2026-12-26": "2026-10-29T00:38:06+08:00",
-    "2026-12-27": "2026-10-29T01:08:08+08:00"
+    "2026-12-18": "2026-10-29T01:52:58+08:00",
+    "2026-12-26": "2026-10-29T01:52:39+08:00",
+    "2026-12-27": "2026-10-29T01:53:17+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
@@ -195,19 +195,19 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-10-29T01:07:49+08:00",
+      "checked_at_bjt": "2026-10-29T01:52:58+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
-      "outbound_api_status": 0,
+      "outbound_api_status": 1,
       "inbound_api_status": 1,
       "reference_total_cny": null,
       "return_date": "2026-12-23",
-      "outbound_flight": "3U6573",
+      "outbound_flight": null,
       "return_flight": null,
-      "outbound_airline": "川航",
+      "outbound_airline": null,
       "return_airline": null,
-      "outbound_price_cny": "1110.00",
+      "outbound_price_cny": null,
       "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0ovNLi",
+      "outbound_url": null,
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -215,18 +215,22 @@
       "query_diagnostics": {
         "outbound": {
           "cli_exit": 0,
-          "api_status": 0,
-          "raw_offer_count": 10,
+          "api_status": 1,
+          "raw_offer_count": 0,
           "error": null,
-          "api_message": "success",
+          "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
-            0
+            1,
+            1,
+            1
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         },
         "inbound": {
@@ -257,20 +261,20 @@
       ]
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-10-29T00:38:06+08:00",
+      "checked_at_bjt": "2026-10-29T01:52:39+08:00",
       "status": "priced_reference",
       "outbound_api_status": 0,
       "inbound_api_status": 0,
-      "reference_total_cny": "2520.00",
+      "reference_total_cny": "2518.00",
       "return_date": "2026-12-31",
       "outbound_flight": "9C6685",
       "return_flight": "9C6686",
       "outbound_airline": "春秋",
       "return_airline": "春秋",
-      "outbound_price_cny": "1480.00",
+      "outbound_price_cny": "1478.00",
       "return_price_cny": "1040.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2rAu4D",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0dXjmD",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4ANpLO",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0rQCss",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": "deferred_to_window",
@@ -316,7 +320,7 @@
       ]
     },
     "2026-12-27": {
-      "checked_at_bjt": "2026-10-29T01:08:08+08:00",
+      "checked_at_bjt": "2026-10-29T01:53:17+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -387,16 +391,16 @@
     "2026-12-08": "2026-10-29T01:37:39+08:00",
     "2026-12-09": "2026-10-28T23:07:37+08:00",
     "2026-12-27": "2026-10-28T23:22:48+08:00",
-    "2026-12-26": "2026-10-29T00:38:06+08:00",
+    "2026-12-26": "2026-10-29T01:52:39+08:00",
     "2026-12-18": "2026-10-28T23:22:44+08:00"
   },
   "consecutive_incomplete": {
     "2026-12-08": 0,
     "2026-12-09": 3,
     "2026-12-17": 25,
-    "2026-12-18": 2,
+    "2026-12-18": 3,
     "2026-12-26": 0,
-    "2026-12-27": 2
+    "2026-12-27": 3
   },
   "incomplete_since_bjt": {
     "2026-12-17": "2026-10-27T20:53:01+08:00",
