@@ -7,9 +7,9 @@
     "2026-12-08": "2026-10-29T00:22:50+08:00",
     "2026-12-09": "2026-10-29T00:22:46+08:00",
     "2026-12-17": "2026-10-29T00:07:52+08:00",
-    "2026-12-18": "2026-10-28T23:22:44+08:00",
-    "2026-12-26": "2026-10-28T23:23:06+08:00",
-    "2026-12-27": "2026-10-28T23:22:48+08:00"
+    "2026-12-18": "2026-10-29T00:37:44+08:00",
+    "2026-12-26": "2026-10-29T00:38:06+08:00",
+    "2026-12-27": "2026-10-29T00:38:02+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
@@ -199,20 +199,82 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-10-28T23:22:44+08:00",
+      "checked_at_bjt": "2026-10-29T00:37:44+08:00",
+      "status": "incomplete_no_reliable_roundtrip_price",
+      "outbound_api_status": 0,
+      "inbound_api_status": 1,
+      "reference_total_cny": null,
+      "return_date": "2026-12-23",
+      "outbound_flight": "3U6573",
+      "return_flight": null,
+      "outbound_airline": "川航",
+      "return_airline": null,
+      "outbound_price_cny": "1110.00",
+      "return_price_cny": null,
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F49Ln6j",
+      "return_url": null,
+      "taxes_verified": false,
+      "baggage_verified": false,
+      "notification_channel": null,
+      "query_diagnostics": {
+        "outbound": {
+          "cli_exit": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
+          "error": null,
+          "api_message": "success",
+          "platform_message": null,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
+          "attempt_statuses": [
+            0
+          ],
+          "attempt_labels": [
+            "iata_price_asc"
+          ]
+        },
+        "inbound": {
+          "cli_exit": 0,
+          "api_status": 1,
+          "raw_offer_count": 0,
+          "error": null,
+          "api_message": "搜索机票低价行业失败",
+          "platform_message": null,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
+          "attempt_statuses": [
+            1,
+            1,
+            1
+          ],
+          "attempt_labels": [
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
+          ]
+        }
+      },
+      "data_gap": true,
+      "annotations": [
+        "日期按暂定排班推断（12月正式排班未出）",
+        "乘客：1 成人，经济舱。"
+      ]
+    },
+    "2026-12-26": {
+      "checked_at_bjt": "2026-10-29T00:38:06+08:00",
       "status": "priced_reference",
       "outbound_api_status": 0,
       "inbound_api_status": 0,
-      "reference_total_cny": "2148.00",
-      "return_date": "2026-12-23",
-      "outbound_flight": "3U6573",
+      "reference_total_cny": "2520.00",
+      "return_date": "2026-12-31",
+      "outbound_flight": "9C6685",
       "return_flight": "9C6686",
-      "outbound_airline": "川航",
+      "outbound_airline": "春秋",
       "return_airline": "春秋",
-      "outbound_price_cny": "1110.00",
-      "return_price_cny": "1038.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F314mj2",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0z3fIE",
+      "outbound_price_cny": "1480.00",
+      "return_price_cny": "1040.00",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2rAu4D",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0dXjmD",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": "deferred_to_window",
@@ -253,16 +315,17 @@
       "data_gap": false,
       "annotations": [
         "日期按暂定排班推断（12月正式排班未出）",
-        "乘客：1 成人，经济舱。"
+        "乘客：1 成人，经济舱。",
+        "日历冲突：2026-12-27 全天「复诊评估｜信必可是否停药」与本次行程重叠。"
       ]
     },
-    "2026-12-26": {
-      "checked_at_bjt": "2026-10-28T23:23:06+08:00",
+    "2026-12-27": {
+      "checked_at_bjt": "2026-10-29T00:38:02+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
       "reference_total_cny": null,
-      "return_date": "2026-12-31",
+      "return_date": "2027-01-01",
       "outbound_flight": null,
       "return_flight": null,
       "outbound_airline": null,
@@ -322,86 +385,28 @@
         "乘客：1 成人，经济舱。",
         "日历冲突：2026-12-27 全天「复诊评估｜信必可是否停药」与本次行程重叠。"
       ]
-    },
-    "2026-12-27": {
-      "checked_at_bjt": "2026-10-28T23:22:48+08:00",
-      "status": "priced_reference",
-      "outbound_api_status": 0,
-      "inbound_api_status": 0,
-      "reference_total_cny": "2449.00",
-      "return_date": "2027-01-01",
-      "outbound_flight": "9C6685",
-      "return_flight": "9C6686",
-      "outbound_airline": "春秋",
-      "return_airline": "春秋",
-      "outbound_price_cny": "1159.00",
-      "return_price_cny": "1290.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1AdYza",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0ku2BW",
-      "taxes_verified": false,
-      "baggage_verified": false,
-      "notification_channel": "deferred_to_window",
-      "query_diagnostics": {
-        "outbound": {
-          "cli_exit": 0,
-          "api_status": 0,
-          "raw_offer_count": 10,
-          "error": null,
-          "api_message": "success",
-          "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
-          "attempt_statuses": [
-            0
-          ],
-          "attempt_labels": [
-            "iata_price_asc"
-          ]
-        },
-        "inbound": {
-          "cli_exit": 0,
-          "api_status": 0,
-          "raw_offer_count": 10,
-          "error": null,
-          "api_message": "success",
-          "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
-          "attempt_statuses": [
-            0
-          ],
-          "attempt_labels": [
-            "iata_price_asc"
-          ]
-        }
-      },
-      "data_gap": false,
-      "annotations": [
-        "日期按暂定排班推断（12月正式排班未出）",
-        "乘客：1 成人，经济舱。",
-        "日历冲突：2026-12-27 全天「复诊评估｜信必可是否停药」与本次行程重叠。"
-      ]
     }
   },
   "last_valid_quote_bjt": {
     "2026-12-08": "2026-10-29T00:22:50+08:00",
     "2026-12-09": "2026-10-28T23:07:37+08:00",
     "2026-12-27": "2026-10-28T23:22:48+08:00",
-    "2026-12-26": "2026-10-28T19:38:07+08:00",
+    "2026-12-26": "2026-10-29T00:38:06+08:00",
     "2026-12-18": "2026-10-28T23:22:44+08:00"
   },
   "consecutive_incomplete": {
     "2026-12-08": 0,
     "2026-12-09": 1,
     "2026-12-17": 24,
-    "2026-12-18": 0,
-    "2026-12-26": 4,
-    "2026-12-27": 0
+    "2026-12-18": 1,
+    "2026-12-26": 0,
+    "2026-12-27": 1
   },
   "incomplete_since_bjt": {
     "2026-12-17": "2026-10-27T20:53:01+08:00",
-    "2026-12-26": "2026-10-28T20:53:05+08:00",
-    "2026-12-09": "2026-10-29T00:22:46+08:00"
+    "2026-12-09": "2026-10-29T00:22:46+08:00",
+    "2026-12-18": "2026-10-29T00:37:44+08:00",
+    "2026-12-27": "2026-10-29T00:38:02+08:00"
   },
   "migration_note": "Removed the previous three December departure keys so the next run starts on the 12-08, 12-17 and 12-26 windows and their in-window +1 neighbors. Runtime prune also drops itinerary keys that are not in the active departure list.",
   "last_anomaly_alert_bjt": "2026-10-28T17:52:54+08:00",
