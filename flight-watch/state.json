@@ -6,7 +6,7 @@
   "last_scan_bjt": {
     "2026-12-08": "2026-10-29T03:22:53+08:00",
     "2026-12-09": "2026-10-29T02:53:49+08:00",
-    "2026-12-17": "2026-10-29T02:37:46+08:00",
+    "2026-12-17": "2026-10-29T03:52:53+08:00",
     "2026-12-18": "2026-10-29T03:07:52+08:00",
     "2026-12-26": "2026-10-29T03:23:05+08:00",
     "2026-12-27": "2026-10-29T03:08:10+08:00"
@@ -141,19 +141,19 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-10-29T02:37:46+08:00",
+      "checked_at_bjt": "2026-10-29T03:52:53+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
-      "outbound_api_status": 0,
+      "outbound_api_status": 1,
       "inbound_api_status": 1,
       "reference_total_cny": null,
       "return_date": "2026-12-22",
-      "outbound_flight": "9C6685",
+      "outbound_flight": null,
       "return_flight": null,
-      "outbound_airline": "春秋",
+      "outbound_airline": null,
       "return_airline": null,
-      "outbound_price_cny": "1040.00",
+      "outbound_price_cny": null,
       "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F26o9pQ",
+      "outbound_url": null,
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -161,18 +161,22 @@
       "query_diagnostics": {
         "outbound": {
           "cli_exit": 0,
-          "api_status": 0,
-          "raw_offer_count": 10,
+          "api_status": 1,
+          "raw_offer_count": 0,
           "error": null,
-          "api_message": "success",
+          "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
-            0
+            1,
+            1,
+            1
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         },
         "inbound": {
@@ -409,7 +413,7 @@
   "consecutive_incomplete": {
     "2026-12-08": 2,
     "2026-12-09": 4,
-    "2026-12-17": 26,
+    "2026-12-17": 27,
     "2026-12-18": 4,
     "2026-12-26": 2,
     "2026-12-27": 4
