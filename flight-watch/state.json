@@ -6,7 +6,7 @@
   "last_scan_bjt": {
     "2026-12-08": "2026-10-28T16:52:39+08:00",
     "2026-12-09": "2026-10-28T17:22:51+08:00",
-    "2026-12-17": "2026-10-28T16:37:53+08:00",
+    "2026-12-17": "2026-10-28T17:52:54+08:00",
     "2026-12-18": "2026-10-28T17:07:45+08:00",
     "2026-12-26": "2026-10-28T17:08:08+08:00",
     "2026-12-27": "2026-10-28T17:08:04+08:00"
@@ -137,7 +137,7 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-10-28T16:37:53+08:00",
+      "checked_at_bjt": "2026-10-28T17:52:54+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -400,7 +400,7 @@
   "consecutive_incomplete": {
     "2026-12-08": 0,
     "2026-12-09": 2,
-    "2026-12-17": 18,
+    "2026-12-17": 19,
     "2026-12-18": 18,
     "2026-12-26": 0,
     "2026-12-27": 14
@@ -412,10 +412,11 @@
     "2026-12-09": "2026-10-28T16:38:11+08:00"
   },
   "migration_note": "Removed the previous three December departure keys so the next run starts on the 12-08, 12-17 and 12-26 windows and their in-window +1 neighbors. Runtime prune also drops itinerary keys that are not in the active departure list.",
-  "last_anomaly_alert_bjt": "2026-10-28T05:38:21+08:00",
+  "last_anomaly_alert_bjt": "2026-10-28T17:52:54+08:00",
   "last_anomaly_channel": "wechat",
   "last_anomaly_gaps": [
     "2026-12-17",
-    "2026-12-18"
+    "2026-12-18",
+    "2026-12-27"
   ]
 }
