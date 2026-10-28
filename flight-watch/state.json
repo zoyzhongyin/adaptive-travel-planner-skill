@@ -4,8 +4,8 @@
   "window_alerts": {},
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
-    "2026-12-08": "2026-10-28T20:37:56+08:00",
-    "2026-12-09": "2026-10-28T20:37:38+08:00",
+    "2026-12-08": "2026-10-28T21:52:57+08:00",
+    "2026-12-09": "2026-10-28T21:52:38+08:00",
     "2026-12-17": "2026-10-28T21:37:53+08:00",
     "2026-12-18": "2026-10-28T20:52:44+08:00",
     "2026-12-26": "2026-10-28T21:22:46+08:00",
@@ -13,7 +13,7 @@
   },
   "last_scan_results": {
     "2026-12-08": {
-      "checked_at_bjt": "2026-10-28T20:37:56+08:00",
+      "checked_at_bjt": "2026-10-28T21:52:57+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -79,7 +79,7 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-10-28T20:37:38+08:00",
+      "checked_at_bjt": "2026-10-28T21:52:38+08:00",
       "status": "priced_reference",
       "outbound_api_status": 0,
       "inbound_api_status": 0,
@@ -91,8 +91,8 @@
       "return_airline": "春秋",
       "outbound_price_cny": "778.00",
       "return_price_cny": "838.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2UCne2",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0NDXme",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2nkswe",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F12lduZ",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": "deferred_to_window",
@@ -393,12 +393,12 @@
   },
   "last_valid_quote_bjt": {
     "2026-12-08": "2026-10-28T18:07:41+08:00",
-    "2026-12-09": "2026-10-28T20:37:38+08:00",
+    "2026-12-09": "2026-10-28T21:52:38+08:00",
     "2026-12-27": "2026-10-28T00:53:01+08:00",
     "2026-12-26": "2026-10-28T19:38:07+08:00"
   },
   "consecutive_incomplete": {
-    "2026-12-08": 3,
+    "2026-12-08": 4,
     "2026-12-09": 0,
     "2026-12-17": 22,
     "2026-12-18": 21,
