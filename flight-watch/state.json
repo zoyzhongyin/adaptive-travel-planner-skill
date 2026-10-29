@@ -7,9 +7,9 @@
     "2026-12-08": "2026-10-29T10:22:53+08:00",
     "2026-12-09": "2026-10-29T10:22:49+08:00",
     "2026-12-17": "2026-10-29T10:07:36+08:00",
-    "2026-12-18": "2026-10-29T09:22:44+08:00",
+    "2026-12-18": "2026-10-29T10:37:44+08:00",
     "2026-12-26": "2026-10-29T10:23:06+08:00",
-    "2026-12-27": "2026-10-29T09:23:03+08:00"
+    "2026-12-27": "2026-10-29T10:38:03+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
@@ -191,23 +191,23 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-10-29T09:22:44+08:00",
-      "status": "incomplete_no_reliable_roundtrip_price",
+      "checked_at_bjt": "2026-10-29T10:37:44+08:00",
+      "status": "priced_reference",
       "outbound_api_status": 0,
-      "inbound_api_status": 1,
-      "reference_total_cny": null,
+      "inbound_api_status": 0,
+      "reference_total_cny": "2148.00",
       "return_date": "2026-12-23",
       "outbound_flight": "3U6573",
-      "return_flight": null,
+      "return_flight": "9C6686",
       "outbound_airline": "川航",
-      "return_airline": null,
+      "return_airline": "春秋",
       "outbound_price_cny": "1110.00",
-      "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F3Mc9ih",
-      "return_url": null,
+      "return_price_cny": "1038.00",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F15Nxb9",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F19qSX1",
       "taxes_verified": false,
       "baggage_verified": false,
-      "notification_channel": null,
+      "notification_channel": "deferred_to_window",
       "query_diagnostics": {
         "outbound": {
           "cli_exit": 0,
@@ -227,26 +227,22 @@
         },
         "inbound": {
           "cli_exit": 0,
-          "api_status": 1,
-          "raw_offer_count": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
           "error": null,
-          "api_message": "搜索机票低价行业失败",
+          "api_message": "success",
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
-            1
+            0
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         }
       },
-      "data_gap": true,
+      "data_gap": false,
       "annotations": [
         "日期按暂定排班推断（12月正式排班未出）",
         "乘客：1 成人，经济舱。"
@@ -316,7 +312,7 @@
       ]
     },
     "2026-12-27": {
-      "checked_at_bjt": "2026-10-29T09:23:03+08:00",
+      "checked_at_bjt": "2026-10-29T10:38:03+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -388,20 +384,19 @@
     "2026-12-09": "2026-10-28T23:07:37+08:00",
     "2026-12-27": "2026-10-28T23:22:48+08:00",
     "2026-12-26": "2026-10-29T01:52:39+08:00",
-    "2026-12-18": "2026-10-28T23:22:44+08:00",
+    "2026-12-18": "2026-10-29T10:37:44+08:00",
     "2026-12-17": "2026-10-29T10:07:36+08:00"
   },
   "consecutive_incomplete": {
     "2026-12-08": 0,
     "2026-12-09": 10,
     "2026-12-17": 0,
-    "2026-12-18": 9,
+    "2026-12-18": 0,
     "2026-12-26": 8,
-    "2026-12-27": 9
+    "2026-12-27": 10
   },
   "incomplete_since_bjt": {
     "2026-12-09": "2026-10-29T00:22:46+08:00",
-    "2026-12-18": "2026-10-29T00:37:44+08:00",
     "2026-12-27": "2026-10-29T00:38:02+08:00",
     "2026-12-26": "2026-10-29T02:54:00+08:00"
   },
