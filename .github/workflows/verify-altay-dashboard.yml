@@ -37,6 +37,10 @@ jobs:
               assert response.status==200, response.status
               assert "阿勒泰机票监控" in html, "Page not published"
               assert "/api/fares" in html, "Page missing data fetch"
+              assert "三个休息窗口" in html, "Approved V2 overview not yet published"
+              assert "六组行程明细" in html, "Approved V2 detail section not yet published"
+              assert "历史有效价" in html, "Historical fare disclaimer missing"
+              assert "信必可" not in html and "复诊评估" not in html, "Private calendar detail leaked"
           with urlopen(safe_request(base+"/api/fares"),timeout=20) as response:
               data=json.load(response)
               assert response.status==200
