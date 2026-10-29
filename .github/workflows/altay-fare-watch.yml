@@ -82,6 +82,25 @@ jobs:
           path: fare-results/
           if-no-files-found: ignore
           retention-days: 5
+      - name: Prepare public fare snapshot (skip when less than 45 minutes old)
+        id: dashboard
+        if: steps.due.outputs.due == 'true' && steps.price_watch.outcome == 'success'
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/build_fare_dashboard.py --github --only-if-new
+      - name: Publish read-only snapshot to existing Cloudflare Worker
+        if: steps.dashboard.outputs.publish == 'true'
+        continue-on-error: true
+        working-directory: flight-watch/cloudflare-dispatch
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 check-existing.py
+          npx --yes wrangler@4.151.3 deploy --keep-vars
       - name: Flag a price alert for GitHub notification
         if: steps.price_watch.outputs.price_alert == 'true'
         run: |
