@@ -259,6 +259,18 @@ def main():
                 "annotations": outcome.get("annotations"),
             }
             if record["status"] == "priced_reference":
+                # Preserve the last actual successful reference quote separately.
+                # A later API failure does NOT erase it, but this historical
+                # quote must NEVER be used as a live price-alert input.
+                state.setdefault("last_valid_fares", {})[dep] = {
+                    key: record.get(key) for key in (
+                        "checked_at_bjt", "return_date", "reference_total_cny",
+                        "outbound_flight", "return_flight",
+                        "outbound_airline", "return_airline",
+                        "outbound_price_cny", "return_price_cny",
+                        "outbound_url", "return_url",
+                    )
+                }
                 scanned_prices.add(dep)
             state.setdefault("last_scan_bjt", {})[dep] = record["checked_at_bjt"]
             state.setdefault("last_scan_results", {})[dep] = record
@@ -328,6 +340,18 @@ def main():
         lines.append(digest)
     if gaps:
         lines.append("监控异常：以下日期已长时间没有有效往返参考价：" + "、".join(gaps))
+    # Historical quotes are informational only and never satisfy live price alerts.
+    for item in batch:
+        dep = item.get("departure")
+        if item.get("status") == "incomplete_no_reliable_roundtrip_price":
+            previous = (state.get("last_valid_fares") or {}).get(dep)
+            if isinstance(previous, dict) and previous.get("reference_total_cny"):
+                lines.append(
+                    "- " + str(dep) + " 最近一次历史有效参考价：¥"
+                    + str(previous["reference_total_cny"])
+                    + "（" + str(previous.get("checked_at_bjt"))
+                    + "，**非当前报价、不可用于触发低价提醒**）"
+                )
     summary = "\n\n".join(lines) + "\n"
     (watch.OUT_DIR / "watch-batch.md").write_text(summary, encoding="utf-8")
     if os.environ.get("GITHUB_STEP_SUMMARY"):
