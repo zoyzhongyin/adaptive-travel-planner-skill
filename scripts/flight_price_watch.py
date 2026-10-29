@@ -518,6 +518,24 @@ def notify_window_winners(config, state, scanned_departures, now) -> bool:
     return fallback
 
 
+def effective_leg_attempts(config, state, dep_day: str) -> int:
+    """Avoid hammering FlyAI after repeated generic status=1 / empty quote gaps.
+
+    A normal query gets all configured official shapes. After three consecutive
+    incomplete round-trip scans, try the base shape once per leg, restoring
+    the full query plan every sixth incomplete scan for recovery detection.
+    Any successful complete quote resets the failure count in the batch runner.
+    No bypass of provider rate controls; fewer calls on persistent failure.
+    """
+    configured = int(config.get("max_leg_attempts", 3))
+    if not 1 <= configured <= 3:
+        raise ValueError("max_leg_attempts must be 1–3")
+    streak = int((state.get("consecutive_incomplete") or {}).get(dep_day) or 0)
+    if streak >= 3 and streak % 6 != 0:
+        return 1
+    return configured
+
+
 def perform(config, state, *, index=None, live=True, notify=True):
     validate_route(config)
     party = party_settings(config)
@@ -552,7 +570,9 @@ def perform(config, state, *, index=None, live=True, notify=True):
 
     OUT_DIR.mkdir(exist_ok=True)
     direct_only = config.get("direct_only", True) is not False
-    max_attempts = int(config.get("max_leg_attempts", 3))
+    max_attempts = effective_leg_attempts(config, state, dep.isoformat())
+    if live and max_attempts < int(config.get("max_leg_attempts", 3)):
+        print("Repeated incomplete quote: using one attempt per leg to reduce API pressure; periodic full retries remain enabled.", flush=True)
     if live:
         print(
             "Party: 1 adult, economy. Sending --seat-class-name " + party["seat_class_name"]
