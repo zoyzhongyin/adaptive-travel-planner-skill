@@ -6,7 +6,7 @@
   "last_scan_bjt": {
     "2026-12-08": "2026-10-29T15:23:11+08:00",
     "2026-12-09": "2026-10-29T15:23:23+08:00",
-    "2026-12-17": "2026-10-29T15:07:50+08:00",
+    "2026-12-17": "2026-10-29T16:22:46+08:00",
     "2026-12-18": "2026-10-29T15:37:57+08:00",
     "2026-12-26": "2026-10-29T15:22:53+08:00",
     "2026-12-27": "2026-10-29T15:37:44+08:00"
@@ -141,7 +141,7 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-10-29T15:07:50+08:00",
+      "checked_at_bjt": "2026-10-29T16:22:46+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 0,
       "inbound_api_status": 1,
@@ -153,7 +153,7 @@
       "return_airline": null,
       "outbound_price_cny": "1038.00",
       "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0MLxRF",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F3mMEl1",
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -406,7 +406,7 @@
   "consecutive_incomplete": {
     "2026-12-08": 5,
     "2026-12-09": 3,
-    "2026-12-17": 4,
+    "2026-12-17": 5,
     "2026-12-18": 3,
     "2026-12-26": 12,
     "2026-12-27": 14
