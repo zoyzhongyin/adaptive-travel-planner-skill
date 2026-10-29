@@ -6,7 +6,7 @@
   "last_scan_bjt": {
     "2026-12-08": "2026-10-29T21:37:40+08:00",
     "2026-12-09": "2026-10-29T21:37:44+08:00",
-    "2026-12-17": "2026-10-29T21:22:36+08:00",
+    "2026-12-17": "2026-10-29T22:37:37+08:00",
     "2026-12-18": "2026-10-29T21:53:13+08:00",
     "2026-12-26": "2026-10-29T21:37:36+08:00",
     "2026-12-27": "2026-10-29T21:53:10+08:00"
@@ -129,19 +129,19 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-10-29T21:22:36+08:00",
+      "checked_at_bjt": "2026-10-29T22:37:37+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
-      "outbound_api_status": 1,
+      "outbound_api_status": 0,
       "inbound_api_status": 1,
       "reference_total_cny": null,
       "return_date": "2026-12-22",
-      "outbound_flight": null,
+      "outbound_flight": "9C6685",
       "return_flight": null,
-      "outbound_airline": null,
+      "outbound_airline": "春秋",
       "return_airline": null,
-      "outbound_price_cny": null,
+      "outbound_price_cny": "1038.00",
       "return_price_cny": null,
-      "outbound_url": null,
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F42b8Ce",
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -149,15 +149,15 @@
       "query_diagnostics": {
         "outbound": {
           "cli_exit": 0,
-          "api_status": 1,
-          "raw_offer_count": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
           "error": null,
-          "api_message": "搜索机票低价行业失败",
+          "api_message": "success",
           "platform_message": null,
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
-            1
+            0
           ],
           "attempt_labels": [
             "iata_price_asc"
@@ -382,7 +382,7 @@
   "consecutive_incomplete": {
     "2026-12-08": 10,
     "2026-12-09": 0,
-    "2026-12-17": 9,
+    "2026-12-17": 10,
     "2026-12-18": 8,
     "2026-12-26": 17,
     "2026-12-27": 19
