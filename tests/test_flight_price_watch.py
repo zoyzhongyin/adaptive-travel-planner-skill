@@ -295,9 +295,13 @@ class DateExpansionTests(unittest.TestCase):
         state = json.loads((ROOT / "flight-watch/state.json").read_text(encoding="utf-8"))
         for bucket in ("last_scan_bjt", "last_scan_results", "last_valid_quote_bjt",
                        "consecutive_incomplete", "incomplete_since_bjt", "alerts"):
-            blob = json.dumps(state.get(bucket) or {})
+            # Retired *departure keys* must be pruned. Active itineraries may
+            # legitimately return on 12-14/12-23, so inspecting serialized
+            # values (including return_date) is a false-positive test.
+            bucket_keys = (state.get(bucket) or {}).keys()
             for retired in ("2026-12-05", "2026-12-14", "2026-12-23"):
-                self.assertNotIn(retired, blob)
+                self.assertFalse(any(str(key) == retired or str(key).startswith(retired + "_")
+                                     for key in bucket_keys), (bucket, retired))
 
 
 class AirlineAndPartyTests(unittest.TestCase):
