@@ -2,91 +2,69 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light">
-<title>阿勒泰机票监控 · 成都出发</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101b2a">
+<title>阿勒泰机票监控 · 低价雷达</title>
 <style>
-:root{font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#192434;background:#f5f7fb;font-synthesis:none}
-*{box-sizing:border-box}body{margin:0}main{max-width:920px;margin:auto;padding:24px 16px 64px}
-header{display:flex;align-items:start;justify-content:space-between;gap:12px;margin:8px 0 18px}.eyebrow{font-size:12px;letter-spacing:.12em;color:#5577a8;font-weight:750;margin:0 0 8px}h1{font-size:clamp(24px,5.5vw,34px);line-height:1.22;margin:0 0 10px;letter-spacing:-.025em}h2{font-size:18px;margin:0;color:#20334d}.sub{font-size:13px;color:#6c7888;margin:0;line-height:1.6}
-button{font:inherit;border:1px solid #d5dfea;background:#fff;border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;color:#1d416d;cursor:pointer;flex-shrink:0}button:active{transform:translateY(1px)}button:focus-visible,a:focus-visible{outline:3px solid #74a4eb;outline-offset:3px}
-.notice{background:#eaf1fc;border:1px solid #cfdef5;border-radius:15px;color:#29476e;padding:14px 16px;font-size:13px;line-height:1.7;margin:14px 0 20px}
-.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 22px}.metric{background:white;border:1px solid #e5eaf2;border-radius:15px;padding:15px}.metric strong{display:block;font-size:20px;font-variant-numeric:tabular-nums;letter-spacing:-.015em;margin:4px 0}.metric small{color:#778397;font-size:12px}.metric .mini{font-size:10px}
-.group{margin:25px 0 8px}.group-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:12px}.group-title small{color:#8491a3;font-size:12px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{background:#fff;border:1px solid #e5eaf2;box-shadow:0 4px 20px #19243407;border-radius:17px;padding:18px;min-width:0}
-.card-top{display:flex;align-items:start;justify-content:space-between;gap:12px}.route{font-size:16px;font-weight:800;color:#26364e;margin:0}.date{font-size:12px;color:#76869a;margin:5px 0 0}.pill{display:inline-block;border-radius:30px;background:#fff4e5;color:#a05d12;padding:5px 9px;font-size:11px;white-space:nowrap;font-weight:750}
-.pill.ok{background:#e3f8ee;color:#13754b}.pill.degraded{background:#fff1e0;color:#965112}.pill.old{background:#edf1f6;color:#677b91}
-.price{font-size:31px;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums;margin:18px 0 2px;color:#192e47}.price .currency{font-size:17px;font-weight:700;margin-right:2px}.price.unknown{color:#9aa7b6;font-size:27px}
-.price-sub{font-size:12px;color:#8795a6;margin-bottom:16px;min-height:18px}.legs{border-top:1px solid #edf1f6;padding-top:12px;display:grid;gap:9px}.leg{display:flex;justify-content:space-between;gap:8px;font-size:13px}.leg-label{color:#6f8094}.leg-detail{font-weight:650;color:#2c4560;text-align:right}
-.historical{margin-top:12px;background:#f5f7fb;border-radius:10px;padding:10px 11px;color:#64758b;font-size:12px;line-height:1.6}
-.checked{margin-top:14px;font-size:11px;color:#91a0b2;display:flex;align-items:center;justify-content:space-between;gap:8px}.checked a{font-size:12px;color:#346eac;text-decoration:none}
-footer{font-size:12px;color:#8490a0;line-height:1.8;margin:28px 0}.error{padding:14px;background:#fff2ee;color:#9b3c2d;border:1px solid #f5c5b8;border-radius:12px;margin:12px 0}
-@media(max-width:580px){main{padding:19px 13px 48px}.cards{grid-template-columns:1fr}.overview{gap:7px}.metric{padding:12px 10px}.metric strong{font-size:18px}.group{margin-top:21px}h2{font-size:16px}}
+:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;--ink:#192536;--muted:#687484;--line:#e1e6e8;--paper:#f6f6f3;--navy:#101b2a;--gold:#ffc564;--green:#11805e;--brown:#9d5c26;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased}button{font:inherit;cursor:pointer}button:focus-visible,summary:focus-visible{outline:3px solid #edb355;outline-offset:3px}
+.wrap{max-width:990px;margin:auto;padding:0 18px}header{background:var(--navy);color:#fff;padding:22px 0 28px}.brand{display:flex;align-items:center;gap:12px}.brand .mark{display:grid;place-items:center;border:1px solid #364d65;border-radius:12px;background:#26384d;width:40px;height:40px;font-size:21px}.brand b{font-size:18px}.brand small{display:block;color:#a6b7ca;font-size:11px;margin-top:2px}
+.hero{margin-top:29px;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(225px,.7fr);align-items:end;gap:25px}.eyebrow{color:#aebdd0;font-size:12px;letter-spacing:.04em}.hero h1{font-size:clamp(25px,4vw,37px);line-height:1.25;margin:9px 0 15px;letter-spacing:-.7px}.hero h1 em{font-style:normal;color:var(--gold)}.price-row{display:flex;align-items:center;flex-wrap:wrap;gap:13px}.hero-price{font-size:clamp(49px,7vw,65px);font-weight:790;letter-spacing:-2px;line-height:1.1;font-variant-numeric:tabular-nums}.hero-price small{font-size:.42em;vertical-align:.25em}.tag{background:#2c4054;color:#dce8f6;border:1px solid #465970;border-radius:7px;font-size:11px;padding:5px 9px}.hero-note{font-size:12px;line-height:1.8;color:#c4d0df;margin:13px 0 0}.hero-note strong{color:var(--gold)}.targets{border:1px solid #41536b;background:#1b2b40;border-radius:16px;padding:17px 18px}.targets small{font-size:12px;color:#b8c6d7}.targets strong{font-size:24px;display:block;margin-top:4px;font-variant-numeric:tabular-nums}.targets .row+.row{margin-top:13px;padding-top:13px;border-top:1px solid #405069}.targets .ideal{color:var(--gold)}
+main.wrap{padding-bottom:50px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 12px}.sync{display:flex;align-items:center;gap:9px;color:#526073;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:#b6bfc8}.dot.ok{background:#11805e}.dot.warn{background:#d78a38}.button{background:#fff;border:1px solid #d5dce1;border-radius:10px;padding:10px 16px;font-size:12px;color:#243146;font-weight:650;min-height:39px}.button:disabled{opacity:.55}.note{background:#fff9ed;border:1px solid #eedfbe;border-radius:11px;padding:12px 15px;color:#705a37;font-size:12px;line-height:1.65}.titlebar{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:25px 0 14px}.titlebar h2{font-size:18px;margin:0;letter-spacing:-.2px}.titlebar span{color:#728092;font-size:12px}.windows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.window{background:#fff;border:1px solid var(--line);border-radius:15px;padding:17px;display:flex;flex-direction:column;min-height:190px;justify-content:space-between}.window.best{border-color:#ddad59;box-shadow:0 4px 16px #ad8d4519}.window .kicker{color:#8a95a4;font-size:11px;font-weight:750}.window h3{margin:6px 0;font-size:17px}.window .date{font-size:12px;color:#7c8896}.window .total{font-size:33px;line-height:1.2;font-variant-numeric:tabular-nums;font-weight:790;letter-spacing:-1px}.window .total.empty{font-size:20px;letter-spacing:0;color:#9a9fa9}.window .hint{font-size:11px;color:#7c8795;line-height:1.5;margin-top:5px}.window .over{color:#ad6428;font-size:11px;font-weight:700}.window .below{color:#087f59;font-size:11px;font-weight:700}
+.filter{display:flex;align-items:center;gap:4px;border-radius:11px;background:#e7eaea;padding:3px}.filter button{font-size:12px;color:#687685;border:0;background:transparent;padding:8px 11px;border-radius:8px}.filter button.active{background:#fff;color:#192636;font-weight:700;box-shadow:0 1px 3px #0000000b}
+.group{margin-bottom:17px}.group-head{font-size:12px;font-weight:700;color:#7c8896;display:flex;align-items:center;gap:9px;margin:9px 0}.group-head:after{content:"";background:#dde2e4;height:1px;flex:1}
+.trip{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:9px;padding:0 16px}.trip summary{list-style:none;display:flex;align-items:center;gap:8px;min-height:77px;cursor:pointer}.trip summary::-webkit-details-marker{display:none}.trip .left{flex:1;min-width:0}.trip .route{font-size:16px;font-weight:740}.trip .meta{font-size:11px;color:#87929e;margin-top:6px}.trip .right{text-align:right;flex-shrink:0}.trip .value{font-size:23px;font-weight:770;font-variant-numeric:tabular-nums}.trip .value.na{font-size:15px;color:#8d97a2}.trip .stat{display:block;font-size:11px;color:#a86b2f;margin-top:3px}.trip .stat.good{color:#0c815c}.arrow{font-size:19px;color:#a6afbd;transition:transform .2s;margin-left:3px}details[open] .arrow{transform:rotate(180deg)}.trip .body{border-top:1px solid #ecedef;padding:11px 2px 15px;font-size:12px}.leg{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:10px 0;color:#627080}.leg strong{color:#253347;font-size:13px}.leg strong.miss{color:#ab6947}.footnote{color:#8a95a1;font-size:11px;line-height:1.7;margin-top:11px}.oldprice{padding:9px 11px;margin-top:10px;background:#f2f4f5;color:#606e7b;border-radius:9px;font-size:11px}
+footer{margin:25px 0;color:#7e8a97;font-size:11px;line-height:1.8}.empty{padding:15px;color:#8b95a2;font-size:12px;text-align:center}.err{background:#fff0e8;color:#a34d2f;padding:13px;border-radius:10px}
+@media(max-width:760px){.wrap{padding:0 13px}.hero{grid-template-columns:1fr;gap:16px;margin-top:24px}.hero h1{font-size:28px}.targets{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:13px}.targets .row+.row{margin:0;padding:0 0 0 14px;border-top:0;border-left:1px solid #405069}.windows{grid-template-columns:1fr;gap:9px}.window{min-height:unset;display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;padding:15px 16px}.window .bottom{text-align:right;grid-column:2;grid-row:1/3}.window .total{font-size:29px}.window h3{font-size:15px}.toolbar{margin-top:14px}.titlebar{margin-top:24px}.trip{padding:0 13px}.trip .route{font-size:14px}.trip .value{font-size:21px}}
+@media(max-width:375px){.trip .route{font-size:13px}.trip .value{font-size:18px}.brand b{font-size:16px}}
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <div><p class="eyebrow">FLIGHT PRICE WATCH</p><h1>阿勒泰机票监控 <span aria-hidden="true">✈</span></h1><p class="sub">成都天府 TFU ⇄ 阿勒泰 AAT · 1人 · 直飞 · 5晚</p></div>
-    <button id="reload" type="button" aria-label="刷新报价页面">刷新 ↻</button>
-  </header>
-  <div class="notice" id="notice">正在读取最新价格快照…</div>
-  <div class="overview" aria-label="监控概览">
-    <div class="metric"><small>提醒预算</small><strong>¥1,500</strong><small class="mini">往返参考价</small></div>
-    <div class="metric"><small>理想价格</small><strong>¥1,200</strong><small class="mini">往返参考价</small></div>
-    <div class="metric"><small>有效报价</small><strong id="coverage">— / 6</strong><small class="mini">最新检查结果</small></div>
-  </div>
-  <div id="groups" aria-live="polite"></div>
-  <footer id="footer">所有报价来自 FlyAI ticketPrice，两张单程报价之和不等于最终含税可出票价。税费、行李、雪具托运需购票前核实。页面仅供参考，不提供购买或自动支付服务。</footer>
+<header><div class="wrap"><div class="brand"><span class="mark" aria-hidden="true">✈</span><div><b>阿勒泰 · 低价雷达</b><small>阿勒泰机票监控 · 成都天府 TFU ⇄ 阿勒泰 AAT · 直飞</small></div></div>
+<div class="hero"><div><div class="eyebrow">优先关注 · 三个休息窗口的最低完整往返参考价</div><h1 id="hero-title">正在读取<em>最新监控结果</em></h1><div class="price-row"><div class="hero-price" id="hero-price">—</div><span class="tag" id="hero-tag">读取中</span></div><p class="hero-note" id="hero-note">只显示真实查到的完整往返参考价，不把接口失败算作没有机票。</p></div><div class="targets"><div class="row"><small>微信提醒线 · 每人往返</small><strong>¥1,500</strong></div><div class="row"><small>理想购入价 · 每人往返</small><strong class="ideal">¥1,200</strong></div></div></div></div></header>
+<main class="wrap"><div class="toolbar"><div class="sync"><span class="dot" id="dot"></span><span id="sync">正在连接报价数据...</span></div><button class="button" type="button" id="refresh">↻ 刷新数据</button></div>
+<div class="note" id="notice">网页只读取监控结果快照，不发起新的机票查询。每5分钟自动尝试刷新显示，实际报价取决于后台成功查价时间。</div>
+<div class="titlebar"><h2>三个休息窗口</h2><span>优先对比每段最低完整报价</span></div><section class="windows" id="windows" aria-live="polite"></section>
+<div class="titlebar"><h2>六组行程明细</h2><div class="filter"><button type="button" class="active" id="all">全部</button><button type="button" id="issues">仅缺数据</button></div></div><section id="details"></section>
+<footer>1位成人 · 经济舱 · 直飞 · 5晚。出行日期根据暂定休息窗口，购票前请核对正式排班和个人日历。报价为飞猪 FlyAI 返回的两张单程票价之和，税费、托运行李及雪具费用未核实，不代表可以立即成交。网页公开但仅包含脱敏的报价信息，不公开私有监控记录、日历内容或 API 密钥。</footer>
 </main>
 <script>
 (function(){
-'use strict';
-var formatMoney=function(v){return v===null||v===undefined||v===''?'—':'¥'+Number(v).toLocaleString('zh-CN',{maximumFractionDigits:0});};
-var escapeHTML=function(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
-var showDate=function(x){return x?String(x).slice(5,10).replace('-','/'):'';};
-var showTime=function(x){return x?String(x).replace('T',' ').slice(5,16):'暂无';};
-var windowLabels={'dec08':'第一段休息','dec17':'第二段休息','dec26':'第三段休息'};
-var groups=document.getElementById('groups'),notice=document.getElementById('notice'),button=document.getElementById('reload');
-function renderLeg(label,price,airline,flight){return '<div class="leg"><span class="leg-label">'+label+'</span><span class="leg-detail">'+(price!=null?escapeHTML([airline||'',flight||''].join(' '))+' · '+formatMoney(price):'暂无有效报价')+'</span></div>';}
-function renderCard(rec,alert){
-  var total=rec.total_cny, valid=rec.status==='priced_reference'&&total!=null;
-  var cls=valid?(Number(total)<=alert?'ok':'old'):'degraded';
-  var status=valid?(Number(total)<=alert?'达到提醒价':'已取得往返价'):'报价不完整';
-  var old=rec.last_valid;
-  var oldHTML=!valid&&old&&old.total_cny!=null?
-    '<div class="historical">上次取得的完整往返报价：<b>'+formatMoney(old.total_cny)+'</b><div>采集于 '+escapeHTML(showTime(old.checked_at_bjt))+' · 历史价，非当前价</div></div>':'';
-  var priceHTML=valid?'<div class="price"><span class="currency">¥</span>'+Number(total).toLocaleString('zh-CN',{maximumFractionDigits:0})+'</div>':'<div class="price unknown">暂无完整报价</div>';
-  return '<article class="card"><div class="card-top"><div><p class="route">'+escapeHTML(showDate(rec.departure))+' → '+escapeHTML(showDate(rec.return_date))+'</p><p class="date">出发 / 返程 · 直飞优先</p></div><span class="pill '+cls+'">'+status+'</span></div>'+
-    priceHTML+'<div class="price-sub">'+(valid?'往返两张单程参考价合计':'缺少至少一个航段，不能计算往返价')+'</div>'+
-    '<div class="legs">'+renderLeg('去程',rec.outbound_price_cny,rec.outbound_airline,rec.outbound_flight)+renderLeg('返程',rec.return_price_cny,rec.return_airline,rec.return_flight)+'</div>'+
-    oldHTML+'<div class="checked"><span>检查：'+escapeHTML(showTime(rec.checked_at_bjt))+'</span><span>'+(!valid?'数据缺口':'仅供参考')+'</span></div></article>';
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var groups=[{id:"dec08",name:"12月上旬",label:"01",days:["2026-12-08","2026-12-09"]},{id:"dec17",name:"12月中旬",label:"02",days:["2026-12-17","2026-12-18"]},{id:"dec26",name:"12月下旬",label:"03",days:["2026-12-26","2026-12-27"]}];
+var data=null, onlyIssues=false;
+function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function num(x){return x===null||x===undefined||x===""?null:(Number.isFinite(Number(x))?Number(x):null);}
+function money(x){var a=num(x);return a===null?"—":"¥"+a.toLocaleString("zh-CN",{maximumFractionDigits:0});}
+function day(x){return x?String(x).slice(5,10).replace("-","/"):"—";}
+function dateTime(x){return x?String(x).slice(0,16).replace("T"," ").replace(/^\d{4}-/,""):"未知";}
+function validTime(x){var t=Date.parse(x||"");return Number.isFinite(t)?t:null;}
+function describeAge(x){var t=validTime(x);if(t===null)return "时间不详";var m=Math.max(0,Math.floor((Date.now()-t)/60000));return m<60?m+"分钟前":Math.floor(m/60)+"小时前";}
+function fresh(x){var t=validTime(x);return t!==null&&Date.now()-t<=120*60000;}
+function normalize(){var rows=(data&&Array.isArray(data.itineraries))?data.itineraries:[];return groups.flatMap(function(g){return g.days.map(function(key){var r=rows.find(function(x){return x.departure===key;})||{};var isFull=r.status==="priced_reference"&&num(r.total_cny)!==null;var last=r.last_valid||null;var history=!isFull&&last&&num(last.total_cny)!==null;return {group:g,day:key,rec:r,complete:isFull,history:history,amount:isFull?num(r.total_cny):history?num(last.total_cny):null,displayStamp:isFull?r.checked_at_bjt:history?last.checked_at_bjt:null,returnDate:r.return_date||"",liveFresh:isFull&&fresh(r.checked_at_bjt)};});});}
+function render(){
+if(!data)return;
+var rows=normalize(),complete=rows.filter(function(x){return x.complete;}).sort(function(a,b){return a.amount-b.amount;}),recent=complete.filter(function(x){return x.liveFresh;});
+var historical=rows.filter(function(x){return x.history;}).sort(function(a,b){return a.amount-b.amount;});
+var selected=recent[0]||complete[0]||historical[0]||null;
+var inBudget=recent.filter(function(x){return x.amount<=1500;});
+$("hero-title").innerHTML=inBudget.length?"有 <em>"+inBudget.length+" 组</em>达到提醒线":"目前未发现<em>近期达标报价</em>";
+$("hero-price").innerHTML=selected?"<small>¥</small>"+selected.amount.toLocaleString("zh-CN"):"—";
+$("hero-tag").textContent=selected?(selected.liveFresh?"最近完整报价":selected.complete?"较早完整报价 · 需刷新核验":"历史有效价 · 非当前报价"):"暂无完整往返数据";
+$("hero-note").innerHTML=selected?"<strong>"+esc(day(selected.day))+" → "+esc(day(selected.returnDate))+"</strong> · 采集于 "+esc(dateTime(selected.displayStamp))+" · "+(selected.amount>1500?"高于提醒线 <strong>"+money(selected.amount-1500)+"</strong>":selected.liveFresh?"已达到参考提醒线，需核实最终价格":"历史价达到提醒线，但不是当前可购买价格"):"所有日期均缺少完整去返程报价，不能判断是否有低价。";
+$("windows").innerHTML=groups.map(function(g){var list=rows.filter(function(x){return x.group.id===g.id;});var a=list.filter(function(x){return x.complete&&x.liveFresh;}).sort(function(x,y){return x.amount-y.amount;});var b=list.filter(function(x){return x.complete;}).sort(function(x,y){return x.amount-y.amount;});var c=list.filter(function(x){return x.history;}).sort(function(x,y){return x.amount-y.amount;});var best=a[0]||b[0]||c[0];var issues=list.filter(function(x){return !x.complete;}).length;var state=best?(best.liveFresh?"近期完整报价":best.complete?"较早完整报价":"历史价 · 非实时"):"暂无完整报价";return '<article class="window'+(best&&best.liveFresh?' best':'')+'"><div><span class="kicker">窗口 '+g.label+'</span><h3>'+g.name+'</h3><div class="date">'+day(g.days[0])+'起 · 2组候选</div><div class="hint">'+(issues?"⚠ "+issues+"组目前缺少完整报价":"两组都有完整报价")+'</div></div><div class="bottom">'+(best?'<div class="total">'+money(best.amount)+'</div><div class="'+(best.amount<=1500&&best.liveFresh?'below':'over')+'">'+(best.amount<=1500?(best.liveFresh?"达到参考提醒线":"旧报价达标 · 非实时"):"高于提醒线 "+money(best.amount-1500))+'</div><div class="hint">'+day(best.day)+'出发</div><div class="hint">'+state+' · '+dateTime(best.displayStamp)+'</div>':'<div class="total empty">数据不足</div><div class="hint">待获得完整双程报价</div>')+'</div></article>';}).join("");
+$("details").innerHTML=groups.map(function(g){var list=rows.filter(function(x){return x.group.id===g.id&&(!onlyIssues||!x.complete);});if(!list.length)return "";return '<div class="group"><div class="group-head">'+g.name+'</div>'+list.map(function(x){var r=x.rec,tag=x.complete?(x.liveFresh?"近期完整参考价":"较早完整价"):(x.history?"历史价 · 非实时":"报价不完整");var price=x.amount===null?"暂无完整往返价":money(x.amount);var flightOut=[r.outbound_airline||"",r.outbound_flight||""].filter(Boolean).join(" "),flightBack=[r.return_airline||"",r.return_flight||""].filter(Boolean).join(" ");var prior=x.history?'<div class="oldprice">上次完整历史报价 '+money(x.amount)+' · '+esc(dateTime(x.displayStamp))+'，当前不可当作实时价格</div>':"";return '<details class="trip"><summary><div class="left"><div class="route">'+esc(day(x.day))+' → '+esc(day(x.returnDate))+'</div><div class="meta">'+esc(flightOut||"去程待查")+' / '+esc(flightBack||"返程待查")+'</div></div><div class="right"><div class="value'+(x.amount===null?" na":"")+'">'+esc(price)+'</div><span class="stat'+(x.complete&&x.liveFresh?" good":"")+'">'+esc(tag)+'</span></div><span class="arrow">⌄</span></summary><div class="body"><div class="leg"><span>去程 TFU → AAT · '+esc(flightOut||"未获取")+'</span><strong class="'+(num(r.outbound_price_cny)===null?"miss":"")+'">'+money(r.outbound_price_cny)+'</strong></div><div class="leg"><span>返程 AAT → TFU · '+esc(flightBack||"未获取")+'</span><strong class="'+(num(r.return_price_cny)===null?"miss":"")+'">'+money(r.return_price_cny)+'</strong></div>'+prior+'<div class="footnote">最近检查 '+esc(dateTime(r.checked_at_bjt))+'（北京） · '+(x.complete?"两张单程参考价相加":"接口数据缺口，不代表没有航班")+'</div></div></details>';}).join("")+'</div>';}).join("")||'<div class="empty">当前筛选没有行程</div>';
+var update=data.generated_at_bjt||data.generated_at;var date=validTime(update),stale=date===null||Date.now()-date>3*3600000;
+$("sync").textContent="公开快照 "+dateTime(update)+"（北京） · 最近检查 "+dateTime(data.most_recent_check_bjt);
+$("dot").className="dot "+(stale?"warn":"ok");
+$("notice").textContent="网页每5分钟自动读取快照；后台按各日期的查询间隔获取机票。"+(stale?"目前公开快照可能过期，请勿据此判断实时票价。":"当前为最新发布的监控快照，但仍不等于可出票的实时含税价格。")+" 近期判定按最近2小时内的完整报价计算。";
 }
-function render(data){
-  if(!data||!Array.isArray(data.itineraries)||!Array.isArray(data.windows))throw Error('报价格式异常');
-  var threshold=Number(data.alert_price_cny||1500),found=0,out='';
-  data.windows.forEach(function(win){
-    var cards=data.itineraries.filter(function(r){return r.window_id===win.id;});
-    cards.forEach(function(r){if(r.status==='priced_reference'&&r.total_cny!=null)found++;});
-    out+='<section class="group"><div class="group-title"><h2>'+escapeHTML(windowLabels[win.id]||'休息窗口')+'</h2><small>'+escapeHTML(showDate(win.start))+' — '+escapeHTML(showDate(win.end))+'</small></div><div class="cards">'+cards.map(function(r){return renderCard(r,threshold);}).join('')+'</div></section>';
-  });
-  groups.innerHTML=out;
-  document.getElementById('coverage').textContent=found+' / '+data.itineraries.length;
-  var generated=showTime(data.generated_at_bjt||data.generated_at);
-  notice.textContent='页面快照更新：'+generated+'（北京时间）。自动查价约每15分钟尝试触发，但各日期不一定每次都查到价格；网页快照通常约每小时更新一次。';
-}
-async function load(){
-  button.disabled=true;button.textContent='读取中…';
-  try{
-    var r=await fetch('/api/fares?at='+Date.now(),{cache:'no-store'});
-    if(!r.ok)throw Error('HTTP '+r.status);
-    render(await r.json());
-  }catch(err){
-    notice.textContent='暂时无法读取最新报价。';
-    groups.innerHTML='<div class="error">数据加载失败（'+escapeHTML(err.message||'网络错误')+'）。请检查网络后重试。</div>';
-  }finally{button.disabled=false;button.textContent='刷新 ↻';}
-}
-button.addEventListener('click',load);load();
+async function load(){var b=$("refresh");b.disabled=true;b.textContent="读取中…";try{var r=await fetch("/api/fares?ts="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);var d=await r.json();if(!d||!Array.isArray(d.windows)||!Array.isArray(d.itineraries)||d.schema_version!==1)throw Error("数据格式不符");data=d;render();}catch(e){$("dot").className="dot warn";$("sync").textContent="数据更新失败";$("notice").textContent="暂时无法获取最新快照；"+(data?"页面继续显示上次成功读取的数据（可能过期）。":"请稍后刷新，勿把页面空白当作无航班。");if(!data)$("details").innerHTML='<div class="err">获取数据失败：'+esc(e.message)+'</div>';}finally{b.disabled=false;b.textContent="↻ 刷新数据";}}
+$("refresh").addEventListener("click",load);
+$("all").addEventListener("click",function(){onlyIssues=false;$("all").className="active";$("issues").className="";render();});
+$("issues").addEventListener("click",function(){onlyIssues=true;$("issues").className="active";$("all").className="";render();});
+load();setInterval(load,300000);
 })();
 </script>
 </body>
