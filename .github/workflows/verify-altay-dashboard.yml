@@ -21,8 +21,10 @@ jobs:
           from urllib.error import HTTPError
           import json, re
           base="https://altay-fare-cron.zoyzhongyin.workers.dev"
+          def safe_request(url, *, method=None, data=None):
+              return Request(url, method=method, data=data, headers={"User-Agent":"AltayDashboardVerifier/1.0"})
           try:
-              homepage=urlopen(base+"/", timeout=20)
+              homepage=urlopen(safe_request(base+"/"), timeout=20)
           except HTTPError as exc:
               print("Homepage HTTP status:",exc.code)
               print("Server:",exc.headers.get("Server"))
@@ -35,7 +37,7 @@ jobs:
               assert response.status==200, response.status
               assert "阿勒泰机票监控" in html, "Page not published"
               assert "/api/fares" in html, "Page missing data fetch"
-          with urlopen(base+"/api/fares",timeout=20) as response:
+          with urlopen(safe_request(base+"/api/fares"),timeout=20) as response:
               data=json.load(response)
               assert response.status==200
           assert data.get("schema_version")==1
@@ -49,12 +51,12 @@ jobs:
           assert not any(x in html for x in ("GH_ACTIONS_TOKEN","SERVERCHAN_SENDKEY","FLYAI_API_KEY","CLOUDFLARE_API_TOKEN"))
           assert not any(x in str(data) for x in ("GH_ACTIONS_TOKEN","SERVERCHAN_SENDKEY","FLYAI_API_KEY","CLOUDFLARE_API_TOKEN"))
           try:
-              urlopen(Request(base+"/", data=b"hi",method="POST"),timeout=20)
+              urlopen(safe_request(base+"/", data=b"hi",method="POST"),timeout=20)
               raise AssertionError("Public POST unexpectedly allowed")
           except HTTPError as exc:
               assert exc.code==405, exc.code
           try:
-              urlopen(base+"/internal/state.json",timeout=20)
+              urlopen(safe_request(base+"/internal/state.json"),timeout=20)
               raise AssertionError("Internal state unexpectedly public")
           except HTTPError as exc:
               assert exc.code==404, exc.code
