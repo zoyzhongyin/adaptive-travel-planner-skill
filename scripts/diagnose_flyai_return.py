@@ -12,12 +12,11 @@ from datetime import datetime, timezone, timedelta
 
 BJT=timezone(timedelta(hours=8))
 checks=[
-  ("return_baseline_economy","AAT","TFU","2026-12-14","3","经济舱",None),
-  ("return_baseline_without_cabin","AAT","TFU","2026-12-14","3",None,None),
-  ("return_recommended_sort","AAT","TFU","2026-12-14","2",None,None),
-  ("return_specific_flight","AAT","TFU","2026-12-14","3",None,"9C6686"),
-  ("return_other_date","AAT","TFU","2026-12-23","3",None,None),
-  ("outbound_control","TFU","AAT","2026-12-09","3","经济舱",None),
+  ("return_dec23_default","AAT","TFU","2026-12-23","3",None,None),
+  ("return_dec23_flight_number","AAT","TFU","2026-12-23","3",None,"9C6686"),
+  ("return_dec23_recommended","AAT","TFU","2026-12-23","2",None,None),
+  ("return_dec31_flight_number","AAT","TFU","2026-12-31","3",None,"9C6686"),
+  ("return_dec14_control","AAT","TFU","2026-12-14","3",None,None),
 ]
 def run():
   if not os.environ.get("FLYAI_API_KEY"):
