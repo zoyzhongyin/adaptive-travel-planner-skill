@@ -1,0 +1,27 @@
+name: Probe FlyAI Return Date Ranges (once)
+
+on:
+  push:
+    paths:
+      - ".github/workflows/probe-flyai-return-ranges.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install -g @fly-ai/flyai-cli@1.0.16 --no-audit --no-fund
+      - name: Probe two date-range queries
+        env:
+          FLYAI_API_KEY: ${{ secrets.FLYAI_API_KEY }}
+        run: python3 scripts/diagnose_flyai_range.py
