@@ -21,7 +21,16 @@ jobs:
           from urllib.error import HTTPError
           import json, re
           base="https://altay-fare-cron.zoyzhongyin.workers.dev"
-          with urlopen(base+"/", timeout=20) as response:
+          try:
+              homepage=urlopen(base+"/", timeout=20)
+          except HTTPError as exc:
+              print("Homepage HTTP status:",exc.code)
+              print("Server:",exc.headers.get("Server"))
+              print("CF-Ray present:",bool(exc.headers.get("CF-Ray")))
+              print("Content-Type:",exc.headers.get("Content-Type"))
+              print("Response excerpt:",exc.read(250).decode("utf-8","replace"))
+              raise
+          with homepage as response:
               html=response.read().decode("utf-8")
               assert response.status==200, response.status
               assert "阿勒泰机票监控" in html, "Page not published"
