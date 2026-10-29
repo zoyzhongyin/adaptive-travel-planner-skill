@@ -211,6 +211,7 @@ DATE_STATE_BUCKETS = (
     "last_scan_bjt",
     "last_scan_results",
     "last_valid_quote_bjt",
+    "last_valid_fares",
     "consecutive_incomplete",
     "incomplete_since_bjt",
 )
