@@ -1,6 +1,9 @@
 name: Deploy existing Altay Cloudflare scheduler
 
 on:
+  push:
+    paths:
+      - ".github/workflows/deploy-altay-cron.yml"
   workflow_dispatch:
 
 permissions:
