@@ -1,9 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-// Import as ESM without changing the repository's package type.
-const code = await readFile(new URL('./worker.js', import.meta.url), 'utf8');
-const { dispatch, default: worker } = await import('data:text/javascript;base64,' + Buffer.from(code).toString('base64'));
+import { dispatch, default as worker } from './worker.js';
 const time = Date.parse('2026-10-22T00:07:00Z');
 const env = { GH_ACTIONS_TOKEN: 'test-private-value' };
 
@@ -63,8 +60,21 @@ test('monitor end date stops dispatch at Beijing midnight', async () => {
   assert.equal(f.requests.length, 0); assert.equal(f.logs[0].event, 'dispatch_inactive');
 });
 
-test('public HTTP cannot trigger the workflow', async () => {
-  assert.equal((await worker.fetch(new Request('https://example.com'))).status, 404);
+test('public HTML and JSON endpoints expose only sanitized read-only data', async () => {
+  const html = await worker.fetch(new Request('https://example.com/'));
+  assert.equal(html.status, 200);
+  assert.match(html.headers.get('Content-Type'), /text\/html/);
+  assert.ok(!(await html.text()).includes(env.GH_ACTIONS_TOKEN));
+  const json = await worker.fetch(new Request('https://example.com/api/fares'));
+  assert.equal(json.status, 200);
+  assert.equal(Array.isArray((await json.json()).itineraries), true);
+  assert.equal((await worker.fetch(new Request('https://example.com/api/fares', { method: 'HEAD' }))).status, 200);
+});
+
+test('public HTTP cannot dispatch GitHub or modify monitoring', async () => {
+  assert.equal((await worker.fetch(new Request('https://example.com/', { method: 'POST' }))).status, 405);
+  assert.equal((await worker.fetch(new Request('https://example.com/dispatch'))).status, 404);
+  assert.equal((await worker.fetch(new Request('https://example.com/internal/state.json'))).status, 404);
 });
 
 test('Cron runtime waits for dispatch completion', async () => {
