@@ -37,6 +37,10 @@ jobs:
           PY
       - name: Require existing Worker and GitHub dispatch secret
         run: python3 flight-watch/cloudflare-dispatch/check-existing.py
+      - name: Build safe dashboard snapshot from latest private state
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/build_fare_dashboard.py --github
       - name: Test scheduler offline
         run: node --test flight-watch/cloudflare-dispatch/worker.test.mjs
       - name: Deploy to existing altay-fare-cron
