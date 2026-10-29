@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>阿勒泰机票监控 · 成都出发</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#192434;background:#f5f7fb;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}main{max-width:920px;margin:auto;padding:24px 16px 64px}
+header{display:flex;align-items:start;justify-content:space-between;gap:12px;margin:8px 0 18px}.eyebrow{font-size:12px;letter-spacing:.12em;color:#5577a8;font-weight:750;margin:0 0 8px}h1{font-size:clamp(24px,5.5vw,34px);line-height:1.22;margin:0 0 10px;letter-spacing:-.025em}h2{font-size:18px;margin:0;color:#20334d}.sub{font-size:13px;color:#6c7888;margin:0;line-height:1.6}
+button{font:inherit;border:1px solid #d5dfea;background:#fff;border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;color:#1d416d;cursor:pointer;flex-shrink:0}button:active{transform:translateY(1px)}button:focus-visible,a:focus-visible{outline:3px solid #74a4eb;outline-offset:3px}
+.notice{background:#eaf1fc;border:1px solid #cfdef5;border-radius:15px;color:#29476e;padding:14px 16px;font-size:13px;line-height:1.7;margin:14px 0 20px}
+.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 22px}.metric{background:white;border:1px solid #e5eaf2;border-radius:15px;padding:15px}.metric strong{display:block;font-size:20px;font-variant-numeric:tabular-nums;letter-spacing:-.015em;margin:4px 0}.metric small{color:#778397;font-size:12px}.metric .mini{font-size:10px}
+.group{margin:25px 0 8px}.group-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:12px}.group-title small{color:#8491a3;font-size:12px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:#fff;border:1px solid #e5eaf2;box-shadow:0 4px 20px #19243407;border-radius:17px;padding:18px;min-width:0}
+.card-top{display:flex;align-items:start;justify-content:space-between;gap:12px}.route{font-size:16px;font-weight:800;color:#26364e;margin:0}.date{font-size:12px;color:#76869a;margin:5px 0 0}.pill{display:inline-block;border-radius:30px;background:#fff4e5;color:#a05d12;padding:5px 9px;font-size:11px;white-space:nowrap;font-weight:750}
+.pill.ok{background:#e3f8ee;color:#13754b}.pill.degraded{background:#fff1e0;color:#965112}.pill.old{background:#edf1f6;color:#677b91}
+.price{font-size:31px;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums;margin:18px 0 2px;color:#192e47}.price .currency{font-size:17px;font-weight:700;margin-right:2px}.price.unknown{color:#9aa7b6;font-size:27px}
+.price-sub{font-size:12px;color:#8795a6;margin-bottom:16px;min-height:18px}.legs{border-top:1px solid #edf1f6;padding-top:12px;display:grid;gap:9px}.leg{display:flex;justify-content:space-between;gap:8px;font-size:13px}.leg-label{color:#6f8094}.leg-detail{font-weight:650;color:#2c4560;text-align:right}
+.historical{margin-top:12px;background:#f5f7fb;border-radius:10px;padding:10px 11px;color:#64758b;font-size:12px;line-height:1.6}
+.checked{margin-top:14px;font-size:11px;color:#91a0b2;display:flex;align-items:center;justify-content:space-between;gap:8px}.checked a{font-size:12px;color:#346eac;text-decoration:none}
+footer{font-size:12px;color:#8490a0;line-height:1.8;margin:28px 0}.error{padding:14px;background:#fff2ee;color:#9b3c2d;border:1px solid #f5c5b8;border-radius:12px;margin:12px 0}
+@media(max-width:580px){main{padding:19px 13px 48px}.cards{grid-template-columns:1fr}.overview{gap:7px}.metric{padding:12px 10px}.metric strong{font-size:18px}.group{margin-top:21px}h2{font-size:16px}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div><p class="eyebrow">FLIGHT PRICE WATCH</p><h1>阿勒泰机票监控 <span aria-hidden="true">✈</span></h1><p class="sub">成都天府 TFU ⇄ 阿勒泰 AAT · 1人 · 直飞 · 5晚</p></div>
+    <button id="reload" type="button" aria-label="刷新报价页面">刷新 ↻</button>
+  </header>
+  <div class="notice" id="notice">正在读取最新价格快照…</div>
+  <div class="overview" aria-label="监控概览">
+    <div class="metric"><small>提醒预算</small><strong>¥1,500</strong><small class="mini">往返参考价</small></div>
+    <div class="metric"><small>理想价格</small><strong>¥1,200</strong><small class="mini">往返参考价</small></div>
+    <div class="metric"><small>有效报价</small><strong id="coverage">— / 6</strong><small class="mini">最新检查结果</small></div>
+  </div>
+  <div id="groups" aria-live="polite"></div>
+  <footer id="footer">所有报价来自 FlyAI ticketPrice，两张单程报价之和不等于最终含税可出票价。税费、行李、雪具托运需购票前核实。页面仅供参考，不提供购买或自动支付服务。</footer>
+</main>
+<script>
+(function(){
+'use strict';
+var formatMoney=function(v){return v===null||v===undefined||v===''?'—':'¥'+Number(v).toLocaleString('zh-CN',{maximumFractionDigits:0});};
+var escapeHTML=function(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+var showDate=function(x){return x?String(x).slice(5,10).replace('-','/'):'';};
+var showTime=function(x){return x?String(x).replace('T',' ').slice(5,16):'暂无';};
+var windowLabels={'dec08':'第一段休息','dec17':'第二段休息','dec26':'第三段休息'};
+var groups=document.getElementById('groups'),notice=document.getElementById('notice'),button=document.getElementById('reload');
+function renderLeg(label,price,airline,flight){return '<div class="leg"><span class="leg-label">'+label+'</span><span class="leg-detail">'+(price!=null?escapeHTML([airline||'',flight||''].join(' '))+' · '+formatMoney(price):'暂无有效报价')+'</span></div>';}
+function renderCard(rec,alert){
+  var total=rec.total_cny, valid=rec.status==='priced_reference'&&total!=null;
+  var cls=valid?(Number(total)<=alert?'ok':'old'):'degraded';
+  var status=valid?(Number(total)<=alert?'达到提醒价':'已取得往返价'):'报价不完整';
+  var old=rec.last_valid;
+  var oldHTML=!valid&&old&&old.total_cny!=null?
+    '<div class="historical">上次取得的完整往返报价：<b>'+formatMoney(old.total_cny)+'</b><div>采集于 '+escapeHTML(showTime(old.checked_at_bjt))+' · 历史价，非当前价</div></div>':'';
+  var priceHTML=valid?'<div class="price"><span class="currency">¥</span>'+Number(total).toLocaleString('zh-CN',{maximumFractionDigits:0})+'</div>':'<div class="price unknown">暂无完整报价</div>';
+  return '<article class="card"><div class="card-top"><div><p class="route">'+escapeHTML(showDate(rec.departure))+' → '+escapeHTML(showDate(rec.return_date))+'</p><p class="date">出发 / 返程 · 直飞优先</p></div><span class="pill '+cls+'">'+status+'</span></div>'+
+    priceHTML+'<div class="price-sub">'+(valid?'往返两张单程参考价合计':'缺少至少一个航段，不能计算往返价')+'</div>'+
+    '<div class="legs">'+renderLeg('去程',rec.outbound_price_cny,rec.outbound_airline,rec.outbound_flight)+renderLeg('返程',rec.return_price_cny,rec.return_airline,rec.return_flight)+'</div>'+
+    oldHTML+'<div class="checked"><span>检查：'+escapeHTML(showTime(rec.checked_at_bjt))+'</span><span>'+(!valid?'数据缺口':'仅供参考')+'</span></div></article>';
+}
+function render(data){
+  if(!data||!Array.isArray(data.itineraries)||!Array.isArray(data.windows))throw Error('报价格式异常');
+  var threshold=Number(data.alert_price_cny||1500),found=0,out='';
+  data.windows.forEach(function(win){
+    var cards=data.itineraries.filter(function(r){return r.window_id===win.id;});
+    cards.forEach(function(r){if(r.status==='priced_reference'&&r.total_cny!=null)found++;});
+    out+='<section class="group"><div class="group-title"><h2>'+escapeHTML(windowLabels[win.id]||'休息窗口')+'</h2><small>'+escapeHTML(showDate(win.start))+' — '+escapeHTML(showDate(win.end))+'</small></div><div class="cards">'+cards.map(function(r){return renderCard(r,threshold);}).join('')+'</div></section>';
+  });
+  groups.innerHTML=out;
+  document.getElementById('coverage').textContent=found+' / '+data.itineraries.length;
+  var generated=showTime(data.generated_at_bjt||data.generated_at);
+  notice.textContent='页面快照更新：'+generated+'（北京时间）。自动查价约每15分钟尝试触发，但各日期不一定每次都查到价格；网页快照通常约每小时更新一次。';
+}
+async function load(){
+  button.disabled=true;button.textContent='读取中…';
+  try{
+    var r=await fetch('/api/fares?at='+Date.now(),{cache:'no-store'});
+    if(!r.ok)throw Error('HTTP '+r.status);
+    render(await r.json());
+  }catch(err){
+    notice.textContent='暂时无法读取最新报价。';
+    groups.innerHTML='<div class="error">数据加载失败（'+escapeHTML(err.message||'网络错误')+'）。请检查网络后重试。</div>';
+  }finally{button.disabled=false;button.textContent='刷新 ↻';}
+}
+button.addEventListener('click',load);load();
+})();
+</script>
+</body>
+</html>
