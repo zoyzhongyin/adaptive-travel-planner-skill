@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - ".github/workflows/diagnose-flyai-return.yml"
+      - "scripts/diagnose_flyai_return.py"
   workflow_dispatch:
 
 permissions:
