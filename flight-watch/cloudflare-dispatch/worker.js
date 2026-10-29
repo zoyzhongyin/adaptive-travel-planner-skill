@@ -1,3 +1,5 @@
+import { DASHBOARD_HTML } from "./dashboard-page.mjs";
+import { PUBLIC_SNAPSHOT } from "./dashboard-data.mjs";
 // Reuse the existing altay-fare-cron Worker. Secrets stay in Cloudflare.
 const dispatchUrl =
   "https://api.github.com/repos/zoyzhongyin/adaptive-travel-planner-skill/actions/workflows/altay-fare-watch.yml/dispatches";
@@ -52,7 +54,34 @@ export default {
   async scheduled(controller, env, ctx) {
     ctx.waitUntil(dispatch(env, controller.scheduledTime));
   },
-  async fetch() {
-    return new Response("Scheduler only. No public HTTP triggers.", { status: 404 });
+  async fetch(request) {
+    // Only read-only, sanitized public data. Never expose the dispatch secret,
+    // internal state.json, monitoring logs, or GitHub Actions controls.
+    const url = new URL(request.url);
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      return new Response("Read-only monitoring page.", { status: 405, headers: { Allow: "GET, HEAD" } });
+    }
+    const isHead = request.method === "HEAD";
+    const common = {
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "no-referrer",
+      "Cache-Control": "public, max-age=60, s-maxage=60",
+    };
+    if (url.pathname === "/" || url.pathname === "/index.html") {
+      return new Response(isHead ? null : DASHBOARD_HTML, {
+        status: 200,
+        headers: {
+          ...common,
+          "Content-Type": "text/html; charset=utf-8",
+          "Content-Security-Policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
+        },
+      });
+    }
+    if (url.pathname === "/api/fares") {
+      return new Response(isHead ? null : JSON.stringify(PUBLIC_SNAPSHOT), {
+        status: 200, headers: { ...common, "Content-Type": "application/json; charset=utf-8" },
+      });
+    }
+    return new Response("Not found", { status: 404, headers: common });
   },
 };
