@@ -1,10 +1,6 @@
 name: Deploy existing Altay Cloudflare scheduler
 
 on:
-  # One-time push trigger for the approved dashboard rollout; restore manual-only after validation.
-  push:
-    paths:
-      - '.github/workflows/deploy-altay-cron.yml'
   workflow_dispatch:
 
 permissions:
