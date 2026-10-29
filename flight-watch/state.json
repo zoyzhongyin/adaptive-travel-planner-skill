@@ -4,16 +4,16 @@
   "window_alerts": {},
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
-    "2026-12-08": "2026-10-29T12:07:44+08:00",
-    "2026-12-09": "2026-10-29T11:37:39+08:00",
+    "2026-12-08": "2026-10-29T12:53:07+08:00",
+    "2026-12-09": "2026-10-29T12:52:43+08:00",
     "2026-12-17": "2026-10-29T12:37:45+08:00",
     "2026-12-18": "2026-10-29T11:52:38+08:00",
-    "2026-12-26": "2026-10-29T11:38:03+08:00",
+    "2026-12-26": "2026-10-29T12:52:55+08:00",
     "2026-12-27": "2026-10-29T11:52:57+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
-      "checked_at_bjt": "2026-10-29T12:07:44+08:00",
+      "checked_at_bjt": "2026-10-29T12:53:07+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 0,
@@ -26,7 +26,7 @@
       "outbound_price_cny": null,
       "return_price_cny": "969.00",
       "outbound_url": null,
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F014dBj",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F46GTrK",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": null,
@@ -75,7 +75,7 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-10-29T11:37:39+08:00",
+      "checked_at_bjt": "2026-10-29T12:52:43+08:00",
       "status": "priced_reference",
       "outbound_api_status": 0,
       "inbound_api_status": 0,
@@ -87,8 +87,8 @@
       "return_airline": "春秋",
       "outbound_price_cny": "778.00",
       "return_price_cny": "838.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1hXsLt",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4cQQXK",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F11uDg5",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1qi50i",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": "deferred_to_window",
@@ -253,41 +253,25 @@
       ]
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-10-29T11:38:03+08:00",
+      "checked_at_bjt": "2026-10-29T12:52:55+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
-      "outbound_api_status": 0,
-      "inbound_api_status": 1,
+      "outbound_api_status": 1,
+      "inbound_api_status": 0,
       "reference_total_cny": null,
       "return_date": "2026-12-31",
-      "outbound_flight": "9C6685",
-      "return_flight": null,
-      "outbound_airline": "春秋",
-      "return_airline": null,
-      "outbound_price_cny": "1478.00",
-      "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F3tQJjc",
-      "return_url": null,
+      "outbound_flight": null,
+      "return_flight": "9C6686",
+      "outbound_airline": null,
+      "return_airline": "春秋",
+      "outbound_price_cny": null,
+      "return_price_cny": "1170.00",
+      "outbound_url": null,
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1yeZ2V",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": null,
       "query_diagnostics": {
         "outbound": {
-          "cli_exit": 0,
-          "api_status": 0,
-          "raw_offer_count": 10,
-          "error": null,
-          "api_message": "success",
-          "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
-          "attempt_statuses": [
-            0
-          ],
-          "attempt_labels": [
-            "iata_price_asc"
-          ]
-        },
-        "inbound": {
           "cli_exit": 0,
           "api_status": 1,
           "raw_offer_count": 0,
@@ -305,6 +289,22 @@
             "iata_price_asc",
             "iata_direct_first",
             "city_direct_first"
+          ]
+        },
+        "inbound": {
+          "cli_exit": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
+          "error": null,
+          "api_message": "success",
+          "platform_message": null,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
+          "attempt_statuses": [
+            0
+          ],
+          "attempt_labels": [
+            "iata_price_asc"
           ]
         }
       },
@@ -385,18 +385,18 @@
   },
   "last_valid_quote_bjt": {
     "2026-12-08": "2026-10-29T10:22:53+08:00",
-    "2026-12-09": "2026-10-29T11:37:39+08:00",
+    "2026-12-09": "2026-10-29T12:52:43+08:00",
     "2026-12-27": "2026-10-28T23:22:48+08:00",
     "2026-12-26": "2026-10-29T01:52:39+08:00",
     "2026-12-18": "2026-10-29T11:52:38+08:00",
     "2026-12-17": "2026-10-29T11:22:40+08:00"
   },
   "consecutive_incomplete": {
-    "2026-12-08": 2,
+    "2026-12-08": 3,
     "2026-12-09": 0,
     "2026-12-17": 1,
     "2026-12-18": 0,
-    "2026-12-26": 9,
+    "2026-12-26": 10,
     "2026-12-27": 11
   },
   "incomplete_since_bjt": {
