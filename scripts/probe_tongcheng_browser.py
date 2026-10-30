@@ -18,8 +18,18 @@ from playwright.sync_api import sync_playwright, TimeoutError as BrowserTimeout
 
 BJT = timezone(timedelta(hours=8))
 LEG_CASES = [
+    ("2026-12-08", "TFU", "AAT"),
+    ("2026-12-13", "AAT", "TFU"),
     ("2026-12-09", "TFU", "AAT"),
     ("2026-12-14", "AAT", "TFU"),
+    ("2026-12-17", "TFU", "AAT"),
+    ("2026-12-22", "AAT", "TFU"),
+    ("2026-12-18", "TFU", "AAT"),
+    ("2026-12-23", "AAT", "TFU"),
+    ("2026-12-26", "TFU", "AAT"),
+    ("2026-12-31", "AAT", "TFU"),
+    ("2026-12-27", "TFU", "AAT"),
+    ("2027-01-01", "AAT", "TFU"),
 ]
 VALID_CARRIERS = {"CA", "3U", "9C"}
 MAX_ITEMS = 12
@@ -87,7 +97,7 @@ def probe():
                 page = browser.new_page(locale="zh-CN")
                 try:
                     response = page.goto(url, wait_until="domcontentloaded", timeout=20000)
-                    page.wait_for_timeout(5000)
+                    page.wait_for_timeout(2500)
                     record = page.evaluate(JS)
                     matches = [canonical(x, dep, arr, day) for x in record["items"]]
                     valid = [x for x in matches if x is not None]
