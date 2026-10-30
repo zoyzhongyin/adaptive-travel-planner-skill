@@ -6,10 +6,10 @@
   "last_scan_bjt": {
     "2026-12-08": "2026-10-30T21:22:37+08:00",
     "2026-12-09": "2026-10-30T21:22:41+08:00",
-    "2026-12-17": "2026-10-30T20:22:57+08:00",
-    "2026-12-18": "2026-10-30T20:22:54+08:00",
+    "2026-12-17": "2026-10-30T21:37:44+08:00",
+    "2026-12-18": "2026-10-30T21:37:41+08:00",
     "2026-12-26": "2026-10-30T21:07:37+08:00",
-    "2026-12-27": "2026-10-30T20:22:51+08:00"
+    "2026-12-27": "2026-10-30T21:37:37+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
@@ -129,7 +129,7 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-10-30T20:22:57+08:00",
+      "checked_at_bjt": "2026-10-30T21:37:44+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -187,23 +187,23 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-10-30T20:22:54+08:00",
-      "status": "incomplete_no_reliable_roundtrip_price",
+      "checked_at_bjt": "2026-10-30T21:37:41+08:00",
+      "status": "priced_reference",
       "outbound_api_status": 0,
-      "inbound_api_status": 1,
-      "reference_total_cny": null,
+      "inbound_api_status": 0,
+      "reference_total_cny": "2149.00",
       "return_date": "2026-12-23",
       "outbound_flight": "3U6573",
-      "return_flight": null,
+      "return_flight": "9C6686",
       "outbound_airline": "川航",
-      "return_airline": null,
+      "return_airline": "春秋",
       "outbound_price_cny": "1110.00",
-      "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F26c6SY",
-      "return_url": null,
+      "return_price_cny": "1039.00",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2fmMCO",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F00LC2h",
       "taxes_verified": false,
       "baggage_verified": false,
-      "notification_channel": null,
+      "notification_channel": "deferred_to_window",
       "query_diagnostics": {
         "outbound": {
           "cli_exit": 0,
@@ -223,22 +223,22 @@
         },
         "inbound": {
           "cli_exit": 0,
-          "api_status": 1,
-          "raw_offer_count": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
           "error": null,
-          "api_message": "搜索机票低价行业失败",
+          "api_message": "success",
           "platform_message": null,
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
-            1
+            0
           ],
           "attempt_labels": [
             "iata_price_asc"
           ]
         }
       },
-      "data_gap": true,
+      "data_gap": false,
       "annotations": [
         "日期按暂定排班推断（12月正式排班未出）",
         "乘客：1 成人，经济舱。"
@@ -304,7 +304,7 @@
       ]
     },
     "2026-12-27": {
-      "checked_at_bjt": "2026-10-30T20:22:51+08:00",
+      "checked_at_bjt": "2026-10-30T21:37:37+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -329,17 +329,13 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         },
         "inbound": {
@@ -349,17 +345,13 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         }
       },
@@ -376,21 +368,20 @@
     "2026-12-09": "2026-10-30T21:22:41+08:00",
     "2026-12-27": "2026-10-28T23:22:48+08:00",
     "2026-12-26": "2026-10-30T21:07:37+08:00",
-    "2026-12-18": "2026-10-29T13:07:38+08:00",
+    "2026-12-18": "2026-10-30T21:37:41+08:00",
     "2026-12-17": "2026-10-29T11:22:40+08:00"
   },
   "consecutive_incomplete": {
     "2026-12-08": 5,
     "2026-12-09": 0,
-    "2026-12-17": 28,
-    "2026-12-18": 26,
+    "2026-12-17": 29,
+    "2026-12-18": 0,
     "2026-12-26": 0,
-    "2026-12-27": 37
+    "2026-12-27": 38
   },
   "incomplete_since_bjt": {
     "2026-12-27": "2026-10-29T00:38:02+08:00",
     "2026-12-17": "2026-10-29T12:37:45+08:00",
-    "2026-12-18": "2026-10-29T14:22:47+08:00",
     "2026-12-08": "2026-10-30T17:22:46+08:00"
   },
   "migration_note": "Removed the previous three December departure keys so the next run starts on the 12-08, 12-17 and 12-26 windows and their in-window +1 neighbors. Runtime prune also drops itinerary keys that are not in the active departure list.",
@@ -441,6 +432,19 @@
       "return_price_cny": "1170.00",
       "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0nZAUw",
       "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0MHK9T"
+    },
+    "2026-12-18": {
+      "checked_at_bjt": "2026-10-30T21:37:41+08:00",
+      "return_date": "2026-12-23",
+      "reference_total_cny": "2149.00",
+      "outbound_flight": "3U6573",
+      "return_flight": "9C6686",
+      "outbound_airline": "川航",
+      "return_airline": "春秋",
+      "outbound_price_cny": "1110.00",
+      "return_price_cny": "1039.00",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2fmMCO",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F00LC2h"
     }
   }
 }
