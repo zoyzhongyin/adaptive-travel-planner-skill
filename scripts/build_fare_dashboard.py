@@ -92,6 +92,17 @@ def public_alternate(alt_row, dep, ret):
         return {"flight": flight, "airline": v["airline"], "price_cny": amount}
 
     out, back = leg(alt_row.get("outbound")), leg(alt_row.get("return"))
+    prices = alt_row.get("carrier_prices") or {}
+    def carrier_prices(leg_name):
+        source = prices.get(leg_name) or {}
+        if not isinstance(source, dict):
+            return {}
+        cleaned = {}
+        for code in CARRIER_NAMES:
+            value = clean_money(source.get(code))
+            if value is not None and float(value) > 0:
+                cleaned[code] = value
+        return cleaned
     total = clean_money(alt_row.get("total_cny"))
     if alt_row.get("status") == "priced_reference":
         if not (out and back and total is not None):
@@ -101,7 +112,12 @@ def public_alternate(alt_row, dep, ret):
             return None  # Never publish an inconsistent route sum.
         return {
             "status": "priced_reference", "checked_at_bjt": stamp, "total_cny": total,
-            "outbound": out, "return": back, "taxes_verified": False,
+            "outbound": out, "return": back,
+            "airline_prices": {
+                "outbound": carrier_prices("outbound"),
+                "return": carrier_prices("return"),
+            },
+            "taxes_verified": False,
             "cabin_verified": False, "baggage_verified": False, "bookability_verified": False,
             "source": "同程公开页面",
         }
