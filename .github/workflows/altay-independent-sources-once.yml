@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   browser-ctrip:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 9
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -31,7 +31,7 @@ jobs:
         run: python flight-watch/probes/probe_two_date_sources.py --source ctrip
 
   independent-flyclaw-engines:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 7
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
