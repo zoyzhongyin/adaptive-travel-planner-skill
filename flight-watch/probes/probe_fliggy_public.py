@@ -30,8 +30,8 @@ with sync_playwright() as p:
    valid=[]
    for r in data:
     dep,arr=str(r.get("depAirport") or ""),str(r.get("arrAirport") or "")
-    good_dep=("天府" in dep) if ori=="TFU" else (("阿勒泰" in dep) or ("将军山" in dep))
-    good_arr=("天府" in arr) if dst=="TFU" else (("阿勒泰" in arr) or ("将军山" in arr))
+    good_dep=("天府" in dep) if ori=="TFU" else (("阿勒泰" in dep) or ("雪都" in dep))
+    good_arr=("天府" in arr) if dst=="TFU" else (("阿勒泰" in arr) or ("雪都" in arr))
     if not good_dep or not good_arr or not r.get("code") or r.get("transCity") or r.get("stopover") or "/" in str(r["code"]):continue
     try:price=float(r.get("price") or 0)
     except:continue
