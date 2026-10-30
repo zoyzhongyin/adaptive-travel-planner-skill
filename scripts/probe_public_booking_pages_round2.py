@@ -62,7 +62,7 @@ def probe():
         binary=shutil.which('google-chrome') or shutil.which('chromium')
         browser=p.chromium.launch(headless=True, **({'executable_path':binary} if binary else {}))
         try:
-            for source in ("spring","ctrip","tuniu","qunar","trip"):
+            for source in ("spring",):
                 for origin,dest,day in DATES:
                     page=browser.new_page(locale="zh-CN")
                     result={"provider":source,"day":day,"route":origin+"→"+dest,
@@ -72,6 +72,26 @@ def probe():
                                        wait_until="domcontentloaded",timeout=22000)
                         page.wait_for_timeout(4500)
                         state=page.evaluate(SCRIPT,MATCHERS[source])
+                        if source == "spring":
+                            state["spring_dom"] = page.evaluate(r"""() => {
+                              const pick=(s)=>[...document.querySelectorAll(s)].slice(0,5)
+                                .map(n=>({
+                                  label:(n.innerText||n.value||"").trim().slice(0,180),
+                                  title:(n.getAttribute("title")||"").slice(0,60),
+                                  name:(n.getAttribute("name")||"").slice(0,60),
+                                  cls:(n.className||"").toString().slice(0,80)
+                                }));
+                              return {
+                                selected_dates:pick(".J-date-picker .selected,.J-date-picker .active,.J-date-picker .cur,.J-date-picker li.on,.J-date-picker li.current"),
+                                calendar_head:pick(".J-date-picker li"),
+                                date_inputs:pick("input[name*=Date], input[id*=date],input[name*=date]"),
+                                flight_rows:pick("[data-route-index]"),
+                                flightnos:pick("[data-route-index] .c-flight-no"),
+                                prices:pick("[data-route-index] .td-price-item"),
+                                route_dep:pick("[data-route-index] .td-left .local"),
+                                route_arr:pick("[data-route-index] .td-right .local")
+                              };
+                            }""")
                         result.update({
                           "http_status":resp.status if resp else None,
                           "final_host":urlparse(page.url).hostname,
