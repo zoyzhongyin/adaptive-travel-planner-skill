@@ -1,10 +1,6 @@
 name: Deploy existing Altay Cloudflare scheduler
 
 on:
-  # One approved dashboard refresh to expose new sanitized Tongcheng references.
-  push:
-    paths:
-      - ".github/workflows/deploy-altay-cron.yml"
   workflow_dispatch:
 
 permissions:
