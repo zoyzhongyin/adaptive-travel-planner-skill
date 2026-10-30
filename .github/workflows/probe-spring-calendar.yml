@@ -1,0 +1,20 @@
+name: One-time official Spring calendar six-roundtrip audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/probe-spring-calendar.yml'
+permissions:
+  contents: read
+jobs:
+  observe:
+    if: github.ref == 'refs/heads/experiment/altay-additional-public-sources-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - run: python3 -m pip install 'playwright==1.56.0'
+      - name: Check exact-date Spring public calendar without credentials
+        run: python3 scripts/probe_spring_calendar_202612.py
