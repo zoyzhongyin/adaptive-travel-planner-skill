@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/probe-public-sources-round2.yml'
+      - 'scripts/probe_public_booking_pages_round2.py'
 
 permissions:
   contents: read
