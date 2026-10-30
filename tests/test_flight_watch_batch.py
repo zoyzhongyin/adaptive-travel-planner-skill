@@ -110,7 +110,42 @@ class AnomalyTests(unittest.TestCase):
         state["last_anomaly_alert_bjt"] = now.isoformat()
         self.assertEqual(monitor_gaps(state, ["2026-12-14"], now), ["2026-12-14"])
         self.assertTrue(anomaly_on_cooldown(state, now))
-        self.assertFalse(anomaly_on_cooldown(state, now + timedelta(hours=13)))
+        self.assertTrue(anomaly_on_cooldown(state, now + timedelta(hours=13)))
+        self.assertFalse(anomaly_on_cooldown(state, now + timedelta(hours=25)))
+
+    def test_persistent_outage_is_not_sent_again_after_twenty_four_hours(self):
+        state = {"last_anomaly_alert_bjt": NOW.isoformat(),
+                 "last_anomaly_gaps": ["2026-12-14"]}
+        later = NOW + timedelta(days=2)
+        self.assertTrue(batch.anomaly_episode_active(state))
+        self.assertFalse(batch.should_notify_anomaly(
+            state, ["2026-12-14", "2026-12-23"], later
+        ))
+
+    def test_new_outage_after_full_recovery_can_notify_again(self):
+        state = {"last_anomaly_alert_bjt": NOW.isoformat(),
+                 "last_anomaly_gaps": ["2026-12-14"],
+                 "anomaly_episode_active": False}
+        self.assertFalse(batch.should_notify_anomaly(
+            state, ["2026-12-23"], NOW + timedelta(hours=2)
+        ))
+        self.assertTrue(batch.should_notify_anomaly(
+            state, ["2026-12-23"], NOW + timedelta(hours=25)
+        ))
+
+    def test_anomaly_is_initially_sent_only_once_and_text_is_readable(self):
+        state = {"incomplete_since_bjt": {
+            "2026-12-17": "2026-10-29T12:37:45+08:00",
+        }}
+        self.assertTrue(batch.should_notify_anomaly(state, ["2026-12-17"], NOW))
+        title, message = batch.build_anomaly_message(["2026-12-17"], state)
+        self.assertIn("12月17日", message)
+        self.assertIn("10月29日 12:37", message)
+        self.assertNotIn("2026-10-29T", message)
+        self.assertIn("监控异常", title)
+        self.assertFalse(batch.should_notify_anomaly(
+            {"anomaly_episode_active": True}, ["2026-12-17"], NOW + timedelta(days=3)
+        ))
 
     def test_a_fresh_gap_and_a_recovered_quote_do_not_notify(self):
         now = NOW
