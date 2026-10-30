@@ -32,9 +32,9 @@ def address(source,o,d,day):
     if source=="ctrip":
         return f"https://flights.ctrip.com/online/list/oneway-{o.lower()}-{d.lower()}?depdate={day}&cabin=y_s&adult=1"
     if source=="tuniu":
-        return f"https://m.tuniu.com/flight/domestic/new/{o}-{d}?date={day}"
+        return f"https://m.tuniu.com/flight/domestic/new/{o}_{d}_OW_1_0_0?deptDate={day}&isGo=0"
     if source=="qunar":
-        return f"https://m.flight.qunar.com/h5/flight/?depCity={o}&arrCity={d}&depDate={day}"
+        return "https://m.flight.qunar.com/ncs/page/flightlist?" + urlencode({"depCity":"成都" if o=="TFU" else "阿勒泰", "arrCity":"成都" if d=="TFU" else "阿勒泰", "goDate":day, "from":"touch_index_search", "child":"0", "baby":"0", "cabinType":"0"})
     if source=="trip":
         return f"https://www.trip.com/flights/{o.lower()}-to-{d.lower()}/tickets-{o.lower()}-{d.lower()}?dcity={o}&acity={d}&ddate={day}"
     raise ValueError(source)
@@ -62,9 +62,9 @@ def probe():
         binary=shutil.which('google-chrome') or shutil.which('chromium')
         browser=p.chromium.launch(headless=True, **({'executable_path':binary} if binary else {}))
         try:
-            for source in ("spring",):
+            for source in ("tuniu","qunar"):
                 for origin,dest,day in DATES:
-                    page=browser.new_page(locale="zh-CN")
+                    page=browser.new_page(locale="zh-CN", viewport={"width":390,"height":844}, device_scale_factor=2, is_mobile=True, has_touch=True)
                     result={"provider":source,"day":day,"route":origin+"→"+dest,
                             "verified_fare":False}
                     try:
