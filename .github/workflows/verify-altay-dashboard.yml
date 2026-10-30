@@ -39,6 +39,7 @@ jobs:
               assert "/api/fares" in html, "Page missing data fetch"
               assert "三个休息窗口" in html, "Approved V2 overview not yet published"
               assert "六组行程明细" in html, "Approved V2 detail section not yet published"
+              assert "同程独立参考" in html, "Tongcheng backup details not yet published"
               assert "历史有效价" in html, "Historical fare disclaimer missing"
               assert "信必可" not in html and "复诊评估" not in html, "Private calendar detail leaked"
           with urlopen(safe_request(base+"/api/fares"),timeout=20) as response:
@@ -48,6 +49,13 @@ jobs:
           assert len(data.get("itineraries",[]))==6
           assert len(data.get("windows",[]))==3
           assert data.get("most_recent_check_bjt")
+          assert data.get("supplement_generated_at_bjt"), "Supplement is not yet published"
+          assert all(r.get("alternate") and r["alternate"].get("source")=="同程公开页面"
+                     for r in data["itineraries"]), "Missing some supplemental entries"
+          assert all(r["alternate"]["taxes_verified"] is False
+                     and r["alternate"]["bookability_verified"] is False
+                     and r["alternate"]["cabin_verified"] is False
+                     for r in data["itineraries"]), "Unverified quote incorrectly presented as verified"
           assert {
              "departure","return_date","window_id","checked_at_bjt","status",
              "total_cny","outbound_price_cny","return_price_cny",
@@ -66,7 +74,7 @@ jobs:
           except HTTPError as exc:
               assert exc.code==404, exc.code
           print("PASS public 200 HTML")
-          print("PASS sanitized JSON: 6 itinerary cards, 3 windows")
+          print("PASS sanitized JSON: 6 itinerary cards, 3 windows, and 6 unverified Tongcheng supplements")
           print("PASS blocked POST and private state access")
           print("Published at BJT:",data.get("generated_at_bjt"))
           print("Newest scanned at BJT:",data.get("most_recent_check_bjt"))
