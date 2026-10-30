@@ -103,7 +103,7 @@ class AnomalyTests(unittest.TestCase):
         self.assertFalse(anomaly_on_cooldown(state, now))
         title, body = batch.build_anomaly_message(gaps, state)
         self.assertIn("监控数据缺口", body)
-        self.assertIn("2026-12-14", body)
+        self.assertIn("12月14日", body)
         self.assertIn("不能说明没有航班", body)
         self.assertIn("不能说明价格高于预算", body)
         self.assertNotIn("SCT", title + body)
