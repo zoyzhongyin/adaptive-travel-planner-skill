@@ -20,7 +20,9 @@ from scripts.serverchan_push import DeliveryError
 
 BJT = timezone(timedelta(hours=8))
 ANOMALY_AFTER = timedelta(hours=8)
-ANOMALY_COOLDOWN = timedelta(hours=12)
+# Free ServerChan quota is precious: one anomaly notice per outage episode,
+# and no more than one anomaly notice on a Beijing calendar day.
+ANOMALY_COOLDOWN = timedelta(hours=24)
 
 
 def validated_schedule(config: dict) -> tuple[int, int, int]:
@@ -126,20 +128,64 @@ def anomaly_on_cooldown(state: dict, now: datetime, *, cooldown: timedelta = ANO
     return now - sent < cooldown
 
 
+def anomaly_episode_active(state: dict) -> bool:
+    """Treat old persisted alert state as an ongoing incident after an upgrade.
+
+    Only a *fully recovered* monitor resets the incident. New affected dates
+    appearing during the same outage do not produce more paid/quota-limited
+    messages. Price alerts are independent of this flag.
+    """
+    if "anomaly_episode_active" in state:
+        return bool(state["anomaly_episode_active"])
+    return bool(state.get("last_anomaly_alert_bjt") and state.get("last_anomaly_gaps"))
+
+
+def should_notify_anomaly(state: dict, gaps: list[str], now: datetime) -> bool:
+    if not gaps or anomaly_episode_active(state):
+        return False
+    # If a monitor recovers and fails again on the same calendar day, avoid
+    # using a second free ServerChan slot even though the incident is new.
+    last = state.get("last_anomaly_alert_bjt")
+    if last:
+        try:
+            prior = datetime.fromisoformat(last)
+            if prior.tzinfo is None:
+                prior = prior.replace(tzinfo=BJT)
+            if prior.astimezone(BJT).date() == now.astimezone(BJT).date():
+                return False
+        except (ValueError, TypeError):
+            pass
+    return not anomaly_on_cooldown(state, now)
+
+
+def human_bjt(value) -> str:
+    if not value:
+        return "尚无"
+    try:
+        day = datetime.fromisoformat(str(value))
+        if day.tzinfo is None:
+            day = day.replace(tzinfo=BJT)
+        return day.astimezone(BJT).strftime("%m月%d日 %H:%M")
+    except (ValueError, TypeError):
+        return "时间不详"
+
+
 def build_anomaly_message(gaps: list, state: dict) -> tuple[str, str]:
     title = "阿勒泰机票监控异常：缺有效报价"
-    lines = [
-        "下列日期持续没有可计算的往返参考价。这是监控数据缺口。",
-        "接口失败不能说明没有航班，也不能说明价格高于预算。",
-    ]
     valid = state.get("last_valid_quote_bjt") or {}
     since_map = state.get("incomplete_since_bjt") or {}
+    lines = [
+        "当前 " + str(len(gaps)) + " 组出发日期持续未取得完整往返参考价。",
+        "这是数据源异常，不代表没有航班或票价超过预算。",
+        "本轮持续故障只提醒一次；价格达标提醒仍会独立发送。",
+    ]
     for dep in gaps:
         lines.append(
-            dep + "：缺口从 " + str(since_map.get(dep) or "未知")
-            + " 开始；最近一次有效参考价时间：" + str(valid.get(dep) or "尚无")
+            dep[5:].replace("-", "月") + "日：异常始于"
+            + human_bjt(since_map.get(dep))
+            + "；上次完整报价 " + human_bjt(valid.get(dep))
         )
-    lines.append("请查看本次 GitHub Actions 摘要里的接口状态。监控不会自动购票。")
+    lines.append("可打开阿勒泰机票看板查看当前状态，无需手动干预。")
     return title, "\n\n".join(lines)
 
 
@@ -293,8 +339,15 @@ def main():
                 item["notification_channel"] = payload.get("delivery_channel")
     gaps = monitor_gaps(state, active_dates, observed)
     anomaly_email = False
-    if gaps and not anomaly_on_cooldown(state, observed):
-        anomaly_email = notify_anomaly(state, gaps, observed)
+    if not gaps:
+        # Clear incident only on genuine complete recovery of all long gaps.
+        state["anomaly_episode_active"] = False
+    elif not anomaly_episode_active(state):
+        if should_notify_anomaly(state, gaps, observed):
+            anomaly_email = notify_anomaly(state, gaps, observed)
+        # Also suppress additional alerts if a new incident started within the
+        # daily quota guard. No repeat until full recovery is observed.
+        state["anomaly_episode_active"] = True
 
     if removed or any(b.get("status") != "runner_error" for b in batch):
         watch.github_commit_state(state)
