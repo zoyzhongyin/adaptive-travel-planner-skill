@@ -1,0 +1,79 @@
+name: Tongcheng low-frequency reference fare snapshot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/tongcheng-supplement.yml"
+  schedule:
+    # 08:40 and 20:40 Beijing. Public browser pages, at most 12 GETs per run.
+    - cron: "40 0,12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tongcheng-supplement
+  cancel-in-progress: false
+
+jobs:
+  supplement:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: true
+      - name: Respect monitoring end date
+        id: active
+        run: |
+          python3 - <<'PY'
+          import json,os
+          from datetime import datetime,timezone,timedelta,date
+          c=json.load(open("flight-watch/config.json",encoding="utf-8"))
+          today=datetime.now(timezone(timedelta(hours=8))).date()
+          active=bool(c.get("enabled")) and today<=date.fromisoformat(c["stop_after"])
+          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf8") as f:
+              f.write("active="+str(active).lower()+"\n")
+          print("Supplement active:",active)
+          PY
+      - name: Install normal Chromium tooling only when monitoring is active
+        if: steps.active.outputs.active == 'true'
+        run: |
+          python3 -m pip install --disable-pip-version-check 'playwright==1.56.0'
+          if ! command -v google-chrome >/dev/null && ! command -v chromium >/dev/null; then
+            python3 -m playwright install chromium
+          fi
+      - name: Query only six configured itineraries, no notifications
+        if: steps.active.outputs.active == 'true'
+        run: python3 scripts/tongcheng_snapshot.py
+      - name: Persist sanitized references in private repository
+        if: steps.active.outputs.active == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add flight-watch/tongcheng-latest.json
+          if git diff --cached --quiet; then
+            echo 'No changed supplement.'
+            exit 0
+          fi
+          git commit -m 'Update low-frequency Tongcheng public listing reference snapshot [skip ci]'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo 'Supplement update conflict: stopped without overwriting main.'
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              echo 'Supplement committed. No pricing alerts or Worker changes made.'
+              exit 0
+            fi
+            sleep 3
+          done
+          echo 'Could not publish supplement after three safe tries.'
+          exit 1

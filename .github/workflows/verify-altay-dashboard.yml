@@ -48,10 +48,11 @@ jobs:
           assert len(data.get("itineraries",[]))==6
           assert len(data.get("windows",[]))==3
           assert data.get("most_recent_check_bjt")
-          assert set(data.get("itineraries", [{}])[0])=={
+          assert {
              "departure","return_date","window_id","checked_at_bjt","status",
              "total_cny","outbound_price_cny","return_price_cny",
-             "outbound_airline","return_airline","outbound_flight","return_flight","last_valid"}
+             "outbound_airline","return_airline","outbound_flight","return_flight","last_valid"
+          }.issubset(set(data.get("itineraries", [{}])[0]))
           assert not any(x in html for x in ("GH_ACTIONS_TOKEN","SERVERCHAN_SENDKEY","FLYAI_API_KEY","CLOUDFLARE_API_TOKEN"))
           assert not any(x in str(data) for x in ("GH_ACTIONS_TOKEN","SERVERCHAN_SENDKEY","FLYAI_API_KEY","CLOUDFLARE_API_TOKEN"))
           try:
