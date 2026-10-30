@@ -176,7 +176,7 @@ def build_anomaly_message(gaps: list, state: dict) -> tuple[str, str]:
     since_map = state.get("incomplete_since_bjt") or {}
     lines = [
         "当前 " + str(len(gaps)) + " 组出发日期持续未取得完整往返参考价。",
-        "这是数据源异常，不代表没有航班或票价超过预算。",
+        "这是监控数据缺口；接口失败不能说明没有航班，也不能说明价格高于预算。",
         "本轮持续故障只提醒一次；价格达标提醒仍会独立发送。",
     ]
     for dep in gaps:
