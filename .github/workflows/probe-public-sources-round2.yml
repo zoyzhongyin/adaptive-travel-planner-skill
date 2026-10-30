@@ -1,0 +1,27 @@
+name: One-off additional airline and OTA public page audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/probe-public-sources-round2.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    if: github.ref == 'refs/heads/experiment/altay-additional-public-sources-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install normal browser dependency
+        run: |
+          python3 -m pip install 'playwright==1.56.0'
+          if ! command -v google-chrome >/dev/null && ! command -v chromium >/dev/null; then
+            python3 -m playwright install chromium
+          fi
+      - name: Probe 10 public pages without credentials or notifications
+        run: python3 scripts/probe_public_booking_pages_round2.py
