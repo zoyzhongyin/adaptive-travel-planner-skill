@@ -40,7 +40,9 @@ jobs:
           assert data["taxes_verified"] is False
           assert data["baggage_verified"] is False
           pub=Path("flight-watch/cloudflare-dispatch/dashboard-data.mjs").read_text()
-          assert "同程公开页面" in pub
+          obj=json.loads(pub.split(" = ",1)[1].rstrip(";\n"))
+          assert any(x.get("alternate") and x["alternate"].get("source")=="同程公开页面"
+                     for x in obj["itineraries"])
           assert "GH_ACTIONS_TOKEN" not in pub
           print("Six-pair safe snapshot and public read-only Worker tests passed.")
           PY
