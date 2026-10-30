@@ -11,6 +11,7 @@ from datetime import datetime, timezone, timedelta
 import json
 import os
 import re
+import shutil
 from urllib.parse import urlencode, urlparse
 from playwright.sync_api import sync_playwright
 
@@ -58,7 +59,8 @@ SCRIPT=r"""(selector) => {
 def probe():
     results=[]
     with sync_playwright() as p:
-        browser=p.chromium.launch(headless=True)
+        binary=shutil.which('google-chrome') or shutil.which('chromium')
+        browser=p.chromium.launch(headless=True, **({'executable_path':binary} if binary else {}))
         try:
             for source in ("spring","ctrip","tuniu","qunar","trip"):
                 for origin,dest,day in DATES:
