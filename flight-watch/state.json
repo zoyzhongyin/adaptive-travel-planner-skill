@@ -4,16 +4,16 @@
   "window_alerts": {},
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
-    "2026-12-08": "2026-10-31T01:07:37+08:00",
-    "2026-12-09": "2026-10-31T01:07:45+08:00",
+    "2026-12-08": "2026-10-31T02:22:36+08:00",
+    "2026-12-09": "2026-10-31T02:22:44+08:00",
     "2026-12-17": "2026-10-31T01:22:42+08:00",
     "2026-12-18": "2026-10-31T01:22:45+08:00",
-    "2026-12-26": "2026-10-31T01:07:40+08:00",
+    "2026-12-26": "2026-10-31T02:22:39+08:00",
     "2026-12-27": "2026-10-31T01:22:38+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
-      "checked_at_bjt": "2026-10-31T01:07:37+08:00",
+      "checked_at_bjt": "2026-10-31T02:22:36+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 0,
@@ -26,7 +26,7 @@
       "outbound_price_cny": null,
       "return_price_cny": "969.00",
       "outbound_url": null,
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4XS3Z5",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1wfT2x",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": null,
@@ -71,7 +71,7 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-10-31T01:07:45+08:00",
+      "checked_at_bjt": "2026-10-31T02:22:44+08:00",
       "status": "priced_reference",
       "outbound_api_status": 0,
       "inbound_api_status": 0,
@@ -83,8 +83,8 @@
       "return_airline": "春秋",
       "outbound_price_cny": "779.00",
       "return_price_cny": "839.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2jQHxV",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F06ACtN",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F3Cme2z",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2w8qGO",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": "deferred_to_window",
@@ -245,7 +245,7 @@
       ]
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-10-31T01:07:40+08:00",
+      "checked_at_bjt": "2026-10-31T02:22:39+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -365,18 +365,18 @@
   },
   "last_valid_quote_bjt": {
     "2026-12-08": "2026-10-30T16:07:45+08:00",
-    "2026-12-09": "2026-10-31T01:07:45+08:00",
+    "2026-12-09": "2026-10-31T02:22:44+08:00",
     "2026-12-27": "2026-10-28T23:22:48+08:00",
     "2026-12-26": "2026-10-30T21:07:37+08:00",
     "2026-12-18": "2026-10-30T21:37:41+08:00",
     "2026-12-17": "2026-10-29T11:22:40+08:00"
   },
   "consecutive_incomplete": {
-    "2026-12-08": 8,
+    "2026-12-08": 9,
     "2026-12-09": 0,
     "2026-12-17": 32,
     "2026-12-18": 4,
-    "2026-12-26": 4,
+    "2026-12-26": 5,
     "2026-12-27": 41
   },
   "incomplete_since_bjt": {
@@ -397,7 +397,7 @@
   ],
   "last_valid_fares": {
     "2026-12-09": {
-      "checked_at_bjt": "2026-10-31T01:07:45+08:00",
+      "checked_at_bjt": "2026-10-31T02:22:44+08:00",
       "return_date": "2026-12-14",
       "reference_total_cny": "1618.00",
       "outbound_flight": "9C6685",
@@ -406,8 +406,8 @@
       "return_airline": "春秋",
       "outbound_price_cny": "779.00",
       "return_price_cny": "839.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2jQHxV",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F06ACtN"
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F3Cme2z",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2w8qGO"
     },
     "2026-12-08": {
       "checked_at_bjt": "2026-10-30T16:07:45+08:00",
