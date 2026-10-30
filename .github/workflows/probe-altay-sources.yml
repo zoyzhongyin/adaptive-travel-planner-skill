@@ -1,0 +1,23 @@
+name: One-time safe public-page TFU-AAT availability probe
+
+on:
+  push:
+    paths:
+      - ".github/workflows/probe-altay-sources.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    if: github.ref == 'refs/heads/experiment/altay-multisource-probe-20261030'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Checkout isolated experiment
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Probe public booking pages only, no secrets
+        run: python3 scripts/probe_altay_public_sources.py
