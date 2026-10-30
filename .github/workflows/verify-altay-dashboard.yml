@@ -40,7 +40,7 @@ jobs:
               assert "三个休息窗口" in html, "Approved V2 overview not yet published"
               assert "六组行程明细" in html, "Approved V2 detail section not yet published"
               assert "同程独立参考" in html, "Tongcheng backup details not yet published"
-              assert "历史有效价" in html, "Historical fare disclaimer missing"
+              assert "历史参考价" in html, "Historical fare disclaimer missing"
               assert "信必可" not in html and "复诊评估" not in html, "Private calendar detail leaked"
           with urlopen(safe_request(base+"/api/fares"),timeout=20) as response:
               data=json.load(response)
