@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - ".github/workflows/probe-tongcheng-browser.yml"
+      - "scripts/probe_tongcheng_browser.py"
   workflow_dispatch:
 
 permissions:
