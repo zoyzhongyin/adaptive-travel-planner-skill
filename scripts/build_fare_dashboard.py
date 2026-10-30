@@ -93,7 +93,9 @@ def public_alternate(alt_row, dep, ret):
 
     out, back = leg(alt_row.get("outbound")), leg(alt_row.get("return"))
     total = clean_money(alt_row.get("total_cny"))
-    if alt_row.get("status") == "priced_reference" and out and back and total is not None:
+    if alt_row.get("status") == "priced_reference":
+        if not (out and back and total is not None):
+            return None  # Reject a purportedly complete listing with invalid legs.
         from decimal import Decimal
         if Decimal(total) != Decimal(out["price_cny"]) + Decimal(back["price_cny"]):
             return None  # Never publish an inconsistent route sum.
