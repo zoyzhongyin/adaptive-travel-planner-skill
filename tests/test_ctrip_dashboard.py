@@ -19,7 +19,7 @@ def ctrip(*,price="1620",return_day=RET,flight="9C6686",source="ctrip_browser_pu
               "total_cny":price,
               "outbound":{"flight":"9C6685","airline":"春秋","price_cny":"780"},
               "return":{"flight":flight,"airline":"春秋","price_cny":"840"},
-              "secret":"TOP_SECRET_MUST_NOT_PUBLISH"}]}
+              "diagnostic":"TOP_SECRET_MUST_NOT_PUBLISH"}]}
 class TestMultiSourceDashboard(unittest.TestCase):
  def test_ctrip_shows_under_other_sources_only(self):
     obj=pub.snapshot(CONFIG,STATE,ctrip=ctrip())
