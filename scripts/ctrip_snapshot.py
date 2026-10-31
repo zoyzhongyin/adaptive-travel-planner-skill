@@ -6,6 +6,7 @@ from decimal import Decimal, InvalidOperation
 import os
 import re
 import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from scripts.tongcheng_snapshot import validate_config
 
 ROOT=Path(__file__).resolve().parent.parent
