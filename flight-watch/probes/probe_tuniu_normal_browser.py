@@ -25,9 +25,9 @@ def check(row, leg):
  o,d,date=leg
  match_from=("天府" in dep_air) if o=="TFU" else ("雪都" in dep_air or "阿勒泰" in dep_air)
  match_to=("天府" in arr_air) if d=="TFU" else ("雪都" in arr_air or "阿勒泰" in arr_air)
- fn=re.search(r"([A-Z0-9]{2}\\d{3,4})",row.get("fn",""))
- price=re.search(r"[￥¥]\\s*([\\d,]+(?:\\.\\d+)?)",row.get("price",""))
- t=re.search(r"^\\d{2}:\\d{2}",row.get("dep",""))
+ fn=re.search(r"([A-Z0-9]{2}\d{3,4})",row.get("fn",""))
+ price=re.search(r"[￥¥]\s*([\d,]+(?:\.\d+)?)",row.get("price",""))
+ t=re.search(r"^\d{2}:\d{2}",row.get("dep",""))
  return bool(match_from and match_to and fn and price and t and not re.search(r"中转|经停",row.get("row","")))
 
 def desktop(browser,leg):
@@ -49,8 +49,8 @@ def desktop(browser,leg):
   good=[]
   for r in raw:
    if not check(r,leg):continue
-   number=re.search(r"([A-Z0-9]{2}\\d{3,4})",r["fn"]).group(1)
-   fare=float(re.search(r"[￥¥]\\s*([\\d,]+(?:\\.\\d+)?)",r["price"]).group(1).replace(",",""))
+   number=re.search(r"([A-Z0-9]{2}\d{3,4})",r["fn"]).group(1)
+   fare=float(re.search(r"[￥¥]\s*([\d,]+(?:\.\d+)?)",r["price"]).group(1).replace(",",""))
    if fare<100 or fare>50000:continue
    good.append({"flight":number,"price_cny_reference":fare,"dep_airport":r["depAir"],
      "arr_airport":r["arrAir"],"dep_time":r["dep"][:5],"fare_label":r["price"][:90]})
