@@ -19,6 +19,7 @@ DASHBOARD = ROOT / "flight-watch/dashboard/index.html"
 WORKER = ROOT / "flight-watch/cloudflare-dispatch"
 STATE_PATH = ROOT / "flight-watch/state.json"
 SUPPLEMENT_PATH = ROOT / "flight-watch/tongcheng-latest.json"
+CTRIP_PATH = ROOT / "flight-watch/ctrip-latest.json"
 CONFIG_PATH = ROOT / "flight-watch/config.json"
 PUBLIC_URL = "https://altay-fare-cron.zoyzhongyin.workers.dev/api/fares"
 BJT = timezone(timedelta(hours=8))
@@ -30,7 +31,8 @@ HISTORY_FIELDS = ("checked_at_bjt", "reference_total_cny")
 
 def fetch_github_json(path: str) -> dict:
     """Read just one private file; never publish raw source content."""
-    if path not in ("flight-watch/state.json", "flight-watch/tongcheng-latest.json"):
+    if path not in ("flight-watch/state.json", "flight-watch/tongcheng-latest.json",
+                    "flight-watch/ctrip-latest.json"):
         raise ValueError("File path is not approved")
     token = os.environ.get("GITHUB_TOKEN")
     repo = os.environ.get("GITHUB_REPOSITORY")
@@ -68,10 +70,12 @@ def clean_money(value):
         pass
     return None
 
-CARRIER_NAMES = {"CA": "国航", "3U": "川航", "9C": "春秋"}
+CARRIER_NAMES = {"CA": "国航", "3U": "川航", "9C": "春秋",
+                 "CZ": "南航", "MU": "东航", "MF": "厦航",
+                 "G5": "华夏", "EU": "成都航空"}
 
 
-def public_alternate(alt_row, dep, ret):
+def public_alternate(alt_row, dep, ret, source_name="同程公开页面"):
     """Whitelist only factual reference fields; no diagnostic or private text."""
     if not isinstance(alt_row, dict) or (alt_row.get("departure"), alt_row.get("return_date")) != (dep, ret):
         return None
@@ -82,7 +86,7 @@ def public_alternate(alt_row, dep, ret):
         if not isinstance(v, dict):
             return None
         flight = str(v.get("flight") or "").upper()
-        if not re.fullmatch(r"(?:CA|3U|9C)[0-9]{3,5}", flight):
+        if not re.fullmatch(r"(?:CA|3U|9C|CZ|MU|MF|G5|EU)[0-9]{3,5}", flight):
             return None
         if v.get("airline") != CARRIER_NAMES.get(flight[:2]):
             return None
@@ -119,7 +123,7 @@ def public_alternate(alt_row, dep, ret):
             },
             "taxes_verified": False,
             "cabin_verified": False, "baggage_verified": False, "bookability_verified": False,
-            "source": "同程公开页面",
+            "source": source_name,
         }
     historic = alt_row.get("last_valid") or {}
     past = clean_money(historic.get("total_cny"))
@@ -130,12 +134,13 @@ def public_alternate(alt_row, dep, ret):
             "checked_at_bjt": clean_text(historic.get("checked_at_bjt"),32),
             "total_cny": past
         } if past is not None else None,
-        "source": "同程公开页面", "taxes_verified": False,
+        "source": source_name, "taxes_verified": False,
         "cabin_verified": False, "baggage_verified": False, "bookability_verified": False,
     }
 
 
-def snapshot(config: dict, state: dict, supplement: dict | None = None) -> dict:
+def snapshot(config: dict, state: dict, supplement: dict | None = None,
+             ctrip: dict | None = None) -> dict:
     windows = [
         {"id": str(w["id"]), "start": str(w["start"]), "end": str(w["end"])}
         for w in config["rest_windows"]
@@ -151,6 +156,13 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None) -> dict:
     )
     alternative = ((supplement or {}).get("itineraries") or []) if supplement_valid else []
     by_dep = {x.get("departure"): x for x in alternative if isinstance(x, dict)}
+    ctrip_valid = (isinstance(ctrip, dict) and ctrip.get("schema_version") == 1
+        and ctrip.get("source") == "ctrip_browser_public_listing"
+        and ctrip.get("taxes_verified") is False
+        and ctrip.get("bookability_verified") is False
+        and ctrip.get("cabin_verified") is False)
+    ctrip_by_dep = {x.get("departure"): x for x in (ctrip or {}).get("itineraries", [])
+                    if isinstance(x, dict)} if ctrip_valid else {}
     result = []
     for dep in config["departure_dates"]:
         window = next((w["id"] for w in windows if w["start"] <= dep <= w["end"]), None)
@@ -181,6 +193,9 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None) -> dict:
                 "total_cny": clean_money(prior.get("reference_total_cny")),
             } if prior and clean_money(prior.get("reference_total_cny")) else None,
             "alternate": public_alternate(by_dep.get(dep), dep, ret) if supplement_valid else None,
+            "other_sources": ([public_alternate(ctrip_by_dep.get(dep),dep,ret,"携程公开页面")]
+                              if public_alternate(ctrip_by_dep.get(dep),dep,ret,"携程公开页面")
+                              else []),
         })
     scanned = [x["checked_at_bjt"] for x in result if x.get("checked_at_bjt")]
     return {
@@ -188,6 +203,7 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None) -> dict:
         "generated_at_bjt": datetime.now(BJT).isoformat(timespec="seconds"),
         "most_recent_check_bjt": max(scanned) if scanned else None,
         "supplement_generated_at_bjt": clean_text(supplement.get("generated_at_bjt"),32) if supplement_valid else None,
+        "ctrip_generated_at_bjt": clean_text(ctrip.get("generated_at_bjt"),32) if ctrip_valid else None,
         "origin": "TFU", "destination": "AAT",
         "alert_price_cny": int(config["alert_price_cny"]),
         "ideal_price_cny": int(config["ideal_price_cny"]),
@@ -209,7 +225,8 @@ def needs_deploy(current: dict, *, min_minutes: int=45) -> bool:
         if age < timedelta(minutes=min_minutes):
             return False
         return (previous.get("most_recent_check_bjt") != current.get("most_recent_check_bjt")
-                or previous.get("supplement_generated_at_bjt") != current.get("supplement_generated_at_bjt"))
+                or previous.get("supplement_generated_at_bjt") != current.get("supplement_generated_at_bjt")
+                or previous.get("ctrip_generated_at_bjt") != current.get("ctrip_generated_at_bjt"))
     except (error.URLError, ValueError, TimeoutError):
         return True
 
@@ -225,7 +242,13 @@ def build(*, github: bool, check_stale: bool) -> bool:
         )
     except (error.HTTPError, error.URLError, ValueError, TimeoutError) as exc:
         print("Supplement read skipped; diagnostic type=" + type(exc).__name__)
-    public = snapshot(config, state, supplement)
+    ctrip = None
+    try:
+        ctrip = (fetch_github_json("flight-watch/ctrip-latest.json") if github
+                 else json.loads(CTRIP_PATH.read_text(encoding="utf-8")) if CTRIP_PATH.exists() else None)
+    except (error.HTTPError, error.URLError, ValueError, TimeoutError) as exc:
+        print("Ctrip reference read skipped; diagnostic type="+type(exc).__name__)
+    public = snapshot(config, state, supplement, ctrip)
     deploy = not check_stale or needs_deploy(public)
     output = os.environ.get("GITHUB_OUTPUT")
     if output:
