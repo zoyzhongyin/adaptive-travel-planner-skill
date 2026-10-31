@@ -44,12 +44,19 @@ with sync_playwright() as p:
    emit("destination_picker",details=state(page))
   except Exception as e:emit("destination_click_error",error=str(e)[:230])
   try:
+   inp=page.locator("#search-input")
+   inp.fill("阿勒泰")
+   page.wait_for_timeout(1300)
+   emit("altay_search",details=state(page))
    loc=page.get_by_text("阿勒泰",exact=True)
    emit("altay_match_count",count=loc.count())
    if loc.count():
     loc.last.click(timeout=3000)
-    page.wait_for_timeout(500)
+    page.wait_for_timeout(550)
     emit("destination_altay",details=state(page))
+    page.locator(".select-date").first.click(timeout=3500)
+    page.wait_for_timeout(750)
+    emit("date_picker",details=state(page))
   except Exception as e:emit("altay_click_error",error=str(e)[:220])
  finally:
   b.close()
