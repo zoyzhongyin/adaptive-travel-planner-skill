@@ -4,6 +4,7 @@ on:
     branches: [flight-source-probe-20261030]
     paths:
       - .github/workflows/altay-meituan-form-once.yml
+      - flight-watch/probes/probe_meituan_h5_form.py
 permissions:
   contents: read
 jobs:
