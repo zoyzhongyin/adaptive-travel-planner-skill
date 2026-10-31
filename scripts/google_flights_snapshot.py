@@ -84,3 +84,5 @@ if __name__=="__main__":
     OUTPUT.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     ok=sum(r["status"]=="priced_reference" for r in data["itineraries"])
     print(f"Independent Google Flights CNY: {ok}/6 complete; unverified bookability, no alerts.",flush=True)
+    for r in data["itineraries"]:
+        print("GOOGLE_CNY_PAIR "+json.dumps({"departure":r["departure"],"return_date":r["return_date"],"status":r["status"],"total_cny_reference":r["total_cny"],"outbound":r["outbound"],"return":r["return"]},ensure_ascii=False),flush=True)
