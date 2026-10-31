@@ -5,7 +5,8 @@ from urllib.parse import quote
 from playwright.sync_api import sync_playwright
 sys.path.insert(0, "/tmp/ticket")
 from crawlers.fliggy import FliggyCrawler
-LEGS=[("TFU","AAT","2026-12-09"),("AAT","TFU","2026-12-14")]
+LEGS=[["TFU","AAT","2026-12-08"],["AAT","TFU","2026-12-13"],["TFU","AAT","2026-12-09"],["AAT","TFU","2026-12-14"],["TFU","AAT","2026-12-17"],["AAT","TFU","2026-12-22"],["TFU","AAT","2026-12-18"],["AAT","TFU","2026-12-23"],["TFU","AAT","2026-12-26"],["AAT","TFU","2026-12-31"],["TFU","AAT","2026-12-27"],["AAT","TFU","2027-01-01"]]
+
 def report(leg,status,rows,detail,url):
  print("PROBE_JSON "+json.dumps({"source":"fliggy_public_pc","date":leg[2],"origin":leg[0],"destination":leg[1],"checked_at_utc":datetime.now(timezone.utc).isoformat(),"status":status,"match_count":len(rows),"matches":rows[:8],"detail":detail[:150],"page_url":url[:140],"taxes_verified":False,"bookability_verified":False},ensure_ascii=False),flush=True)
 with sync_playwright() as p:
