@@ -42,7 +42,7 @@ jobs:
       - name: Install public MIT Google Flights library
         if: steps.active.outputs.active == 'true'
         run: |
-          python3 -m pip install --quiet flights
+          python3 -m pip install --quiet 'flights==0.9.0'
           python3 -m pip show flights | grep -E '^Version:'
       - name: Query six strict five-night itineraries as CNY
         if: steps.active.outputs.active == 'true'
