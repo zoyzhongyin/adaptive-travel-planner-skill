@@ -63,7 +63,7 @@ with sync_playwright() as p:
          december_header_count=page.get_by_text("2026年12月",exact=True).count())
     if months.count()>=3:
      dec=months.nth(2)
-     candidates=dec.locator("p.only-date").filter(has_text=re.compile(r"^\\s*9\\s*$"))
+     candidates=dec.locator("p.only-date").filter(has_text=re.compile(r"^\s*9\s*$"))
      emit("dec_ninth_candidates",count=candidates.count())
      if candidates.count():
       candidates.first.click(timeout=7000)
