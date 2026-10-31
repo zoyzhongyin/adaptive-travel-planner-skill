@@ -4,6 +4,7 @@ on:
     branches: [flight-source-probe-20261030]
     paths:
       - .github/workflows/altay-spring-official-interaction-once.yml
+      - flight-watch/probes/probe_spring_booking_interaction.py
 permissions:
   contents: read
 jobs:
