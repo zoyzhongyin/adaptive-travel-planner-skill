@@ -6,10 +6,10 @@
   "last_scan_bjt": {
     "2026-12-08": "2026-10-31T12:22:37+08:00",
     "2026-12-09": "2026-10-31T12:22:51+08:00",
-    "2026-12-17": "2026-10-31T11:23:04+08:00",
-    "2026-12-18": "2026-10-31T11:23:08+08:00",
+    "2026-12-17": "2026-10-31T12:37:42+08:00",
+    "2026-12-18": "2026-10-31T12:38:01+08:00",
     "2026-12-26": "2026-10-31T12:22:48+08:00",
-    "2026-12-27": "2026-10-31T11:23:02+08:00"
+    "2026-12-27": "2026-10-31T12:37:39+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
@@ -129,7 +129,7 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-10-31T11:23:04+08:00",
+      "checked_at_bjt": "2026-10-31T12:37:42+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -187,19 +187,19 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-10-31T11:23:08+08:00",
+      "checked_at_bjt": "2026-10-31T12:38:01+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
-      "outbound_api_status": 0,
+      "outbound_api_status": 1,
       "inbound_api_status": 1,
       "reference_total_cny": null,
       "return_date": "2026-12-23",
-      "outbound_flight": "3U6573",
+      "outbound_flight": null,
       "return_flight": null,
-      "outbound_airline": "川航",
+      "outbound_airline": null,
       "return_airline": null,
-      "outbound_price_cny": "1110.00",
+      "outbound_price_cny": null,
       "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0xJl5Q",
+      "outbound_url": null,
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -207,18 +207,22 @@
       "query_diagnostics": {
         "outbound": {
           "cli_exit": 0,
-          "api_status": 0,
-          "raw_offer_count": 10,
+          "api_status": 1,
+          "raw_offer_count": 0,
           "error": null,
-          "api_message": "success",
+          "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
-            0
+            1,
+            1,
+            1
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         },
         "inbound": {
@@ -228,13 +232,17 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
+            1,
+            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         }
       },
@@ -308,7 +316,7 @@
       ]
     },
     "2026-12-27": {
-      "checked_at_bjt": "2026-10-31T11:23:02+08:00",
+      "checked_at_bjt": "2026-10-31T12:37:39+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -333,17 +341,13 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         },
         "inbound": {
@@ -353,17 +357,13 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         }
       },
@@ -386,10 +386,10 @@
   "consecutive_incomplete": {
     "2026-12-08": 17,
     "2026-12-09": 9,
-    "2026-12-17": 40,
-    "2026-12-18": 12,
+    "2026-12-17": 41,
+    "2026-12-18": 13,
     "2026-12-26": 13,
-    "2026-12-27": 49
+    "2026-12-27": 50
   },
   "incomplete_since_bjt": {
     "2026-12-27": "2026-10-29T00:38:02+08:00",
