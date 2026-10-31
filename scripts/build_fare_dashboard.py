@@ -20,6 +20,7 @@ WORKER = ROOT / "flight-watch/cloudflare-dispatch"
 STATE_PATH = ROOT / "flight-watch/state.json"
 SUPPLEMENT_PATH = ROOT / "flight-watch/tongcheng-latest.json"
 CTRIP_PATH = ROOT / "flight-watch/ctrip-latest.json"
+FLIGGY_PATH = ROOT / "flight-watch/fliggy-latest.json"
 CONFIG_PATH = ROOT / "flight-watch/config.json"
 PUBLIC_URL = "https://altay-fare-cron.zoyzhongyin.workers.dev/api/fares"
 BJT = timezone(timedelta(hours=8))
@@ -32,7 +33,7 @@ HISTORY_FIELDS = ("checked_at_bjt", "reference_total_cny")
 def fetch_github_json(path: str) -> dict:
     """Read just one private file; never publish raw source content."""
     if path not in ("flight-watch/state.json", "flight-watch/tongcheng-latest.json",
-                    "flight-watch/ctrip-latest.json"):
+                    "flight-watch/ctrip-latest.json", "flight-watch/fliggy-latest.json"):
         raise ValueError("File path is not approved")
     token = os.environ.get("GITHUB_TOKEN")
     repo = os.environ.get("GITHUB_REPOSITORY")
@@ -140,7 +141,7 @@ def public_alternate(alt_row, dep, ret, source_name="同程公开页面"):
 
 
 def snapshot(config: dict, state: dict, supplement: dict | None = None,
-             ctrip: dict | None = None) -> dict:
+             ctrip: dict | None = None, fliggy: dict | None = None) -> dict:
     windows = [
         {"id": str(w["id"]), "start": str(w["start"]), "end": str(w["end"])}
         for w in config["rest_windows"]
@@ -163,6 +164,13 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
         and ctrip.get("cabin_verified") is False)
     ctrip_by_dep = {x.get("departure"): x for x in (ctrip or {}).get("itineraries", [])
                     if isinstance(x, dict)} if ctrip_valid else {}
+    fliggy_valid = (isinstance(fliggy, dict) and fliggy.get("schema_version") == 1
+        and fliggy.get("source") == "fliggy_pc_public_listing"
+        and fliggy.get("taxes_verified") is False
+        and fliggy.get("bookability_verified") is False
+        and fliggy.get("cabin_verified") is False)
+    fliggy_by_dep = {x.get("departure"): x for x in (fliggy or {}).get("itineraries", [])
+                     if isinstance(x, dict)} if fliggy_valid else {}
     result = []
     for dep in config["departure_dates"]:
         window = next((w["id"] for w in windows if w["start"] <= dep <= w["end"]), None)
@@ -195,6 +203,9 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
             "alternate": public_alternate(by_dep.get(dep), dep, ret) if supplement_valid else None,
             "other_sources": ([public_alternate(ctrip_by_dep.get(dep),dep,ret,"携程公开页面")]
                               if public_alternate(ctrip_by_dep.get(dep),dep,ret,"携程公开页面")
+                              else []) +
+                             ([public_alternate(fliggy_by_dep.get(dep),dep,ret,"飞猪网页")]
+                              if public_alternate(fliggy_by_dep.get(dep),dep,ret,"飞猪网页")
                               else []),
         })
     scanned = [x["checked_at_bjt"] for x in result if x.get("checked_at_bjt")]
@@ -204,6 +215,7 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
         "most_recent_check_bjt": max(scanned) if scanned else None,
         "supplement_generated_at_bjt": clean_text(supplement.get("generated_at_bjt"),32) if supplement_valid else None,
         "ctrip_generated_at_bjt": clean_text(ctrip.get("generated_at_bjt"),32) if ctrip_valid else None,
+        "fliggy_generated_at_bjt": clean_text(fliggy.get("generated_at_bjt"),32) if fliggy_valid else None,
         "origin": "TFU", "destination": "AAT",
         "alert_price_cny": int(config["alert_price_cny"]),
         "ideal_price_cny": int(config["ideal_price_cny"]),
@@ -226,7 +238,8 @@ def needs_deploy(current: dict, *, min_minutes: int=45) -> bool:
             return False
         return (previous.get("most_recent_check_bjt") != current.get("most_recent_check_bjt")
                 or previous.get("supplement_generated_at_bjt") != current.get("supplement_generated_at_bjt")
-                or previous.get("ctrip_generated_at_bjt") != current.get("ctrip_generated_at_bjt"))
+                or previous.get("ctrip_generated_at_bjt") != current.get("ctrip_generated_at_bjt")
+                or previous.get("fliggy_generated_at_bjt") != current.get("fliggy_generated_at_bjt"))
     except (error.URLError, ValueError, TimeoutError):
         return True
 
@@ -248,7 +261,13 @@ def build(*, github: bool, check_stale: bool) -> bool:
                  else json.loads(CTRIP_PATH.read_text(encoding="utf-8")) if CTRIP_PATH.exists() else None)
     except (error.HTTPError, error.URLError, ValueError, TimeoutError) as exc:
         print("Ctrip reference read skipped; diagnostic type="+type(exc).__name__)
-    public = snapshot(config, state, supplement, ctrip)
+    fliggy = None
+    try:
+        fliggy = (fetch_github_json("flight-watch/fliggy-latest.json") if github
+                  else json.loads(FLIGGY_PATH.read_text(encoding="utf-8")) if FLIGGY_PATH.exists() else None)
+    except (error.HTTPError, error.URLError, ValueError, TimeoutError) as exc:
+        print("Fliggy PC reference read skipped; diagnostic type="+type(exc).__name__)
+    public = snapshot(config, state, supplement, ctrip, fliggy)
     deploy = not check_stale or needs_deploy(public)
     output = os.environ.get("GITHUB_OUTPUT")
     if output:
