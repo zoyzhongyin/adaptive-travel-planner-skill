@@ -21,6 +21,7 @@ STATE_PATH = ROOT / "flight-watch/state.json"
 SUPPLEMENT_PATH = ROOT / "flight-watch/tongcheng-latest.json"
 CTRIP_PATH = ROOT / "flight-watch/ctrip-latest.json"
 FLIGGY_PATH = ROOT / "flight-watch/fliggy-latest.json"
+GOOGLE_PATH = ROOT / "flight-watch/google-flights-latest.json"
 CONFIG_PATH = ROOT / "flight-watch/config.json"
 PUBLIC_URL = "https://altay-fare-cron.zoyzhongyin.workers.dev/api/fares"
 BJT = timezone(timedelta(hours=8))
@@ -33,7 +34,8 @@ HISTORY_FIELDS = ("checked_at_bjt", "reference_total_cny")
 def fetch_github_json(path: str) -> dict:
     """Read just one private file; never publish raw source content."""
     if path not in ("flight-watch/state.json", "flight-watch/tongcheng-latest.json",
-                    "flight-watch/ctrip-latest.json", "flight-watch/fliggy-latest.json"):
+                    "flight-watch/ctrip-latest.json", "flight-watch/fliggy-latest.json",
+                    "flight-watch/google-flights-latest.json"):
         raise ValueError("File path is not approved")
     token = os.environ.get("GITHUB_TOKEN")
     repo = os.environ.get("GITHUB_REPOSITORY")
@@ -141,7 +143,8 @@ def public_alternate(alt_row, dep, ret, source_name="同程公开页面"):
 
 
 def snapshot(config: dict, state: dict, supplement: dict | None = None,
-             ctrip: dict | None = None, fliggy: dict | None = None) -> dict:
+             ctrip: dict | None = None, fliggy: dict | None = None,
+             google: dict | None = None) -> dict:
     windows = [
         {"id": str(w["id"]), "start": str(w["start"]), "end": str(w["end"])}
         for w in config["rest_windows"]
@@ -171,6 +174,15 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
         and fliggy.get("cabin_verified") is False)
     fliggy_by_dep = {x.get("departure"): x for x in (fliggy or {}).get("itineraries", [])
                      if isinstance(x, dict)} if fliggy_valid else {}
+    google_valid = (isinstance(google, dict) and google.get("schema_version") == 1
+        and google.get("source") == "google_flights_public_cny"
+        and google.get("currency") == "CNY"
+        and google.get("currency_requested") == "CNY"
+        and google.get("taxes_verified") is False
+        and google.get("bookability_verified") is False
+        and google.get("cabin_verified") is False)
+    google_by_dep = {x.get("departure"): x for x in (google or {}).get("itineraries", [])
+                     if isinstance(x, dict)} if google_valid else {}
     result = []
     for dep in config["departure_dates"]:
         window = next((w["id"] for w in windows if w["start"] <= dep <= w["end"]), None)
@@ -206,6 +218,9 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
                               else []) +
                              ([public_alternate(fliggy_by_dep.get(dep),dep,ret,"飞猪网页")]
                               if public_alternate(fliggy_by_dep.get(dep),dep,ret,"飞猪网页")
+                              else []) +
+                             ([public_alternate(google_by_dep.get(dep),dep,ret,"Google Flights（CNY）")]
+                              if public_alternate(google_by_dep.get(dep),dep,ret,"Google Flights（CNY）")
                               else []),
         })
     scanned = [x["checked_at_bjt"] for x in result if x.get("checked_at_bjt")]
@@ -216,6 +231,7 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
         "supplement_generated_at_bjt": clean_text(supplement.get("generated_at_bjt"),32) if supplement_valid else None,
         "ctrip_generated_at_bjt": clean_text(ctrip.get("generated_at_bjt"),32) if ctrip_valid else None,
         "fliggy_generated_at_bjt": clean_text(fliggy.get("generated_at_bjt"),32) if fliggy_valid else None,
+        "google_generated_at_bjt": clean_text(google.get("generated_at_bjt"),32) if google_valid else None,
         "origin": "TFU", "destination": "AAT",
         "alert_price_cny": int(config["alert_price_cny"]),
         "ideal_price_cny": int(config["ideal_price_cny"]),
@@ -239,7 +255,8 @@ def needs_deploy(current: dict, *, min_minutes: int=45) -> bool:
         return (previous.get("most_recent_check_bjt") != current.get("most_recent_check_bjt")
                 or previous.get("supplement_generated_at_bjt") != current.get("supplement_generated_at_bjt")
                 or previous.get("ctrip_generated_at_bjt") != current.get("ctrip_generated_at_bjt")
-                or previous.get("fliggy_generated_at_bjt") != current.get("fliggy_generated_at_bjt"))
+                or previous.get("fliggy_generated_at_bjt") != current.get("fliggy_generated_at_bjt")
+                or previous.get("google_generated_at_bjt") != current.get("google_generated_at_bjt"))
     except (error.URLError, ValueError, TimeoutError):
         return True
 
@@ -267,7 +284,13 @@ def build(*, github: bool, check_stale: bool) -> bool:
                   else json.loads(FLIGGY_PATH.read_text(encoding="utf-8")) if FLIGGY_PATH.exists() else None)
     except (error.HTTPError, error.URLError, ValueError, TimeoutError) as exc:
         print("Fliggy PC reference read skipped; diagnostic type="+type(exc).__name__)
-    public = snapshot(config, state, supplement, ctrip, fliggy)
+    google = None
+    try:
+        google = (fetch_github_json("flight-watch/google-flights-latest.json") if github
+                  else json.loads(GOOGLE_PATH.read_text(encoding="utf-8")) if GOOGLE_PATH.exists() else None)
+    except (error.HTTPError, error.URLError, ValueError, TimeoutError) as exc:
+        print("Google CNY reference read skipped; diagnostic type="+type(exc).__name__)
+    public = snapshot(config, state, supplement, ctrip, fliggy, google)
     deploy = not check_stale or needs_deploy(public)
     output = os.environ.get("GITHUB_OUTPUT")
     if output:
