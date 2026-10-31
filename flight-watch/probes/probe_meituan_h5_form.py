@@ -57,6 +57,26 @@ with sync_playwright() as p:
     page.locator(".select-date").first.click(timeout=3500)
     page.wait_for_timeout(750)
     emit("date_picker",details=state(page))
+    months=page.locator(".flight-calendar .dp-date")
+    emit("calendar_months",count=months.count(),
+         samples=[months.nth(i).inner_text()[:180] for i in range(min(4,months.count()))],
+         december_header_count=page.get_by_text("2026年12月",exact=True).count())
+    if months.count()>=3:
+     dec=months.nth(2)
+     candidates=dec.locator("p.only-date").filter(has_text=re.compile(r"^\\s*9\\s*$"))
+     emit("dec_ninth_candidates",count=candidates.count())
+     if candidates.count():
+      candidates.first.click(timeout=7000)
+      page.wait_for_timeout(650)
+      emit("selected_date",details=state(page))
+      label=page.locator(".select-date").first.inner_text()
+      if "12月09日" in label or "12月9日" in label:
+       page.locator("button.button").first.click(timeout=5000)
+       page.wait_for_timeout(9000)
+       emit("searched_real_flights",details=state(page),
+            fare_evidence_uncertain=True)
+      else:
+       emit("date_not_confirmed",label=label)
   except Exception as e:emit("altay_click_error",error=str(e)[:220])
  finally:
   b.close()
