@@ -1,0 +1,78 @@
+name: Fliggy PC public reference fare supplement
+
+on:
+  push:
+    branches: [main, feature/fliggy-pc-multisource-20261031]
+    paths:
+      - ".github/workflows/fliggy-pc-supplement.yml"
+      - "scripts/fliggy_snapshot.py"
+  schedule:
+    # Beijing 09:55 and 21:55. Staggered from Tongcheng and Ctrip.
+    - cron: "55 1,13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fliggy-pc-supplement
+  cancel-in-progress: false
+
+jobs:
+  supplement:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: true
+      - name: Respect configured stop date
+        id: active
+        run: |
+          python3 - <<'PY'
+          import json,os
+          from datetime import datetime, timezone,timedelta,date
+          c=json.load(open("flight-watch/config.json",encoding="utf-8"))
+          today=datetime.now(timezone(timedelta(hours=8))).date()
+          active=bool(c.get("enabled")) and today<=date.fromisoformat(c["stop_after"])
+          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as f:
+              f.write("active="+str(active).lower()+"\n")
+          print("Fliggy PC active:",active)
+          PY
+      - name: Install normal Chromium
+        if: steps.active.outputs.active == 'true'
+        run: |
+          python3 -m pip install --quiet 'playwright==1.56.0'
+          python3 -m playwright install chromium --with-deps
+      - name: Install pinned reference parser
+        if: steps.active.outputs.active == 'true'
+        run: |
+          git clone --quiet https://github.com/LLL151/ticket.git /tmp/ticket
+          git -C /tmp/ticket checkout --quiet ca55181167a2a0856d577c542c815655679478ea
+          test "$(git -C /tmp/ticket rev-parse HEAD)" = "ca55181167a2a0856d577c542c815655679478ea"
+          python3 -m pip install --quiet -r /tmp/ticket/requirements.txt
+      - name: Scan exact six five-night round trips
+        if: steps.active.outputs.active == 'true'
+        run: python3 scripts/fliggy_snapshot.py
+      - name: Save current reference or data-gap state without alerts
+        if: steps.active.outputs.active == 'true' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add flight-watch/fliggy-latest.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Update independent Fliggy PC reference snapshot [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              echo "Fliggy references updated; existing alerts unchanged."
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
