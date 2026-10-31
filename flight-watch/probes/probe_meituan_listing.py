@@ -29,8 +29,22 @@ with sync_playwright() as p:
    if "meituan" not in up.hostname and "dianping" not in up.hostname:return
    path=up.path.lower()
    if not any(t in path for t in ("flight","search","ticket","price","list")):return
-   events.append({"path":up.path[:120],"status":resp.status,
-      "type":resp.headers.get("content-type","")[:70]})
+   event={"path":up.path[:120],"status":resp.status,
+      "type":resp.headers.get("content-type","")[:70]}
+   if "getflightwiththreecode" in path or "getlowpricecalendar" in path:
+    try:
+     doc=resp.json()
+     if isinstance(doc,dict):
+      event["keys"]=list(doc)[:14]
+      event["error_fields"]={k:str(doc[k])[:90] for k in ("code","status","msg","message","success","errorCode") if k in doc and isinstance(doc[k],(str,int,bool))}
+      node=doc.get("data")
+      event["data_type"]=type(node).__name__
+      if isinstance(node,dict):
+       event["data_keys"]=list(node)[:18]
+       event["data_list_counts"]={k:len(v) for k,v in node.items() if isinstance(v,list)}
+      elif isinstance(node,list):event["data_list_count"]=len(node)
+    except Exception as exc:event["parse_error"]=type(exc).__name__
+   events.append(event)
   page.on("response",listener)
   try:
    res=page.goto(url,wait_until="domcontentloaded",timeout=22000)
