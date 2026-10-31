@@ -1,0 +1,77 @@
+name: Ctrip independent fare supplement (reference only)
+
+on:
+  push:
+    branches: [main, feature/ctrip-multisource-20261031]
+    paths:
+      - ".github/workflows/ctrip-supplement.yml"
+      - "scripts/ctrip_snapshot.py"
+  schedule:
+    # Beijing 09:15 and 21:15, staggered from Tongcheng 08:40/20:40.
+    - cron: "15 1,13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ctrip-supplement
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: true
+      - name: Honor original monitoring end date
+        id: active
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone, timedelta, date
+          c=json.load(open("flight-watch/config.json",encoding="utf-8"))
+          today=datetime.now(timezone(timedelta(hours=8))).date()
+          active=bool(c.get("enabled")) and today<=date.fromisoformat(c["stop_after"])
+          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf8") as f:
+              f.write("active="+str(active).lower()+"\n")
+          print("Ctrip reference active:",active)
+          PY
+      - name: Install temporary normal Chromium
+        if: steps.active.outputs.active == 'true'
+        run: |
+          python3 -m pip install --quiet 'playwright==1.56.0'
+          python3 -m playwright install chromium --with-deps
+      - name: Download audited MIT browser source at pinned commit
+        if: steps.active.outputs.active == 'true'
+        run: |
+          git clone --quiet https://github.com/Yybrook/ctrip-ticket-crawler.git /tmp/ctrip-ticket-crawler
+          git -C /tmp/ctrip-ticket-crawler checkout --quiet 920be72e731daf627c0837777c356907d121edd7
+          test "$(git -C /tmp/ctrip-ticket-crawler rev-parse HEAD)" = "920be72e731daf627c0837777c356907d121edd7"
+      - name: Check six exact five-night itineraries with public pages
+        if: steps.active.outputs.active == 'true'
+        run: python3 scripts/ctrip_snapshot.py
+      - name: Save only the provider reference to the original private repository
+        if: steps.active.outputs.active == 'true' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add flight-watch/ctrip-latest.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Update isolated Ctrip public reference snapshot [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              echo "Reference saved without changing FlyAI alert rules."
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
