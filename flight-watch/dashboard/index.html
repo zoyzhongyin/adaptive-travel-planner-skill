@@ -26,7 +26,7 @@ footer{margin:25px 0;color:#7e8a97;font-size:11px;line-height:1.8}.empty{padding
 <div class="note" id="notice">网页只读取监控结果快照，不发起新的机票查询。每5分钟自动尝试刷新显示，实际报价取决于后台成功查价时间。</div>
 <div class="titlebar"><h2>三个休息窗口</h2><span>优先对比每段最低完整报价</span></div><section class="windows" id="windows" aria-live="polite"></section>
 <div class="titlebar"><h2>六组行程明细</h2><div class="filter"><button type="button" class="active" id="all">全部</button><button type="button" id="issues">仅缺数据</button></div></div><section id="details"></section>
-<footer>1位成人 · 经济舱 · 直飞 · 5晚。出行日期根据暂定休息窗口，购票前请核对正式排班和个人日历。报价分别来自 FlyAI 或同程公开页面的两张单程票价之和，来源与采集时间均已标注。经济舱库存、税费、托运行李及雪具费用未核实，不代表可以立即成交。同程补充报价不会触发自动微信低价提醒。网页公开但仅包含脱敏的报价信息，不公开私有监控记录、日历内容或 API 密钥。</footer>
+<footer>1位成人 · 经济舱 · 直飞 · 5晚。出行日期根据暂定休息窗口，购票前请核对正式排班和个人日历。报价来自 FlyAI、同程或携程公开页面的两张单程票价之和，来源与采集时间均已标注。经济舱库存、税费、托运行李及雪具费用未核实，不代表可以立即成交。同程、携程补充报价不会触发自动微信低价提醒。网页公开但仅包含脱敏的报价信息，不公开私有监控记录、日历内容或 API 密钥。</footer>
 </main>
 <script>
 (function(){
@@ -48,13 +48,17 @@ function normalize(){
   return groups.flatMap(function(g){return g.days.map(function(key){
     var r=rows.find(function(x){return x.departure===key;})||{};
     var alt=r.alternate||{};
+    var ctrip=(r.other_sources||[]).find(function(s){return s&&s.source==="携程公开页面";})||{};
     var primary=r.status==="priced_reference"&&num(r.total_cny)!==null;
     var secondary=alt.status==="priced_reference"&&num(alt.total_cny)!==null;
+    var tertiary=ctrip.status==="priced_reference"&&num(ctrip.total_cny)!==null;
     var choices=[];
     if(primary)choices.push({amount:num(r.total_cny),stamp:r.checked_at_bjt,
       source:"FlyAI",fresh:fresh(r.checked_at_bjt)});
     if(secondary)choices.push({amount:num(alt.total_cny),stamp:alt.checked_at_bjt,
       source:"同程",fresh:recentSecondary(alt.checked_at_bjt)});
+    if(tertiary)choices.push({amount:num(ctrip.total_cny),stamp:ctrip.checked_at_bjt,
+      source:"携程",fresh:recentSecondary(ctrip.checked_at_bjt)});
     var current=choices.filter(function(x){return x.fresh;})
       .sort(function(a,b){return a.amount-b.amount;});
     var past=choices.sort(function(a,b){return (validTime(b.stamp)||0)-(validTime(a.stamp)||0);});
@@ -64,10 +68,12 @@ function normalize(){
     if(num(l.total_cny)!==null)archive.push({amount:num(l.total_cny),stamp:l.checked_at_bjt,source:"FlyAI历史"});
     var a=alt.last_valid||{};
     if(num(a.total_cny)!==null)archive.push({amount:num(a.total_cny),stamp:a.checked_at_bjt,source:"同程历史"});
+    var c=ctrip.last_valid||{};
+    if(num(c.total_cny)!==null)archive.push({amount:num(c.total_cny),stamp:c.checked_at_bjt,source:"携程历史"});
     archive.sort(function(a,b){return (validTime(b.stamp)||0)-(validTime(a.stamp)||0);});
     var historical=!chosen&&archive.length>0;
     var shown=chosen||archive[0]||null;
-    return {group:g,day:key,rec:r,alt:alt,
+    return {group:g,day:key,rec:r,alt:alt,ctrip:ctrip,
       complete:!!chosen,history:historical,
       primaryReady:primary,secondaryReady:secondary,
       amount:shown?shown.amount:null,
@@ -88,6 +94,7 @@ $("hero-tag").textContent=selected?(selected.source+" · "+(selected.liveFresh?"
 $("hero-note").innerHTML=selected?"<strong>"+esc(day(selected.day))+" → "+esc(day(selected.returnDate))+"</strong> · "+esc(selected.source)+" · 采集于 "+esc(dateTime(selected.displayStamp))+" · "+(selected.amount>1500?"高于提醒线 <strong>"+money(selected.amount-1500)+"</strong>":selected.liveFresh?"网页候选价低于提醒线，未核税费，需人工确认":"历史参考价达标，但不是当前价格"):"所有日期均缺少完整往返数据，不能判断是否有低价。";
 $("windows").innerHTML=groups.map(function(g){var list=rows.filter(function(x){return x.group.id===g.id;});var a=list.filter(function(x){return x.complete&&x.liveFresh;}).sort(function(x,y){return x.amount-y.amount;});var b=list.filter(function(x){return x.complete;}).sort(function(x,y){return x.amount-y.amount;});var c=list.filter(function(x){return x.history;}).sort(function(x,y){return x.amount-y.amount;});var best=a[0]||b[0]||c[0];var issues=list.filter(function(x){return !x.complete;}).length;var state=best?(best.source+" · "+(best.liveFresh?"近期参考价":best.complete?"较早参考价":"历史价 · 非实时")):"暂无完整报价";return '<article class="window'+(best&&best.liveFresh?' best':'')+'"><div><span class="kicker">窗口 '+g.label+'</span><h3>'+g.name+'</h3><div class="date">'+day(g.days[0])+'起 · 2组候选</div><div class="hint">'+(issues?"⚠ "+issues+"组目前缺少完整报价":"两组都有完整报价")+'</div></div><div class="bottom">'+(best?'<div class="total">'+money(best.amount)+'</div><div class="'+(best.amount<=1500&&best.liveFresh?'below':'over')+'">'+(best.amount<=1500?(best.liveFresh?"达到参考提醒线":"旧报价达标 · 非实时"):"高于提醒线 "+money(best.amount-1500))+'</div><div class="hint">'+day(best.day)+'出发</div><div class="hint">'+state+' · '+dateTime(best.displayStamp)+'</div>':'<div class="total empty">数据不足</div><div class="hint">待获得完整双程报价</div>')+'</div></article>';}).join("");
 $("details").innerHTML=groups.map(function(g){var list=rows.filter(function(x){return x.group.id===g.id&&(!onlyIssues||!x.complete);});if(!list.length)return "";return '<div class="group"><div class="group-head">'+g.name+'</div>'+list.map(function(x){var r=x.rec,tag=x.complete?(x.source+" · "+(x.liveFresh?"近期参考价":"较早参考价")):(x.history?x.source+" · 历史价":"报价不完整");var price=x.amount===null?"暂无完整往返价":money(x.amount);var flightOut=[r.outbound_airline||"",r.outbound_flight||""].filter(Boolean).join(" "),flightBack=[r.return_airline||"",r.return_flight||""].filter(Boolean).join(" ");var aa=x.alt||{},ao=aa.outbound||{},ab=aa.return||{},cp=aa.airline_prices||{},co=cp.outbound||{},cb=cp.return||{};
+var cc=x.ctrip||{},cu=cc.outbound||{},cv=cc.return||{};
 var compare=[["CA","国航"],["3U","川航"],["9C","春秋"]].map(function(q){
 return '<div>'+q[1]+'：去程 '+money(co[q[0]])+' / 返程 '+money(cb[q[0]])+'</div>';
 }).join("");
@@ -97,7 +104,13 @@ var extra=aa.status==="priced_reference"?
 ' / 返程 '+esc((ab.airline||"")+" "+(ab.flight||""))+' '+money(ab.price_cny)+'</div>'+
 '<div style="margin-top:6px">'+compare+'</div>'+
 '<div>经济舱、税费、库存未核实；不触发微信低价提醒</div></div>':
-'<div class="oldprice">同程补充：暂无完整参考价或尚未启用</div>';var prior=x.history?'<div class="oldprice">上次完整历史报价 '+money(x.amount)+' · '+esc(dateTime(x.displayStamp))+'，当前不可当作实时价格</div>':"";return '<details class="trip"><summary><div class="left"><div class="route">'+esc(day(x.day))+' → '+esc(day(x.returnDate))+'</div><div class="meta">'+esc(flightOut||"去程待查")+' / '+esc(flightBack||"返程待查")+'</div></div><div class="right"><div class="value'+(x.amount===null?" na":"")+'">'+esc(price)+'</div><span class="stat'+(x.complete&&x.liveFresh?" good":"")+'">'+esc(tag)+'</span></div><span class="arrow">⌄</span></summary><div class="body"><div class="leg"><span>去程 TFU → AAT · '+esc(flightOut||"未获取")+'</span><strong class="'+(num(r.outbound_price_cny)===null?"miss":"")+'">'+money(r.outbound_price_cny)+'</strong></div><div class="leg"><span>返程 AAT → TFU · '+esc(flightBack||"未获取")+'</span><strong class="'+(num(r.return_price_cny)===null?"miss":"")+'">'+money(r.return_price_cny)+'</strong></div>'+prior+extra+'<div class="footnote">FlyAI 最近检查 '+esc(dateTime(r.checked_at_bjt))+'（北京） · '+(x.primaryReady?"两张单程参考价相加":"FlyAI 数据缺口，不代表没有航班")+'</div></div></details>';}).join("")+'</div>';}).join("")||'<div class="empty">当前筛选没有行程</div>';
+'<div class="oldprice">同程补充：暂无完整参考价或尚未启用</div>';
+var extraC=cc.status==="priced_reference"?
+'<div class="oldprice"><b>携程独立参考</b> · '+money(cc.total_cny)+'（'+esc(dateTime(cc.checked_at_bjt))+'）'+
+'<div>去程 '+esc((cu.airline||"")+" "+(cu.flight||""))+' '+money(cu.price_cny)+
+' / 返程 '+esc((cv.airline||"")+" "+(cv.flight||""))+' '+money(cv.price_cny)+'</div>'+
+'<div>机票税费、行李及库存未核实；不触发微信低价提醒</div></div>':
+'<div class="oldprice">携程补充：暂无完整参考价或尚未启用</div>';var prior=x.history?'<div class="oldprice">上次完整历史报价 '+money(x.amount)+' · '+esc(dateTime(x.displayStamp))+'，当前不可当作实时价格</div>':"";return '<details class="trip"><summary><div class="left"><div class="route">'+esc(day(x.day))+' → '+esc(day(x.returnDate))+'</div><div class="meta">'+esc(flightOut||"去程待查")+' / '+esc(flightBack||"返程待查")+'</div></div><div class="right"><div class="value'+(x.amount===null?" na":"")+'">'+esc(price)+'</div><span class="stat'+(x.complete&&x.liveFresh?" good":"")+'">'+esc(tag)+'</span></div><span class="arrow">⌄</span></summary><div class="body"><div class="leg"><span>去程 TFU → AAT · '+esc(flightOut||"未获取")+'</span><strong class="'+(num(r.outbound_price_cny)===null?"miss":"")+'">'+money(r.outbound_price_cny)+'</strong></div><div class="leg"><span>返程 AAT → TFU · '+esc(flightBack||"未获取")+'</span><strong class="'+(num(r.return_price_cny)===null?"miss":"")+'">'+money(r.return_price_cny)+'</strong></div>'+prior+extra+extraC+'<div class="footnote">FlyAI 最近检查 '+esc(dateTime(r.checked_at_bjt))+'（北京） · '+(x.primaryReady?"两张单程参考价相加":"FlyAI 数据缺口，不代表没有航班")+'</div></div></details>';}).join("")+'</div>';}).join("")||'<div class="empty">当前筛选没有行程</div>';
 var update=data.generated_at_bjt||data.generated_at;var date=validTime(update),stale=date===null||Date.now()-date>3*3600000;
 $("sync").textContent="公开快照 "+dateTime(update)+"（北京） · 最近检查 "+dateTime(data.most_recent_check_bjt);
 $("dot").className="dot "+(stale?"warn":"ok");
