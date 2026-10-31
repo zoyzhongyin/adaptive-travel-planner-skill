@@ -32,7 +32,7 @@ def offers(raw, origin, destination, day):
             if not fare.is_finite() or not (0<fare<50000):continue
             carrier=flight[:2]
             row={"flight":flight,"carrier":carrier,
-                 "airline":{"CA":"国航","3U":"川航","9C":"春秋"}.get(carrier,carrier),
+                 "airline":{"CA":"国航","3U":"川航","9C":"春秋","CZ":"南航","MU":"东航","MF":"厦航","G5":"华夏","EU":"成都航空"}.get(carrier,carrier),
                  "price_cny":str(fare),"departure_time":str(seg.departure_time),
                  "operating_flight":str(seg.operate_flight_no or flight)}
             key=(flight,str(seg.departure_time))
