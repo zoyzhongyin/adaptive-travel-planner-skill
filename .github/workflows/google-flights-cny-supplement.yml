@@ -1,0 +1,71 @@
+name: Google Flights CNY independent fare supplement
+
+on:
+  push:
+    branches: [main, feature/google-flights-cny-20261031]
+    paths:
+      - ".github/workflows/google-flights-cny-supplement.yml"
+      - "scripts/google_flights_snapshot.py"
+  schedule:
+    # Twice daily BJT: 10:35 and 22:35, staggered after other OTAs.
+    - cron: "35 2,14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: google-flights-cny-supplement
+  cancel-in-progress: false
+
+jobs:
+  cny-supplement:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: true
+      - name: Honor original monitoring end date
+        id: active
+        run: |
+          python3 - <<'PY'
+          import json,os
+          from datetime import datetime, timezone, timedelta, date
+          c=json.load(open("flight-watch/config.json",encoding="utf-8"))
+          today=datetime.now(timezone(timedelta(hours=8))).date()
+          allowed=bool(c.get("enabled")) and today<=date.fromisoformat(c["stop_after"])
+          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as f:
+              f.write("active="+str(allowed).lower()+"\n")
+          print("Google Flights CNY reference:",allowed)
+          PY
+      - name: Install public MIT Google Flights library
+        if: steps.active.outputs.active == 'true'
+        run: |
+          python3 -m pip install --quiet flights
+          python3 -m pip show flights | grep -E '^Version:'
+      - name: Query six strict five-night itineraries as CNY
+        if: steps.active.outputs.active == 'true'
+        run: python3 scripts/google_flights_snapshot.py
+      - name: Save reference snapshot to private repo, never alert
+        if: steps.active.outputs.active == 'true' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add flight-watch/google-flights-latest.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Update independent Google Flights CNY reference [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              echo "Google CNY public references updated. No notifications."
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
