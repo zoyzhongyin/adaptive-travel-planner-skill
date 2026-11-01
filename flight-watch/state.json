@@ -6,8 +6,8 @@
   "last_scan_bjt": {
     "2026-12-08": "2026-11-01T23:22:39+08:00",
     "2026-12-09": "2026-11-01T22:52:37+08:00",
-    "2026-12-17": "2026-11-01T22:22:51+08:00",
-    "2026-12-18": "2026-11-01T22:22:55+08:00",
+    "2026-12-17": "2026-11-01T23:37:39+08:00",
+    "2026-12-18": "2026-11-01T23:37:42+08:00",
     "2026-12-26": "2026-11-01T22:37:36+08:00",
     "2026-12-27": "2026-11-01T23:22:43+08:00"
   },
@@ -129,7 +129,7 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-11-01T22:22:51+08:00",
+      "checked_at_bjt": "2026-11-01T23:37:39+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -154,17 +154,13 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         },
         "inbound": {
@@ -174,17 +170,13 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         }
       },
@@ -195,7 +187,7 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-11-01T22:22:55+08:00",
+      "checked_at_bjt": "2026-11-01T23:37:42+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -382,8 +374,8 @@
   "consecutive_incomplete": {
     "2026-12-08": 0,
     "2026-12-09": 0,
-    "2026-12-17": 19,
-    "2026-12-18": 10,
+    "2026-12-17": 20,
+    "2026-12-18": 11,
     "2026-12-26": 41,
     "2026-12-27": 78
   },
