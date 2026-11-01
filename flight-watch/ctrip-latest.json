@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "source": "ctrip_browser_public_listing",
-  "generated_at_bjt": "2026-11-01T01:45:14+08:00",
+  "generated_at_bjt": "2026-11-01T15:33:53+08:00",
   "taxes_verified": false,
   "cabin_verified": false,
   "baggage_verified": false,
@@ -10,7 +10,7 @@
     {
       "departure": "2026-12-08",
       "return_date": "2026-12-13",
-      "checked_at_bjt": "2026-11-01T01:44:32+08:00",
+      "checked_at_bjt": "2026-11-01T15:33:15+08:00",
       "status": "priced_reference",
       "total_cny": "1750",
       "outbound": {
@@ -30,7 +30,7 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-01T01:44:32+08:00",
+        "checked_at_bjt": "2026-11-01T15:33:15+08:00",
         "total_cny": "1750"
       },
       "error_types": []
@@ -38,7 +38,7 @@
     {
       "departure": "2026-12-09",
       "return_date": "2026-12-14",
-      "checked_at_bjt": "2026-11-01T01:44:42+08:00",
+      "checked_at_bjt": "2026-11-01T15:33:26+08:00",
       "status": "priced_reference",
       "total_cny": "1620",
       "outbound": {
@@ -58,7 +58,7 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-01T01:44:42+08:00",
+        "checked_at_bjt": "2026-11-01T15:33:26+08:00",
         "total_cny": "1620"
       },
       "error_types": []
@@ -66,7 +66,7 @@
     {
       "departure": "2026-12-17",
       "return_date": "2026-12-22",
-      "checked_at_bjt": "2026-11-01T01:44:48+08:00",
+      "checked_at_bjt": "2026-11-01T15:33:31+08:00",
       "status": "priced_reference",
       "total_cny": "2140",
       "outbound": {
@@ -86,7 +86,7 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-01T01:44:48+08:00",
+        "checked_at_bjt": "2026-11-01T15:33:31+08:00",
         "total_cny": "2140"
       },
       "error_types": []
@@ -94,7 +94,7 @@
     {
       "departure": "2026-12-18",
       "return_date": "2026-12-23",
-      "checked_at_bjt": "2026-11-01T01:44:54+08:00",
+      "checked_at_bjt": "2026-11-01T15:33:36+08:00",
       "status": "priced_reference",
       "total_cny": "2150",
       "outbound": {
@@ -114,7 +114,7 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-01T01:44:54+08:00",
+        "checked_at_bjt": "2026-11-01T15:33:36+08:00",
         "total_cny": "2150"
       },
       "error_types": []
@@ -122,14 +122,14 @@
     {
       "departure": "2026-12-26",
       "return_date": "2026-12-31",
-      "checked_at_bjt": "2026-11-01T01:45:01+08:00",
+      "checked_at_bjt": "2026-11-01T15:33:42+08:00",
       "status": "priced_reference",
-      "total_cny": "2630",
+      "total_cny": "2650",
       "outbound": {
         "flight": "CA2505",
         "carrier": "CA",
         "airline": "国航",
-        "price_cny": "1460",
+        "price_cny": "1480",
         "departure_time": "2026-12-26 07:15:00",
         "operating_flight": "CA2505"
       },
@@ -142,15 +142,15 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-01T01:45:01+08:00",
-        "total_cny": "2630"
+        "checked_at_bjt": "2026-11-01T15:33:42+08:00",
+        "total_cny": "2650"
       },
       "error_types": []
     },
     {
       "departure": "2026-12-27",
       "return_date": "2027-01-01",
-      "checked_at_bjt": "2026-11-01T01:45:07+08:00",
+      "checked_at_bjt": "2026-11-01T15:33:47+08:00",
       "status": "priced_reference",
       "total_cny": "2450",
       "outbound": {
@@ -170,7 +170,7 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-01T01:45:07+08:00",
+        "checked_at_bjt": "2026-11-01T15:33:47+08:00",
         "total_cny": "2450"
       },
       "error_types": []
