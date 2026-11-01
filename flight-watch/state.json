@@ -6,10 +6,10 @@
   "last_scan_bjt": {
     "2026-12-08": "2026-11-01T14:37:52+08:00",
     "2026-12-09": "2026-11-01T14:09:07+08:00",
-    "2026-12-17": "2026-11-01T13:37:39+08:00",
-    "2026-12-18": "2026-11-01T13:37:50+08:00",
+    "2026-12-17": "2026-11-01T14:52:55+08:00",
+    "2026-12-18": "2026-11-01T14:52:59+08:00",
     "2026-12-26": "2026-11-01T14:09:04+08:00",
-    "2026-12-27": "2026-11-01T13:37:36+08:00"
+    "2026-12-27": "2026-11-01T14:52:36+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
@@ -137,7 +137,7 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-11-01T13:37:39+08:00",
+      "checked_at_bjt": "2026-11-01T14:52:55+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -162,13 +162,17 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
+            1,
+            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         },
         "inbound": {
@@ -178,13 +182,17 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
+            1,
+            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         }
       },
@@ -195,7 +203,7 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-11-01T13:37:50+08:00",
+      "checked_at_bjt": "2026-11-01T14:52:59+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 0,
       "inbound_api_status": 1,
@@ -207,7 +215,7 @@
       "return_airline": null,
       "outbound_price_cny": "1110.00",
       "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4ZuNnd",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4N2CoK",
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -236,17 +244,13 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         }
       },
@@ -316,7 +320,7 @@
       ]
     },
     "2026-12-27": {
-      "checked_at_bjt": "2026-11-01T13:37:36+08:00",
+      "checked_at_bjt": "2026-11-01T14:52:36+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 0,
       "inbound_api_status": 1,
@@ -328,7 +332,7 @@
       "return_airline": null,
       "outbound_price_cny": "1159.00",
       "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F00jUF1",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2uMkbY",
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -386,10 +390,10 @@
   "consecutive_incomplete": {
     "2026-12-08": 3,
     "2026-12-09": 30,
-    "2026-12-17": 12,
-    "2026-12-18": 3,
+    "2026-12-17": 13,
+    "2026-12-18": 4,
     "2026-12-26": 34,
-    "2026-12-27": 70
+    "2026-12-27": 71
   },
   "incomplete_since_bjt": {
     "2026-12-27": "2026-10-29T00:38:02+08:00",
