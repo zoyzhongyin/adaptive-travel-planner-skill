@@ -5,10 +5,10 @@
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
     "2026-12-08": "2026-11-01T15:52:36+08:00",
-    "2026-12-09": "2026-11-01T15:22:47+08:00",
+    "2026-12-09": "2026-11-01T16:37:39+08:00",
     "2026-12-17": "2026-11-01T16:07:39+08:00",
     "2026-12-18": "2026-11-01T16:07:43+08:00",
-    "2026-12-26": "2026-11-01T15:22:35+08:00",
+    "2026-12-26": "2026-11-01T16:37:35+08:00",
     "2026-12-27": "2026-11-01T16:07:37+08:00"
   },
   "last_scan_results": {
@@ -71,7 +71,7 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-11-01T15:22:47+08:00",
+      "checked_at_bjt": "2026-11-01T16:37:39+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 0,
@@ -84,7 +84,7 @@
       "outbound_price_cny": null,
       "return_price_cny": "839.00",
       "outbound_url": null,
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1TC1iV",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4MWTo7",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": null,
@@ -96,17 +96,13 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         },
         "inbound": {
@@ -249,7 +245,7 @@
       ]
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-11-01T15:22:35+08:00",
+      "checked_at_bjt": "2026-11-01T16:37:35+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -377,10 +373,10 @@
   },
   "consecutive_incomplete": {
     "2026-12-08": 4,
-    "2026-12-09": 31,
+    "2026-12-09": 32,
     "2026-12-17": 14,
     "2026-12-18": 5,
-    "2026-12-26": 35,
+    "2026-12-26": 36,
     "2026-12-27": 72
   },
   "incomplete_since_bjt": {
