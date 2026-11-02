@@ -5,7 +5,7 @@
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
     "2026-12-08": "2026-11-02T14:22:37+08:00",
-    "2026-12-09": "2026-11-02T13:37:50+08:00",
+    "2026-12-09": "2026-11-02T14:52:38+08:00",
     "2026-12-17": "2026-11-02T14:37:38+08:00",
     "2026-12-18": "2026-11-02T14:37:42+08:00",
     "2026-12-26": "2026-11-02T14:37:46+08:00",
@@ -71,7 +71,7 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-11-02T13:37:50+08:00",
+      "checked_at_bjt": "2026-11-02T14:52:38+08:00",
       "status": "priced_reference",
       "outbound_api_status": 0,
       "inbound_api_status": 0,
@@ -83,8 +83,8 @@
       "return_airline": "春秋",
       "outbound_price_cny": "779.00",
       "return_price_cny": "839.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2noEuj",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1uB5DF",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4Wq574",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F15EjNS",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": "deferred_to_window",
@@ -365,7 +365,7 @@
   },
   "last_valid_quote_bjt": {
     "2026-12-08": "2026-11-02T14:22:37+08:00",
-    "2026-12-09": "2026-11-02T13:37:50+08:00",
+    "2026-12-09": "2026-11-02T14:52:38+08:00",
     "2026-12-27": "2026-10-28T23:22:48+08:00",
     "2026-12-26": "2026-11-02T14:37:46+08:00",
     "2026-12-18": "2026-11-02T14:37:42+08:00",
@@ -394,7 +394,7 @@
   ],
   "last_valid_fares": {
     "2026-12-09": {
-      "checked_at_bjt": "2026-11-02T13:37:50+08:00",
+      "checked_at_bjt": "2026-11-02T14:52:38+08:00",
       "return_date": "2026-12-14",
       "reference_total_cny": "1618.00",
       "outbound_flight": "9C6685",
@@ -403,8 +403,8 @@
       "return_airline": "春秋",
       "outbound_price_cny": "779.00",
       "return_price_cny": "839.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2noEuj",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1uB5DF"
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4Wq574",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F15EjNS"
     },
     "2026-12-08": {
       "checked_at_bjt": "2026-11-02T14:22:37+08:00",
