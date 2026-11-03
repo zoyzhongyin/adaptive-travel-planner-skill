@@ -45,6 +45,7 @@ jobs:
           python3 -m pip install --quiet 'playwright==1.56.0'
           python3 -m playwright install chromium --with-deps
       - name: Install pinned reference parser
+        id: parser
         if: steps.active.outputs.active == 'true'
         run: |
           git clone --quiet https://github.com/LLL151/ticket.git /tmp/ticket
@@ -52,10 +53,16 @@ jobs:
           test "$(git -C /tmp/ticket rev-parse HEAD)" = "ca55181167a2a0856d577c542c815655679478ea"
           python3 -m pip install --quiet -r /tmp/ticket/requirements.txt
       - name: Scan exact six five-night round trips
+        id: scan
         if: steps.active.outputs.active == 'true'
         run: python3 scripts/fliggy_snapshot.py
+      - name: Mark data-source failure (keeps old prices only as stale last_valid)
+        if: always() && steps.active.outputs.active == 'true' && (steps.parser.outcome == 'failure' || steps.scan.outcome == 'failure')
+        env:
+          FAILED_STAGE: ${{ steps.parser.outcome == 'failure' && 'parser_install' || 'scan' }}
+        run: python3 scripts/fliggy_snapshot.py --mark-failed "$FAILED_STAGE"
       - name: Save current reference or data-gap state without alerts
-        if: steps.active.outputs.active == 'true' && github.ref == 'refs/heads/main'
+        if: always() && steps.active.outputs.active == 'true' && github.ref == 'refs/heads/main'
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"

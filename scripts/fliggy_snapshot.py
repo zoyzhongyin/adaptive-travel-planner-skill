@@ -92,7 +92,39 @@ def snapshot(config,prior=None,now=None):
     data["bookability_verified"]=False
     return data
 
+def mark_failed(prior,stage,run_id=None,now=None):
+    """Data-source failure: keep last priced values only as last_valid, never as current."""
+    now=now or datetime.now(BJT)
+    stamp=now.astimezone(BJT).isoformat(timespec="seconds")
+    out={k:prior.get(k) for k in ("schema_version",) if k in prior}
+    out.setdefault("schema_version",1)
+    out.update({"source":SOURCE,"generated_at_bjt":stamp,
+        "source_status":"failed","stale":True,
+        "failure_stage":re.sub(r"[^a-z0-9_]","",str(stage))[:40] or "unknown",
+        "last_attempt_at_bjt":stamp,
+        "last_success_generated_at_bjt":prior.get("last_success_generated_at_bjt") if prior.get("source_status")=="failed" else prior.get("generated_at_bjt"),
+        "github_run_id":re.sub(r"[^0-9]","",str(run_id or ""))[:20] or None,
+        "taxes_verified":False,"cabin_verified":False,"baggage_verified":False,"bookability_verified":False})
+    rows=[]
+    for x in prior.get("itineraries",[]) or []:
+        if not isinstance(x,dict):continue
+        last=x.get("last_valid")
+        if x.get("status")=="priced_reference":
+            last={"checked_at_bjt":x.get("checked_at_bjt"),"total_cny":x.get("total_cny"),
+                  "outbound":x.get("outbound"),"return":x.get("return")}
+        rows.append({"departure":x.get("departure"),"return_date":x.get("return_date"),
+            "checked_at_bjt":stamp,"status":"source_failed","total_cny":None,
+            "outbound":None,"return":None,"last_valid":last,"stale":True,
+            "error_types":["data_source_failed:"+out["failure_stage"]]})
+    out["itineraries"]=rows
+    return out
+
 if __name__=="__main__":
+    if len(sys.argv)>=3 and sys.argv[1]=="--mark-failed":
+        prior=json.loads(OUTPUT.read_text(encoding="utf-8")) if OUTPUT.exists() else {}
+        OUTPUT.write_text(json.dumps(mark_failed(prior,sys.argv[2],os.environ.get("GITHUB_RUN_ID")),ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+        print("Fliggy PC data source FAILED at stage",sys.argv[2],"; previous prices kept only as stale last_valid.")
+        sys.exit(0)
     config=json.loads(CONFIG.read_text(encoding="utf-8"))
     prior=json.loads(OUTPUT.read_text(encoding="utf-8")) if OUTPUT.exists() else {}
     rows=snapshot(config,prior)
