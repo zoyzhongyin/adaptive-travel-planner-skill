@@ -4,10 +4,10 @@ from types import SimpleNamespace as S
 from scripts import google_flights_snapshot as g
 
 DAY="2026-12-09"
-def flight(*,o="TFU",d="AAT",day=DAY,fn="6685",code="9C",price=920,stops=0,n=1):
+def flight(*,o="TFU",d="AAT",day=DAY,fn="6685",code="9C",price=920,stops=0,n=1,cabin="经济舱"):
  s=S(departure_airport=S(name=o),arrival_airport=S(name=d),
      departure_datetime=day+" 10:05:00",airline=S(name=code),flight_number=fn)
- return S(legs=[s]*n,stops=stops,price=price)
+ return S(legs=[s]*n,stops=stops,price=price,cabin=cabin)
 
 class GoogleCny(unittest.TestCase):
  def test_exact_one_stopless_economy_airport_and_day(self):
@@ -16,7 +16,7 @@ class GoogleCny(unittest.TestCase):
  def test_wrong_origin_dest_date_stop_and_currency_form(self):
   bad=[flight(o="CTU"),flight(d="KJI"),flight(day="2026-12-08"),flight(stops=1),
        flight(n=2),flight(price=-1),flight(price=float("nan")),
-       flight(code="??",fn="invalid")]
+       flight(code="??",fn="invalid"),flight(cabin=None),flight(cabin="")]
   self.assertEqual(g.strict_google_offers(bad,"TFU","AAT",DAY),[])
  def test_opposite_direction(self):
   got=g.strict_google_offers([flight(o="AAT",d="TFU",day="2026-12-14",fn="6686",price=980)],

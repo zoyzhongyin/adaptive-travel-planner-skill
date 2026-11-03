@@ -2,7 +2,7 @@
 import unittest
 from scripts import fliggy_snapshot as f
 def raw(**kw):
- d=dict(code="9C6685",depAirport="天府机场",arrAirport="雪都机场",depTime="10:05",price=780)
+ d=dict(code="9C6685",depAirport="天府机场",arrAirport="雪都机场",depTime="10:05",price=780,cabin="经济舱")
  d.update(kw)
  return d
 class TestFliggyPc(unittest.TestCase):
@@ -15,6 +15,8 @@ class TestFliggyPc(unittest.TestCase):
               raw(transfer=True),raw(transCity="乌鲁木齐"),raw(stopover=True),
               raw(cabin="公务舱"),raw(price=0),raw(price="NaN"),raw(code="BAD/123")]
   self.assertEqual(f.clean_rows(candidates,"TFU","AAT","2026-12-09"),[])
+ def test_missing_cabin_is_not_a_price(self):
+  self.assertEqual(f.clean_rows([raw(cabin=""),raw(cabin=None)],"TFU","AAT","2026-12-09"),[])
  def test_reverse_airports(self):
   r=f.clean_rows([raw(code="9C6686",depAirport="雪都机场",arrAirport="天府机场")],
                  "AAT","TFU","2026-12-14")

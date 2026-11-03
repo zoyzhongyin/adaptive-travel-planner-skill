@@ -43,6 +43,8 @@
   "direct_only": true,
   "alert_price_cny": 1500,
   "ideal_price_cny": 1200,
+  "estimated_airport_fuel_per_leg_cny": 140,
+  "estimated_airport_fuel_label": "estimate, verified 2026-11-03",
   "min_drop_cny": 50,
   "check_interval_minutes": 15,
   "rotation": "prioritize_all_overdue_itineraries_using_persisted_last_scan",
@@ -56,7 +58,7 @@
       "title": "复诊评估｜信必可是否停药"
     }
   ],
-  "note": "目的地仅阿勒泰 AAT（将军山），direct_only=true，不查富蕴、喀纳斯或中转。锚点 2026-12-08 / 2026-12-17 / 2026-12-26，date_flex_days=1。实际查询 12-08、12-09、12-17、12-18、12-26、12-27：三个锚点加上仍落在各休息窗内的 +1 日。窗前 -1（休息窗开始前一天）因 7 组上限不查。stay_nights=5，大约 12/8–13、12/17–22、12/26–31；+1 出发的返程会比该窗结束日晚一天。去程和返程分开查再相加，每段取最低直飞，不限航司（川航 3U、国航 CA、春秋 9C 及其他谁便宜留谁）。每个休息窗的提醒和摘要只报一条最低组合（航司、航班号、日期、链接）。adults=1，但 FlyAI search-flight 没有成人参数，人数只校验和记录、不传给 CLI。cabin=economy，查询带 --seat-class-name 经济舱；接口没标舱位时不丢弃该报价。日期按暂定排班推断（12月正式排班未出）。行程若含 2026-12-27，标注全天日历冲突「复诊评估｜信必可是否停药」。alert_price_cny=1500，ideal_price_cny=1200，min_drop_cny=50。不自动购票。6 个出发日、max_pairs_per_run=3，大约两轮可扫完。stop_after=2026-12-31。已部署 Worker 仍在 2026-12-24 00:00+08 停止 dispatch；本次不改 worker.js，不重新部署。12-24 之后由 GitHub 备份 cron 继续触发同一条 workflow，直到 stop_after。",
+  "note": "目的地仅阿勒泰 AAT（将军山），direct_only=true，不查富蕴、喀纳斯或中转。锚点 2026-12-08 / 2026-12-17 / 2026-12-26，date_flex_days=1。实际查询 12-08、12-09、12-17、12-18、12-26、12-27：三个锚点加上仍落在各休息窗内的 +1 日。窗前 -1（休息窗开始前一天）因 7 组上限不查。stay_nights=5，大约 12/8–13、12/17–22、12/26–31；+1 出发的返程会比该窗结束日晚一天。去程和返程分开查再相加，每段取最低直飞，不限航司（川航 3U、国航 CA、春秋 9C 及其他谁便宜留谁）。每个休息窗的提醒和摘要只报一条最低组合（航司、航班号、日期、链接）。adults=1，但 FlyAI search-flight 没有成人参数，人数只校验和记录、不传给 CLI。cabin=economy，查询带 --seat-class-name 经济舱；接口没标舱位的报价无效，不算价格。alert 与 ideal 比较的是不含税费的票面合计。estimated_airport_fuel_per_leg_cny=140 只是 2026-11-03 飞猪列表观察到的本航线国内机建+燃油估计（estimate, verified 2026-11-03），不并入已核实含税价，也不参与阈值。日期按暂定排班推断（12月正式排班未出）。行程若含 2026-12-27，标注全天日历冲突「复诊评估｜信必可是否停药」。alert_price_cny=1500，ideal_price_cny=1200，min_drop_cny=50。不自动购票。6 个出发日、max_pairs_per_run=3，大约两轮可扫完。stop_after=2026-12-31。已部署 Worker 仍在 2026-12-24 00:00+08 停止 dispatch；本次不改 worker.js，不重新部署。12-24 之后由 GitHub 备份 cron 继续触发同一条 workflow，直到 stop_after。",
   "each_pair_interval_minutes": 60,
   "failure_retry_minutes": 20,
   "max_leg_attempts": 3,

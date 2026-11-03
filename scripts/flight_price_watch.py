@@ -35,6 +35,9 @@ def json_read(path):
 
 
 def only_direct(leg):
+    """Direct quotes. A failure status (including status=1) is not a price."""
+    if "api_status" in leg and leg.get("api_status") != 0:
+        return []
     return [x for x in leg.get("offers", []) if x.get("direct") and x.get("price_cny_reference") is not None]
 
 
@@ -118,8 +121,60 @@ def leg_diag(leg):
     return diag
 
 
-def build_wechat_message(price, dep, ret, outward, inbound, captured_iso, *, ideal, notes=None):
-    """Reference-price alert. Taxes, baggage and ski fees stay unverified."""
+def surcharge_estimate(config):
+    """Configurable 机建+燃油 estimate. Never a verified tax-inclusive fare.
+
+    The number is read from config. It is not added to ticketPrice.
+    """
+    if "estimated_airport_fuel_per_leg_cny" not in config:
+        return None
+    raw = config.get("estimated_airport_fuel_per_leg_cny")
+    if isinstance(raw, bool):
+        return None
+    try:
+        amount = Decimal(str(raw))
+    except Exception:
+        return None
+    if not amount.is_finite() or amount < 0:
+        return None
+    label = str(config.get("estimated_airport_fuel_label") or "estimate, verified 2026-11-03")
+    return {
+        "per_leg_cny": str(amount),
+        "round_trip_cny": str(amount * 2),
+        "label": label,
+        "taxes_verified": False,
+        "merged_into_verified_price": False,
+    }
+
+
+def threshold_note(config, *, taxes_verified=False):
+    """Say which figure the ¥1500 / ¥1200 thresholds use."""
+    alert = config.get("alert_price_cny")
+    ideal = config.get("ideal_price_cny")
+    lines = [
+        "阈值比较：提醒价 ¥" + str(alert) + "、理想价 ¥" + str(ideal)
+        + "，比较的是票面（不含税费的 ticketPrice 相加），不是含税价。税费未核实。",
+    ]
+    if taxes_verified:
+        lines.append("来源另行提供了机建和燃油，含税价单独记录。本次阈值仍按票面比较。")
+        return "\n".join(lines)
+    estimate = surcharge_estimate(config)
+    if estimate is None:
+        return lines[0]
+    lines.append(
+        "另有估计（" + estimate["label"] + "，不并入已核实含税价，也不参与阈值）："
+        + "2026-11-03 约 19:10 北京时间人工复核飞猪列表，价格标注「不含税费」。"
+        + "本航线国内机建+燃油观察到 ¥" + estimate["per_leg_cny"] + "/段，"
+        + "往返票面提醒大约少算 ¥" + estimate["round_trip_cny"] + "。"
+        + "样例：9C6685（2026-12-09 TFU→AAT）票面 ¥780、含税约 ¥920；"
+        + "9C6686（2026-12-14 AAT→TFU）票面 ¥970、含税约 ¥1110；往返含税约 ¥2030。"
+        + "订单页需要淘宝登录，最终订单总额未见。"
+    )
+    return "\n".join(lines)
+
+
+def build_wechat_message(price, dep, ret, outward, inbound, captured_iso, *, ideal, notes=None, config=None, taxes_verified=False):
+    """Reference-price alert. The threshold uses base fare, not an estimated tax."""
     mark = "理想价" if ideal else "目标价"
     title = "阿勒泰机票" + mark + " ¥" + str(price)
     out_flight = leg_carrier(outward)
@@ -127,15 +182,17 @@ def build_wechat_message(price, dep, ret, outward, inbound, captured_iso, *, ide
     out_url = outward.get("booking_url") or ""
     back_url = inbound.get("booking_url") or ""
     lines = [
-        "**往返参考价合计：¥" + str(price) + " / 人**",
-        "这是两张单程票的 ticketPrice 相加，不是已核实的往返结算价。",
+        "**往返票面合计：¥" + str(price) + " / 人**",
+        "这是两张单程票的 ticketPrice（不含税费）相加，不是已核实的往返结算价。",
         "出发：" + dep.isoformat() + "　返回：" + ret.isoformat(),
     ]
+    if config is not None:
+        lines.append(threshold_note(config, taxes_verified=taxes_verified))
     if notes:
         lines.extend(notes)
     lines.extend([
-        "去程：" + nonstop_label(outward) + " " + out_flight + "，参考价 ¥" + str(outward["price_cny_reference"]),
-        "返程：" + nonstop_label(inbound) + " " + back_flight + "，参考价 ¥" + str(inbound["price_cny_reference"]),
+        "去程：" + nonstop_label(outward) + " " + out_flight + "，票面 ¥" + str(outward.get("base_fare_cny") or outward["price_cny_reference"]),
+        "返程：" + nonstop_label(inbound) + " " + back_flight + "，票面 ¥" + str(inbound.get("base_fare_cny") or inbound["price_cny_reference"]),
         "采集时间：" + format_captured(captured_iso),
         "税费、机建燃油：未核实",
         "托运行李：未核实",
@@ -431,6 +488,7 @@ def format_window_digest(config, state) -> str:
         "每窗口只列一条最低往返（航司、日期、链接）。邻近日期不单独再报一条。",
         str(config.get("roster_notice") or DEFAULT_ROSTER),
         "乘客：1 成人，经济舱。两段分开查询后相加；每段取最低直飞，不限航司。不自动购票。",
+        threshold_note(config, taxes_verified=False),
     ]
     for window in _windows(config):
         best = lowest_in_window(config, state, window)
@@ -496,7 +554,8 @@ def notify_window_winners(config, state, scanned_departures, now) -> bool:
                 best["price"], dep, ret,
                 _snapshot_offer(record, "outbound"),
                 _snapshot_offer(record, "return"),
-                captured, ideal=ideal, notes=notes,
+                captured, ideal=ideal, notes=notes, config=config,
+                taxes_verified=record.get("taxes_verified") is True,
             )
             try:
                 send_wechat(WECHAT_KEY, title, msg)
@@ -610,6 +669,9 @@ def perform(config, state, *, index=None, live=True, notify=True):
         name: leg_diag(leg) for name, leg in (("outbound", outbound), ("inbound", inbound))
     }
     result["taxes_verified"] = False
+    result["price_basis"] = "base_fare_ticketPrice"
+    result["threshold_compared_field"] = "base_fare"
+    result["surcharge_estimate"] = surcharge_estimate(config)
     result["baggage_verified"] = False
     result["ski_equipment_verified"] = False
     best = best_direct_price(outbound, inbound)
@@ -644,7 +706,12 @@ def perform(config, state, *, index=None, live=True, notify=True):
     result["status"] = "priced_reference"
     result["data_gap"] = False
     result["reference_sum_cny"] = str(price)
-    result["price_basis"] = "sum_of_two_one_way_ticketPrice_references"
+    result["price_basis"] = "base_fare_ticketPrice"
+    result["taxes_verified"] = False
+    source_taxes = (
+        outward.get("taxes_verified") is True and return_flight.get("taxes_verified") is True
+    )
+    result["source_tax_inclusive_available"] = source_taxes
     result["outbound"] = {
         "flight": outward["legs"][0].get("flight"),
         "airline": outward["legs"][0].get("airline"),
@@ -681,7 +748,8 @@ def perform(config, state, *, index=None, live=True, notify=True):
         if WECHAT_KEY:
             title, msg = build_wechat_message(
                 price, dep, ret, outward, return_flight, result["query_time_bjt"],
-                ideal=ideal, notes=result["annotations"],
+                ideal=ideal, notes=result["annotations"], config=config,
+                taxes_verified=result.get("taxes_verified") is True,
             )
             try:
                 send_wechat(WECHAT_KEY, title, msg)
@@ -728,7 +796,8 @@ def perform(config, state, *, index=None, live=True, notify=True):
     ]
     lines.extend(result["annotations"])
     lines.extend([
-        "税费、机建燃油、托运行李、雪具运输：未核实。ticketPrice 不是最终结算价。",
+        threshold_note(config, taxes_verified=result.get("taxes_verified") is True),
+        "税费、机建燃油、托运行李、雪具运输：未核实。ticketPrice 是不含税费的票面，不是最终结算价。",
         status_line,
         "去程订票链接：" + str(outward.get("booking_url") or "接口未返回"),
         "返程订票链接：" + str(return_flight.get("booking_url") or "接口未返回"),

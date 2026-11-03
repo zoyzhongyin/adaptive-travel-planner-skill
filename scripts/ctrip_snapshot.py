@@ -33,7 +33,9 @@ def offers(raw, origin, destination, day):
             carrier=flight[:2]
             row={"flight":flight,"carrier":carrier,
                  "airline":{"CA":"国航","3U":"川航","9C":"春秋","CZ":"南航","MU":"东航","MF":"厦航","G5":"华夏","EU":"成都航空"}.get(carrier,carrier),
-                 "price_cny":str(fare),"departure_time":str(seg.departure_time),
+                 "cabin":str(f.cabin),"price_cny":str(fare),"base_fare_cny":str(fare),
+                 "tax_inclusive_cny":None,"price_basis":"adult_price_taxes_unverified",
+                 "departure_time":str(seg.departure_time),
                  "operating_flight":str(seg.operate_flight_no or flight)}
             key=(flight,str(seg.departure_time))
             if key not in found or fare<Decimal(found[key]["price_cny"]):found[key]=row

@@ -1,0 +1,19 @@
+This directory vendors an excerpt of LLL151/ticket
+https://github.com/LLL151/ticket
+commit ca55181167a2a0856d577c542c815655679478ea
+(tree 3ea58b7cd7d9317ebae085a7b3397db5dfdc3987).
+
+Included, under the Apache License 2.0 (see LICENSE):
+- crawlers/fliggy.py: FliggyCrawler._parse_pc_text and the regexes it uses
+- crawlers/base.py: function iata2
+- core/models.py: PRICE_MIN and PRICE_MAX
+
+Changes from the upstream excerpt: the parser is a module function instead of
+a classmethod, and browser, login, challenge, and network code are omitted.
+The text-parser behavior of that commit is otherwise unchanged.
+
+A normal git clone of the default branch does not contain this commit, so
+`git checkout ca55181167a2a0856d577c542c815655679478ea` fails with
+"fatal: unable to read tree". This copy was taken from a direct fetch of
+that commit. It is not upstream HEAD (67587ba0114db439b2d5e2ad1e45b7ca5894301b
+at the time of vendoring). Do not replace this file by cloning HEAD.

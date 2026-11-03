@@ -46,6 +46,45 @@ class RecordedPayloadTests(unittest.TestCase):
         self.assertFalse(fare.leg_ready(parsed, direct_only=True))
         self.assertTrue(fare.leg_ready(parsed, direct_only=False))
 
+    def test_missing_cabin_is_not_a_price(self):
+        body = json.loads(load("flyai_direct_offer.json"))
+        for item in body["data"]["itemList"]:
+            for journey in item["journeys"]:
+                for segment in journey["segments"]:
+                    segment.pop("seatClassName", None)
+        parsed = fare.interpret_response(json.dumps(body), "TFU", "AAT", DAY)
+        self.assertEqual(parsed["offers"], [])
+        self.assertFalse(fare.leg_ready(parsed, direct_only=True))
+
+    def test_status1_with_prices_is_not_a_quote(self):
+        body = json.loads(load("flyai_direct_offer.json"))
+        body["status"] = 1
+        body["message"] = "搜索机票低价行业失败"
+        parsed = fare.interpret_response(json.dumps(body), "TFU", "AAT", DAY)
+        self.assertEqual(parsed["api_status"], 1)
+        self.assertGreater(parsed["raw_offer_count"], 0)
+        self.assertEqual(parsed["offers"], [])
+        self.assertFalse(fare.leg_ready(parsed, direct_only=True))
+        self.assertFalse(fare.leg_ready(parsed, direct_only=False))
+
+    def test_source_taxes_stay_separate_from_base_fare(self):
+        body = json.loads(load("flyai_direct_offer.json"))
+        direct = body["data"]["itemList"][1]
+        direct["buildPrice"] = "50"
+        direct["oilPrice"] = "90"
+        parsed = fare.interpret_response(json.dumps(body), "TFU", "AAT", DAY)
+        offer = [item for item in parsed["offers"] if item["direct"]][0]
+        self.assertEqual(offer["base_fare_cny"], "848.00")
+        self.assertEqual(offer["price_cny_reference"], "848.00")
+        self.assertEqual(offer["tax_inclusive_cny"], "988.00")
+        self.assertTrue(offer["taxes_verified"])
+        direct.pop("oilPrice")
+        parsed = fare.interpret_response(json.dumps(body), "TFU", "AAT", DAY)
+        offer = [item for item in parsed["offers"] if item["direct"]][0]
+        self.assertIsNone(offer["tax_inclusive_cny"])
+        self.assertFalse(offer["taxes_verified"])
+        self.assertEqual(offer["price_cny_reference"], "848.00")
+
 
 class RetryTests(unittest.TestCase):
     def test_status1_then_direct_stops_after_second_attempt(self):
@@ -150,7 +189,7 @@ class RetryTests(unittest.TestCase):
 
         self.assertFalse(fare.offer_matches_cabin({"legs": [{"seat_class": "公务舱"}]}, "经济舱"))
         self.assertTrue(fare.offer_matches_cabin({"legs": [{"seat_class": "经济舱"}]}, "经济舱"))
-        self.assertTrue(fare.offer_matches_cabin({"legs": [{"flight": "9C6685"}]}, "经济舱"))
+        self.assertFalse(fare.offer_matches_cabin({"legs": [{"flight": "9C6685"}]}, "经济舱"))
         with tempfile.TemporaryDirectory() as temp:
             fare.OUT_DIR = Path(temp)
             result = fare.query(

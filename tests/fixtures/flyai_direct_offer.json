@@ -14,7 +14,8 @@
                 "marketingTransportNo": "EU1815",
                 "marketingTransportName": "成都航",
                 "transportType": "飞机",
-                "stopInfos": null
+                "stopInfos": null,
+                "seatClassName": "经济舱"
               },
               {
                 "depStationCode": "TCG",
@@ -24,7 +25,8 @@
                 "marketingTransportNo": "EU3025",
                 "marketingTransportName": "成都航",
                 "transportType": "飞机",
-                "stopInfos": null
+                "stopInfos": null,
+                "seatClassName": "经济舱"
               }
             ]
           }
@@ -45,7 +47,8 @@
                 "marketingTransportNo": "9C6685",
                 "marketingTransportName": "春秋",
                 "transportType": "飞机",
-                "stopInfos": null
+                "stopInfos": null,
+                "seatClassName": "经济舱"
               }
             ]
           }

@@ -3,7 +3,7 @@
 Different technical channel from FlyAI; still the same Fliggy platform.
 No booking, paid API, user login, CAPTCHA handling or auto-alerts.
 """
-import json, os, re, sys
+import json, re, sys
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -11,6 +11,7 @@ from urllib.parse import quote,urlparse
 
 sys.path.insert(0,str(Path(__file__).resolve().parent.parent))
 from scripts import ctrip_snapshot as common
+from scripts.vendor.lll151_ticket.fliggy_pc_parse import parse_pc_text
 
 ROOT=Path(__file__).resolve().parent.parent
 OUTPUT=ROOT/"flight-watch/fliggy-latest.json"
@@ -28,11 +29,12 @@ def clean_rows(raw,origin,destination,day):
         arr_ok=("天府" in arr) if destination=="TFU" else ("雪都" in arr or "阿勒泰" in arr)
         no=str(r.get("code") or "").upper()
         tm=str(r.get("depTime") or "")
-        cabin=str(r.get("cabin") or "")
+        cabin=str(r.get("cabin") or "").strip()
+        # PC list price is labelled 不含税费. Empty cabin is not a price.
         if (not dep_ok or not arr_ok or not re.fullmatch(r"[A-Z0-9]{2}\d{3,5}",no)
                 or not re.match(r"^\d{2}:\d{2}",tm)
                 or r.get("transCity") or r.get("stopover")
-                or r.get("transfer") or cabin in ("公务舱","头等舱","商务舱")):
+                or r.get("transfer") or cabin != "经济舱"):
             continue
         try:
             fare=Decimal(str(r.get("price")))
@@ -42,7 +44,9 @@ def clean_rows(raw,origin,destination,day):
         row={"flight":no,"carrier":carrier,
              "airline":{"CA":"国航","3U":"川航","9C":"春秋","CZ":"南航","MU":"东航",
                         "MF":"厦航","G5":"华夏","EU":"成都航空"}.get(carrier,carrier),
-             "price_cny":str(fare),"departure_time":day+" "+tm[:5],
+             "price_cny":str(fare),"base_fare_cny":str(fare),
+             "tax_inclusive_cny":None,"price_basis":"base_fare_pretax_display",
+             "cabin":cabin,"departure_time":day+" "+tm[:5],
              "operating_flight":str(r.get("shareCarrier") or no)[:35]}
         key=(no,tm[:5])
         if key not in seen or fare<Decimal(seen[key]["price_cny"]):seen[key]=row
@@ -50,8 +54,6 @@ def clean_rows(raw,origin,destination,day):
 
 def snapshot(config,prior=None,now=None):
     from playwright.sync_api import sync_playwright
-    sys.path.insert(0,os.environ.get("FLIGGY_PARSER_PATH","/tmp/ticket"))
-    from crawlers.fliggy import FliggyCrawler
     with sync_playwright() as p:
         b=p.chromium.launch(headless=True)
         page=b.new_page(locale="zh-CN",viewport={"width":1440,"height":900})
@@ -76,7 +78,7 @@ def snapshot(config,prior=None,now=None):
                     page.wait_for_timeout(1500)
                     chunks.append(page.inner_text("body",timeout=8000))
                     page.mouse.wheel(0,1200)
-                data=FliggyCrawler._parse_pc_text("\n@@@\n".join(chunks),day)
+                data=parse_pc_text("\n@@@\n".join(chunks),day)
                 valid=clean_rows(data,a,d,day)
                 return valid,(None if valid else "no_strict_direct_listing")
             except Exception as exc:

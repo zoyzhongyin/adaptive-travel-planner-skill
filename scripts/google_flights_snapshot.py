@@ -39,9 +39,15 @@ def strict_google_offers(raw,origin,dest,day):
             if not amount.is_finite() or not (0<amount<50000):continue
             carrier=flight[:2]
             if carrier not in CARRIERS:continue
+            cabin=getattr(item,"cabin",None)
+            if cabin is None:
+                cabin=getattr(s,"cabin",None)
+            cabin=str(cabin or "").strip()
+            if cabin not in ("经济舱","ECONOMY","Y"):continue
             entry={"flight":flight,"carrier":carrier,"airline":CARRIERS[carrier],
-                   "price_cny":str(amount),"departure_time":stamp,
-                   "operating_flight":flight}
+                   "cabin":cabin,"price_cny":str(amount),"base_fare_cny":str(amount),
+                   "tax_inclusive_cny":None,"price_basis":"listing_price_taxes_unverified",
+                   "departure_time":stamp,"operating_flight":flight}
             key=(flight,stamp)
             if key not in found or amount<Decimal(found[key]["price_cny"]):
                 found[key]=entry
