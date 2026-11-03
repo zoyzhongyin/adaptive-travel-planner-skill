@@ -387,7 +387,8 @@ def main():
                      "；去程接口=" + str(record.get("outbound_api_status")) +
                      "；返程接口=" + str(record.get("inbound_api_status")) + flights + price)
     lines.append("status=1、缺返程或无法相加时，记为监控数据缺口。这不能说明没有航班，也不能说明价格高于预算。")
-    lines.append("参考价来自 ticketPrice，税费、机建燃油、托运行李和雪具费用均未核实。")
+    lines.append(watch.threshold_note(config, taxes_verified=False))
+    lines.append("参考价来自不含税费的票面 ticketPrice。估计的机建燃油不并入该参考价，也不触发提醒。托运行李和雪具费用未核实。")
     digest = watch.format_window_digest(config, state)
     if digest:
         lines.append(digest)

@@ -36,7 +36,8 @@ JS = r"""() => {
     airport_arr: String(x.arriveAirportCode || '').slice(0,8),
     date: String(x.flyOffTime || '').slice(0,10),
     stops: x.stopNum,
-    fare: x.flightPrice
+    fare: x.flightPrice,
+    cabin: String(x.cabinName || x.cabinClassName || x.seatClassName || x.cabin || '').slice(0, 20)
   }));
 }"""
 
@@ -63,13 +64,18 @@ def valid_fare(item: dict, *, origin: str, destination: str, day: str):
             or item.get("date") != day or item.get("stops") not in (0, 0.0, "0")):
         return None
     amount = price(item.get("fare"))
-    if amount is None:
+    cabin = str(item.get("cabin") or "").strip()
+    if amount is None or cabin not in ("经济舱", "Y", "ECONOMY"):
         return None
     return {
         "flight": number,
         "airline": CARRIERS[carrier],
         "carrier": carrier,
+        "cabin": cabin,
         "price_cny": str(amount),
+        "base_fare_cny": str(amount),
+        "tax_inclusive_cny": None,
+        "price_basis": "listing_price_taxes_unverified",
     }
 
 def cheapest(items: list, *, origin: str, destination: str, day: str):

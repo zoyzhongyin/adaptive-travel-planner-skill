@@ -22,7 +22,7 @@ class TestCtripSnapshot(unittest.TestCase):
     self.assertEqual(x[0]["flight"],"9C6685")
  def test_reject_wrong_airport_stop_cabin_date_price(self):
     bad=[fare(a="CTU"),fare(b="KJI"),fare(day=BACK),fare(n=2),
-         fare(cabin="C"),fare(amount=0),fare(amount=float("nan")),fare(code="FAKE")]
+         fare(cabin="C"),fare(cabin=""),fare(cabin=None),fare(amount=0),fare(amount=float("nan")),fare(code="FAKE")]
     self.assertEqual(c.offers(bad,"TFU","AAT",DATE),[])
  def test_missing_return_preserves_only_historical_and_never_triggers(self):
     prior={"itineraries":[{"departure":DATE,

@@ -3,7 +3,7 @@
 Different technical channel from FlyAI; still the same Fliggy platform.
 No booking, paid API, user login, CAPTCHA handling or auto-alerts.
 """
-import json, os, re, sys
+import json, re, sys
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -11,6 +11,7 @@ from urllib.parse import quote,urlparse
 
 sys.path.insert(0,str(Path(__file__).resolve().parent.parent))
 from scripts import ctrip_snapshot as common
+from scripts.vendor.lll151_ticket.fliggy_pc_parse import parse_pc_text
 
 ROOT=Path(__file__).resolve().parent.parent
 OUTPUT=ROOT/"flight-watch/fliggy-latest.json"
@@ -28,11 +29,12 @@ def clean_rows(raw,origin,destination,day):
         arr_ok=("天府" in arr) if destination=="TFU" else ("雪都" in arr or "阿勒泰" in arr)
         no=str(r.get("code") or "").upper()
         tm=str(r.get("depTime") or "")
-        cabin=str(r.get("cabin") or "")
+        cabin=str(r.get("cabin") or "").strip()
+        # PC list price is labelled 不含税费. Empty cabin is not a price.
         if (not dep_ok or not arr_ok or not re.fullmatch(r"[A-Z0-9]{2}\d{3,5}",no)
                 or not re.match(r"^\d{2}:\d{2}",tm)
                 or r.get("transCity") or r.get("stopover")
-                or r.get("transfer") or cabin in ("公务舱","头等舱","商务舱")):
+                or r.get("transfer") or cabin != "经济舱"):
             continue
         try:
             fare=Decimal(str(r.get("price")))
@@ -42,7 +44,9 @@ def clean_rows(raw,origin,destination,day):
         row={"flight":no,"carrier":carrier,
              "airline":{"CA":"国航","3U":"川航","9C":"春秋","CZ":"南航","MU":"东航",
                         "MF":"厦航","G5":"华夏","EU":"成都航空"}.get(carrier,carrier),
-             "price_cny":str(fare),"departure_time":day+" "+tm[:5],
+             "price_cny":str(fare),"base_fare_cny":str(fare),
+             "tax_inclusive_cny":None,"price_basis":"base_fare_pretax_display",
+             "cabin":cabin,"departure_time":day+" "+tm[:5],
              "operating_flight":str(r.get("shareCarrier") or no)[:35]}
         key=(no,tm[:5])
         if key not in seen or fare<Decimal(seen[key]["price_cny"]):seen[key]=row
@@ -50,8 +54,6 @@ def clean_rows(raw,origin,destination,day):
 
 def snapshot(config,prior=None,now=None):
     from playwright.sync_api import sync_playwright
-    sys.path.insert(0,os.environ.get("FLIGGY_PARSER_PATH","/tmp/ticket"))
-    from crawlers.fliggy import FliggyCrawler
     with sync_playwright() as p:
         b=p.chromium.launch(headless=True)
         page=b.new_page(locale="zh-CN",viewport={"width":1440,"height":900})
@@ -76,7 +78,7 @@ def snapshot(config,prior=None,now=None):
                     page.wait_for_timeout(1500)
                     chunks.append(page.inner_text("body",timeout=8000))
                     page.mouse.wheel(0,1200)
-                data=FliggyCrawler._parse_pc_text("\n@@@\n".join(chunks),day)
+                data=parse_pc_text("\n@@@\n".join(chunks),day)
                 valid=clean_rows(data,a,d,day)
                 return valid,(None if valid else "no_strict_direct_listing")
             except Exception as exc:
@@ -92,7 +94,39 @@ def snapshot(config,prior=None,now=None):
     data["bookability_verified"]=False
     return data
 
+def mark_failed(prior,stage,run_id=None,now=None):
+    """Data-source failure: keep last priced values only as last_valid, never as current."""
+    now=now or datetime.now(BJT)
+    stamp=now.astimezone(BJT).isoformat(timespec="seconds")
+    out={k:prior.get(k) for k in ("schema_version",) if k in prior}
+    out.setdefault("schema_version",1)
+    out.update({"source":SOURCE,"generated_at_bjt":stamp,
+        "source_status":"failed","stale":True,
+        "failure_stage":re.sub(r"[^a-z0-9_]","",str(stage))[:40] or "unknown",
+        "last_attempt_at_bjt":stamp,
+        "last_success_generated_at_bjt":prior.get("last_success_generated_at_bjt") if prior.get("source_status")=="failed" else prior.get("generated_at_bjt"),
+        "github_run_id":re.sub(r"[^0-9]","",str(run_id or ""))[:20] or None,
+        "taxes_verified":False,"cabin_verified":False,"baggage_verified":False,"bookability_verified":False})
+    rows=[]
+    for x in prior.get("itineraries",[]) or []:
+        if not isinstance(x,dict):continue
+        last=x.get("last_valid")
+        if x.get("status")=="priced_reference":
+            last={"checked_at_bjt":x.get("checked_at_bjt"),"total_cny":x.get("total_cny"),
+                  "outbound":x.get("outbound"),"return":x.get("return")}
+        rows.append({"departure":x.get("departure"),"return_date":x.get("return_date"),
+            "checked_at_bjt":stamp,"status":"source_failed","total_cny":None,
+            "outbound":None,"return":None,"last_valid":last,"stale":True,
+            "error_types":["data_source_failed:"+out["failure_stage"]]})
+    out["itineraries"]=rows
+    return out
+
 if __name__=="__main__":
+    if len(sys.argv)>=3 and sys.argv[1]=="--mark-failed":
+        prior=json.loads(OUTPUT.read_text(encoding="utf-8")) if OUTPUT.exists() else {}
+        OUTPUT.write_text(json.dumps(mark_failed(prior,sys.argv[2],os.environ.get("GITHUB_RUN_ID")),ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+        print("Fliggy PC data source FAILED at stage",sys.argv[2],"; previous prices kept only as stale last_valid.")
+        sys.exit(0)
     config=json.loads(CONFIG.read_text(encoding="utf-8"))
     prior=json.loads(OUTPUT.read_text(encoding="utf-8")) if OUTPUT.exists() else {}
     rows=snapshot(config,prior)

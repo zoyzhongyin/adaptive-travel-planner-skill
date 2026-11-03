@@ -12,7 +12,8 @@
                 "depDateTime": "2026-12-14 09:00:00",
                 "arrDateTime": "2026-12-14 13:00:00",
                 "marketingTransportNo": "XX100",
-                "transportType": "飞机"
+                "transportType": "飞机",
+                "seatClassName": "经济舱"
               }
             ]
           }
@@ -31,7 +32,8 @@
                 "depDateTime": "2026-12-15 09:00:00",
                 "arrDateTime": "2026-12-15 13:00:00",
                 "marketingTransportNo": "XX200",
-                "transportType": "飞机"
+                "transportType": "飞机",
+                "seatClassName": "经济舱"
               }
             ]
           }
@@ -50,7 +52,8 @@
                 "depDateTime": "2026-12-14 09:00:00",
                 "arrDateTime": "2026-12-14 13:00:00",
                 "marketingTransportNo": "XX300",
-                "transportType": "飞机"
+                "transportType": "飞机",
+                "seatClassName": "经济舱"
               }
             ]
           }
@@ -70,7 +73,12 @@
                 "arrDateTime": "2026-12-14 16:00:00",
                 "marketingTransportNo": "9C6685",
                 "transportType": "飞机",
-                "stopInfos": [{"stopCity": "URC"}]
+                "stopInfos": [
+                  {
+                    "stopCity": "URC"
+                  }
+                ],
+                "seatClassName": "经济舱"
               }
             ]
           }

@@ -20,6 +20,8 @@ CONFIG = {
     "alert_price_cny": 1500,
     "ideal_price_cny": 1200,
     "min_drop_cny": 50,
+    "estimated_airport_fuel_per_leg_cny": 140,
+    "estimated_airport_fuel_label": "estimate, verified 2026-11-03",
     "stop_after": "2026-12-23",
     "max_leg_attempts": 3,
 }
@@ -116,6 +118,13 @@ class AlertAndGapTests(unittest.TestCase):
         self.assertIn("北京时间", body)
         self.assertIn("https://example.com/out", body)
         self.assertIn("https://example.com/back", body)
+        self.assertIn("比较的是票面", body)
+        self.assertIn("¥1500", body)
+        self.assertIn("¥1200", body)
+        self.assertIn("estimate, verified 2026-11-03", body)
+        self.assertIn("¥140", body)
+        self.assertIn("¥280", body)
+        self.assertNotIn("1460", body)
         self.assertIn("税费、机建燃油：未核实", body)
         self.assertIn("托运行李：未核实", body)
         self.assertIn("雪具运输：未核实", body)
@@ -128,6 +137,10 @@ class AlertAndGapTests(unittest.TestCase):
         self.assertEqual(written["party"]["adults_cli_supported"], False)
         self.assertIn("理想价", captured["title"])
         self.assertEqual(written["taxes_verified"], False)
+        self.assertEqual(written["reference_sum_cny"], "1180.00")
+        self.assertEqual(written["price_basis"], "base_fare_ticketPrice")
+        self.assertEqual(written["surcharge_estimate"]["round_trip_cny"], "280")
+        self.assertFalse(written["surcharge_estimate"]["merged_into_verified_price"])
         self.assertEqual(state["alerts"]["2026-12-05_2026-12-10"]["best_alert_cny"], "1180.00")
         self.assertEqual(save.call_count, 1)
 
@@ -281,6 +294,8 @@ class DateExpansionTests(unittest.TestCase):
         self.assertEqual(config["date_flex_days"], 1)
         self.assertEqual(config["alert_price_cny"], 1500)
         self.assertEqual(config["ideal_price_cny"], 1200)
+        self.assertEqual(config["estimated_airport_fuel_per_leg_cny"], 140)
+        self.assertEqual(config["estimated_airport_fuel_label"], "estimate, verified 2026-11-03")
         self.assertEqual(config["min_drop_cny"], 50)
         self.assertEqual(config["max_pairs_per_run"], 3)
         self.assertEqual(config["stop_after"], "2026-12-31")

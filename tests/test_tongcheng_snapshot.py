@@ -10,10 +10,10 @@ CONFIG = {"origin":"TFU","destination":"AAT","direct_only":True,
           "stay_nights":5,"departure_dates":[DAY]}
 
 def item(*, flight="9C6685", dep="TFU", arr="AAT", day=DAY,
-         fare=840, stops=0, airline="9C"):
+         fare=840, stops=0, airline="9C", cabin="经济舱"):
     return {"no":flight, "airline_code":airline,
             "airport_dep":dep, "airport_arr":arr,
-            "date":day, "stops":stops, "fare":fare}
+            "date":day, "stops":stops, "fare":fare, "cabin":cabin}
 
 class ParsingTests(unittest.TestCase):
     def test_exact_public_airport_day_nonstop_price_accepted_as_unverified(self):
@@ -28,6 +28,7 @@ class ParsingTests(unittest.TestCase):
             item(stops=1), item(fare=-1), item(fare=0), item(fare="¥100"),
             item(fare=bool(True)), item(flight="MU1111",airline="MU"),
             item(airline="CA"), item(flight="9C9999", dep="AAT"),
+            item(cabin=""), item(cabin=None),
         ]
         for case in candidates:
             self.assertIsNone(tc.valid_fare(case,origin="TFU",destination="AAT",day=DAY))

@@ -72,6 +72,25 @@ def parse_price(value):
         return None
 
 
+# Recognized only when the payload actually contains the key. 2026-11-03
+# search-flight items expose ticketPrice and no 机建/燃油 field.
+FEE_AIRPORT_KEYS = ("buildPrice", "airportFee", "airportTax", "machineConstructionFee")
+FEE_FUEL_KEYS = ("oilPrice", "fuelFee", "fuelSurcharge", "fuelTax")
+
+
+def provided_fee(item: dict, keys: tuple[str, ...]):
+    """Return a fee the source included. Missing keys stay unknown."""
+    if not isinstance(item, dict):
+        return None
+    for key in keys:
+        if key not in item:
+            continue
+        amount = parse_price(item.get(key))
+        if amount is not None:
+            return amount
+    return None
+
+
 def city_label(place: str) -> str:
     return AIRPORT_CITY_NAMES.get(place.upper(), place)
 
@@ -127,10 +146,21 @@ def route_option(item: dict, origin: str, destination: str, expected_date: dt.da
     departure_text = str(first.get("depDateTime") or "")
     if expected_date is not None and not departure_text.startswith(expected_date.isoformat()):
         return None
-    # adultPrice is a different, unverified field. Only ticketPrice is a reference fare.
+    # A segment with no cabin/class is not a fare quote.
+    if any(not str(s.get("seatClassName") or "").strip() for s in segments):
+        return None
+    # adultPrice is a different, unverified field. Only ticketPrice is the base fare.
     price = parse_price(item.get("ticketPrice"))
     if price is None or price <= 0:
         return None
+    airport_fee = provided_fee(item, FEE_AIRPORT_KEYS)
+    fuel_fee = provided_fee(item, FEE_FUEL_KEYS)
+    # ticketPrice is the base fare (Fliggy list label: 不含税费). A tax-inclusive
+    # total exists only when this payload itself includes both 机建 and 燃油.
+    # An observed per-leg surcharge is never added here.
+    tax_inclusive = None
+    if airport_fee is not None and fuel_fee is not None:
+        tax_inclusive = price + airport_fee + fuel_fee
     flight_no = str(first.get("marketingTransportNo") or "").strip()
     stops = first.get("stopInfos")
     has_stop = isinstance(stops, (list, dict)) and len(stops) > 0
@@ -144,7 +174,7 @@ def route_option(item: dict, origin: str, destination: str, expected_date: dt.da
         {
             "flight": s.get("marketingTransportNo"),
             "airline": s.get("marketingTransportName"),
-            "seat_class": s.get("seatClassName"),
+            "seat_class": str(s.get("seatClassName") or "").strip(),
             "from": s.get("depStationCode"),
             "to": s.get("arrStationCode"),
             "departure": s.get("depDateTime"),
@@ -154,8 +184,15 @@ def route_option(item: dict, origin: str, destination: str, expected_date: dt.da
     ]
     return {
         "price_cny_reference": str(price),
-        "price_basis": "ticketPrice_reference",
-        "taxes_verified": False,
+        "base_fare_cny": str(price),
+        "airport_fee_cny": None if airport_fee is None else str(airport_fee),
+        "fuel_fee_cny": None if fuel_fee is None else str(fuel_fee),
+        "tax_inclusive_cny": None if tax_inclusive is None else str(tax_inclusive),
+        "price_basis": (
+            "tax_inclusive_base_plus_airport_and_fuel"
+            if tax_inclusive is not None else "base_fare_ticketPrice"
+        ),
+        "taxes_verified": tax_inclusive is not None,
         "baggage_verified": False,
         "ski_equipment_verified": False,
         "direct": direct,
@@ -185,43 +222,45 @@ def interpret_response(stdout: str, origin: str, destination: str, expected_date
     if not isinstance(entries, list):
         entries = []
     options = []
-    for entry in entries:
-        if isinstance(entry, dict):
-            parsed = route_option(entry, origin, destination, expected_date)
-            if parsed is not None:
-                options.append(parsed)
+    # status other than 0 is a failed search. Leftover itemList rows are not quotes.
+    if data.get("status") == 0:
+        for entry in entries:
+            if isinstance(entry, dict):
+                parsed = route_option(entry, origin, destination, expected_date)
+                if parsed is not None:
+                    options.append(parsed)
     result["offers"] = sorted(options, key=lambda x: Decimal(x["price_cny_reference"]))
     result["raw_offer_count"] = len(entries)
     return result
 
 
 def offer_matches_cabin(offer: dict, seat_class_name: str | None) -> bool:
-    """Keep unlabeled offers. Drop a labeled cabin that is not the one we asked for.
+    """A quote with no cabin/class on every leg is not a price.
 
-    Recorded FlyAI payloads often omit seatClassName. Filtering those out would
-    hide every direct, including non-9C flights. The CLI flag is the primary
-    cabin control; this only rejects an explicit other cabin.
+    When a cabin was requested, an explicit other cabin is also dropped.
     """
-    if not seat_class_name:
-        return True
+    legs = offer.get("legs") or []
     labels = []
-    for leg in offer.get("legs") or []:
+    for leg in legs:
         label = str((leg or {}).get("seat_class") or "").strip()
-        if label:
-            labels.append(label)
+        if not label:
+            return False
+        labels.append(label)
     if not labels:
+        return False
+    if not seat_class_name:
         return True
     return all(label == seat_class_name for label in labels)
 
 
 def leg_ready(result: dict, direct_only: bool) -> bool:
-    """A usable one-way quote. status=1 or a missing direct leg is not ready."""
-    if result.get("error"):
+    """A usable one-way quote. Any status other than 0 is not a price."""
+    if result.get("error") or result.get("api_status") != 0:
         return False
     offers = result.get("offers") or []
     if direct_only:
         return any(offer.get("direct") for offer in offers)
-    return bool(offers) and result.get("api_status") == 0
+    return bool(offers)
 
 
 def _prefer(candidate: dict, current: dict | None, direct_only: bool) -> bool:
@@ -345,21 +384,11 @@ def summarize(req: dict, results: list[dict]) -> str:
             lines.append(f"- **最低已返回双程直飞参考报价合计：¥{price}**（两张单程相加，非已核实往返出票价）")
             lines.append(f"  - 去程：[预订入口]({a['booking_url']}) / 返程：[预订入口]({b['booking_url']})")
             summary.append({"departure": pair["departure"], "return": pair["return"], "direct_combined_reference_cny": str(price)})
-            # Route-specific hypothetical budget, NOT a verified checkout quote.
-            # Sources: Spring Airlines 2026-08-18 baggage table (2000-2999 km),
-            # official October 2026 domestic fuel charge (90 CNY per >800km leg)
-            # and domestic adult passenger civil aviation development fee (50 CNY/leg).
-            if (req["origin"].upper(), req["destination"].upper()) == ("TFU", "AAT") and any(str(s.get("flight") or "").upper().startswith("9C") for s in b["legs"]):
-                baggage_20kg = Decimal("159")
-                fee_each_leg = Decimal("140")  # hypothetical 50 + 90, if NOT included
-                incl = price + baggage_20kg
-                excl = incl + fee_each_leg * 2
-                lines.append("  - **费用敏感性示例，非实际含税报价：**按春秋返程基础票不含托运、另提前购买20kg行李（+159元）假设：")
-                lines.append(f"    - 若 FlyAI 报价已包含机建及燃油：¥{incl}（仅加20kg行李）")
-                lines.append(f"    - 若 FlyAI 两段报价均未包含机建及燃油：¥{excl}（再加每段50元民航发展基金与90元燃油费）")
-                lines.append("    - 这两种是假设情景，**不是报价区间或价格承诺**。不可重复添加已含税费。春秋票型是否含行李、川航实际托运额度、滑雪板尺寸/手续费、平台服务费，必须以订单确认为准。")
-                lines.append("    - 规则依据：[春秋2026行李价格](https://news.springairlines.cn/news/2026-06-16-00-00.html)、[燃油附加费通知](https://webresource.airchina.com.cn/zh-CN/content/c/2026-10-08/30592.shtml)、[财政部民航收费规定](https://www.mof.gov.cn/gkml/caizhengwengao/caizhengbuwengao2008/caizhengbuwengao20083/200805/t20080519_29156.htm)。")
-                lines.append("    - 当前飞猪预订链接会跳转 login.taobao.com，自动程序不能查看登录后的结算页面。")
+            verified = a.get("taxes_verified") is True and b.get("taxes_verified") is True
+            if verified:
+                lines.append("  - 两段都带有来源提供的机建和燃油，上面的合计是含税价（票面+机建+燃油）。")
+            else:
+                lines.append("  - 来源未同时给出机建与燃油，合计只是票面。不使用假定的民航发展基金或燃油费，含税价未知。")
         if possible:
             a, b = depart["offers"][0], ret["offers"][0]
             price = Decimal(a["price_cny_reference"]) + Decimal(b["price_cny_reference"])
