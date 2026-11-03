@@ -5,10 +5,10 @@
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
     "2026-12-08": "2026-11-03T14:52:38+08:00",
-    "2026-12-09": "2026-11-03T14:52:53+08:00",
+    "2026-12-09": "2026-11-03T15:37:49+08:00",
     "2026-12-17": "2026-11-03T14:52:42+08:00",
     "2026-12-18": "2026-11-03T15:07:43+08:00",
-    "2026-12-26": "2026-11-03T14:22:48+08:00",
+    "2026-12-26": "2026-11-03T15:37:38+08:00",
     "2026-12-27": "2026-11-03T14:37:38+08:00"
   },
   "last_scan_results": {
@@ -71,7 +71,7 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-11-03T14:52:53+08:00",
+      "checked_at_bjt": "2026-11-03T15:37:49+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 0,
@@ -84,7 +84,7 @@
       "outbound_price_cny": null,
       "return_price_cny": "969.00",
       "outbound_url": null,
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1qxlPc",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F3jyZQ8",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": null,
@@ -249,7 +249,7 @@
       ]
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-11-03T14:22:48+08:00",
+      "checked_at_bjt": "2026-11-03T15:37:38+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -377,10 +377,10 @@
   },
   "consecutive_incomplete": {
     "2026-12-08": 0,
-    "2026-12-09": 2,
+    "2026-12-09": 3,
     "2026-12-17": 10,
     "2026-12-18": 10,
-    "2026-12-26": 11,
+    "2026-12-26": 12,
     "2026-12-27": 0
   },
   "incomplete_since_bjt": {
