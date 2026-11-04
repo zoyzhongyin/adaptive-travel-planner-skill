@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "source": "fliggy_pc_public_listing",
-  "generated_at_bjt": "2026-11-04T16:11:25+08:00",
+  "generated_at_bjt": "2026-11-05T04:36:39+08:00",
   "taxes_verified": false,
   "cabin_verified": false,
   "baggage_verified": false,
@@ -10,7 +10,7 @@
     {
       "departure": "2026-12-08",
       "return_date": "2026-12-13",
-      "checked_at_bjt": "2026-11-04T16:10:49+08:00",
+      "checked_at_bjt": "2026-11-05T04:35:17+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -20,14 +20,14 @@
         "total_cny": "1790.0"
       },
       "error_types": [
-        "TimeoutError",
-        "Error"
+        "no_strict_direct_listing",
+        "no_strict_direct_listing"
       ]
     },
     {
       "departure": "2026-12-09",
       "return_date": "2026-12-14",
-      "checked_at_bjt": "2026-11-04T16:11:19+08:00",
+      "checked_at_bjt": "2026-11-05T04:35:34+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -37,14 +37,14 @@
         "total_cny": "1750.0"
       },
       "error_types": [
-        "Error",
-        "Error"
+        "no_strict_direct_listing",
+        "no_strict_direct_listing"
       ]
     },
     {
       "departure": "2026-12-17",
       "return_date": "2026-12-22",
-      "checked_at_bjt": "2026-11-04T16:11:23+08:00",
+      "checked_at_bjt": "2026-11-05T04:35:48+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -54,14 +54,14 @@
         "total_cny": "2130.0"
       },
       "error_types": [
-        "Error",
-        "Error"
+        "no_strict_direct_listing",
+        "no_strict_direct_listing"
       ]
     },
     {
       "departure": "2026-12-18",
       "return_date": "2026-12-23",
-      "checked_at_bjt": "2026-11-04T16:11:24+08:00",
+      "checked_at_bjt": "2026-11-05T04:36:00+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -71,14 +71,14 @@
         "total_cny": "2100.0"
       },
       "error_types": [
-        "Error",
-        "Error"
+        "no_strict_direct_listing",
+        "no_strict_direct_listing"
       ]
     },
     {
       "departure": "2026-12-26",
       "return_date": "2026-12-31",
-      "checked_at_bjt": "2026-11-04T16:11:24+08:00",
+      "checked_at_bjt": "2026-11-05T04:36:14+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -88,14 +88,14 @@
         "total_cny": "2650.0"
       },
       "error_types": [
-        "Error",
-        "Error"
+        "no_strict_direct_listing",
+        "no_strict_direct_listing"
       ]
     },
     {
       "departure": "2026-12-27",
       "return_date": "2027-01-01",
-      "checked_at_bjt": "2026-11-04T16:11:25+08:00",
+      "checked_at_bjt": "2026-11-05T04:36:27+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -105,8 +105,8 @@
         "total_cny": "2450.0"
       },
       "error_types": [
-        "Error",
-        "Error"
+        "no_strict_direct_listing",
+        "no_strict_direct_listing"
       ]
     }
   ]
