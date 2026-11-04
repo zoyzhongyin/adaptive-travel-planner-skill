@@ -6,10 +6,10 @@
   "last_scan_bjt": {
     "2026-12-08": "2026-11-05T03:22:45+08:00",
     "2026-12-09": "2026-11-05T02:53:40+08:00",
-    "2026-12-17": "2026-11-05T02:37:41+08:00",
+    "2026-12-17": "2026-11-05T03:52:41+08:00",
     "2026-12-18": "2026-11-05T03:07:39+08:00",
     "2026-12-26": "2026-11-05T02:53:24+08:00",
-    "2026-12-27": "2026-11-05T02:37:38+08:00"
+    "2026-12-27": "2026-11-05T03:52:38+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
@@ -133,7 +133,7 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-11-05T02:37:41+08:00",
+      "checked_at_bjt": "2026-11-05T03:52:41+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 0,
       "inbound_api_status": 1,
@@ -145,7 +145,7 @@
       "return_airline": null,
       "outbound_price_cny": "1039.00",
       "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F32ns1U",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2juCJz",
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -308,7 +308,7 @@
       ]
     },
     "2026-12-27": {
-      "checked_at_bjt": "2026-11-05T02:37:38+08:00",
+      "checked_at_bjt": "2026-11-05T03:52:38+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 0,
       "inbound_api_status": 1,
@@ -320,7 +320,7 @@
       "return_airline": null,
       "outbound_price_cny": "1159.00",
       "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0vSZXX",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F3jxMn4",
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -378,10 +378,10 @@
   "consecutive_incomplete": {
     "2026-12-08": 2,
     "2026-12-09": 4,
-    "2026-12-17": 4,
+    "2026-12-17": 5,
     "2026-12-18": 0,
     "2026-12-26": 12,
-    "2026-12-27": 23
+    "2026-12-27": 24
   },
   "incomplete_since_bjt": {
     "2026-12-27": "2026-11-04T00:22:46+08:00",
