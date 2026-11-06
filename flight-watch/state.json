@@ -6,7 +6,7 @@
   "last_scan_bjt": {
     "2026-12-08": "2026-11-06T15:37:40+08:00",
     "2026-12-09": "2026-11-06T15:22:38+08:00",
-    "2026-12-17": "2026-11-06T14:37:37+08:00",
+    "2026-12-17": "2026-11-06T15:52:45+08:00",
     "2026-12-18": "2026-11-06T15:22:42+08:00",
     "2026-12-26": "2026-11-06T15:37:37+08:00",
     "2026-12-27": "2026-11-06T15:22:46+08:00"
@@ -129,7 +129,7 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-11-06T14:37:37+08:00",
+      "checked_at_bjt": "2026-11-06T15:52:45+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 0,
       "inbound_api_status": 1,
@@ -141,7 +141,7 @@
       "return_airline": null,
       "outbound_price_cny": "1039.00",
       "return_price_cny": null,
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F02ZyiZ",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1Koubn",
       "return_url": null,
       "taxes_verified": false,
       "baggage_verified": false,
@@ -170,13 +170,17 @@
           "error": null,
           "api_message": "搜索机票低价行业失败",
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
+            1,
+            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         }
       },
@@ -374,7 +378,7 @@
   "consecutive_incomplete": {
     "2026-12-08": 4,
     "2026-12-09": 0,
-    "2026-12-17": 12,
+    "2026-12-17": 13,
     "2026-12-18": 0,
     "2026-12-26": 4,
     "2026-12-27": 11
