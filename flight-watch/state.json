@@ -4,16 +4,16 @@
   "window_alerts": {},
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
-    "2026-12-08": "2026-11-06T16:52:41+08:00",
+    "2026-12-08": "2026-11-06T17:55:14+08:00",
     "2026-12-09": "2026-11-06T17:52:44+08:00",
     "2026-12-17": "2026-11-06T17:07:40+08:00",
     "2026-12-18": "2026-11-06T17:52:48+08:00",
-    "2026-12-26": "2026-11-06T16:52:37+08:00",
+    "2026-12-26": "2026-11-06T17:55:09+08:00",
     "2026-12-27": "2026-11-06T17:52:59+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
-      "checked_at_bjt": "2026-11-06T16:52:41+08:00",
+      "checked_at_bjt": "2026-11-06T17:55:14+08:00",
       "status": "priced_reference",
       "outbound_api_status": 0,
       "inbound_api_status": 0,
@@ -25,8 +25,8 @@
       "return_airline": "春秋",
       "outbound_price_cny": "709.00",
       "return_price_cny": "1099.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4JbZPQ",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F14meDg",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2auYQW",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1YphdU",
       "taxes_verified": false,
       "baggage_verified": false,
       "notification_channel": "deferred_to_window",
@@ -249,7 +249,7 @@
       ]
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-11-06T16:52:37+08:00",
+      "checked_at_bjt": "2026-11-06T17:55:09+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -372,7 +372,7 @@
     }
   },
   "last_valid_quote_bjt": {
-    "2026-12-08": "2026-11-06T16:52:41+08:00",
+    "2026-12-08": "2026-11-06T17:55:14+08:00",
     "2026-12-09": "2026-11-06T16:37:37+08:00",
     "2026-12-27": "2026-11-06T03:07:43+08:00",
     "2026-12-26": "2026-11-06T11:37:38+08:00",
@@ -384,7 +384,7 @@
     "2026-12-09": 1,
     "2026-12-17": 0,
     "2026-12-18": 0,
-    "2026-12-26": 5,
+    "2026-12-26": 6,
     "2026-12-27": 13
   },
   "incomplete_since_bjt": {
@@ -416,7 +416,7 @@
       "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0gcGN4"
     },
     "2026-12-08": {
-      "checked_at_bjt": "2026-11-06T16:52:41+08:00",
+      "checked_at_bjt": "2026-11-06T17:55:14+08:00",
       "return_date": "2026-12-13",
       "reference_total_cny": "1808.00",
       "outbound_flight": "9C6685",
@@ -425,8 +425,8 @@
       "return_airline": "春秋",
       "outbound_price_cny": "709.00",
       "return_price_cny": "1099.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4JbZPQ",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F14meDg"
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2auYQW",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1YphdU"
     },
     "2026-12-26": {
       "checked_at_bjt": "2026-11-06T11:37:38+08:00",
