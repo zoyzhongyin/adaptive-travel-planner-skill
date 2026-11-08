@@ -113,12 +113,16 @@ class AnomalyTests(unittest.TestCase):
         self.assertTrue(anomaly_on_cooldown(state, now + timedelta(hours=13)))
         self.assertFalse(anomaly_on_cooldown(state, now + timedelta(hours=25)))
 
-    def test_persistent_outage_is_not_sent_again_after_twenty_four_hours(self):
+    def test_persistent_outage_reminds_after_cooldown_instead_of_staying_muted(self):
         state = {"last_anomaly_alert_bjt": NOW.isoformat(),
-                 "last_anomaly_gaps": ["2026-12-14"]}
-        later = NOW + timedelta(days=2)
+                 "last_anomaly_gaps": ["2026-12-14"],
+                 "anomaly_episode_active": True}
         self.assertTrue(batch.anomaly_episode_active(state))
         self.assertFalse(batch.should_notify_anomaly(
+            state, ["2026-12-14"], NOW + timedelta(hours=12)
+        ))
+        later = NOW + timedelta(days=2)
+        self.assertTrue(batch.should_notify_anomaly(
             state, ["2026-12-14", "2026-12-23"], later
         ))
 
@@ -143,8 +147,12 @@ class AnomalyTests(unittest.TestCase):
         self.assertIn("10月29日 12:37", message)
         self.assertNotIn("2026-10-29T", message)
         self.assertIn("监控异常", title)
-        self.assertFalse(batch.should_notify_anomaly(
+        self.assertTrue(batch.should_notify_anomaly(
             {"anomaly_episode_active": True}, ["2026-12-17"], NOW + timedelta(days=3)
+        ))
+        cooling = {"anomaly_episode_active": True, "last_anomaly_alert_bjt": NOW.isoformat()}
+        self.assertFalse(batch.should_notify_anomaly(
+            cooling, ["2026-12-17"], NOW + timedelta(hours=3)
         ))
 
     def test_a_fresh_gap_and_a_recovered_quote_do_not_notify(self):

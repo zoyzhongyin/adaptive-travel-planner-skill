@@ -55,9 +55,20 @@ test('network failure retries are bounded and safe', async () => {
   assert.equal(f.requests.length, 3);
 });
 
-test('monitor end date stops dispatch at Beijing midnight', async () => {
-  const f = fake([]); await dispatch(env, Date.parse('2026-12-24T00:00:00+08:00'), f.io);
-  assert.equal(f.requests.length, 0); assert.equal(f.logs[0].event, 'dispatch_inactive');
+test('dispatch continues from Dec 24 through the last departure day', async () => {
+  for (const when of ['2026-12-24T00:00:00+08:00', '2026-12-27T15:07:00+08:00', '2026-12-31T23:52:00+08:00']) {
+    const f = fake([204]);
+    await dispatch(env, Date.parse(when), f.io);
+    assert.equal(f.requests.length, 1, when);
+    assert.equal(f.logs[0].event, 'dispatch_accepted');
+  }
+});
+
+test('dispatch stops after the configured stop_after day', async () => {
+  const f = fake([]);
+  await dispatch(env, Date.parse('2027-01-01T00:00:00+08:00'), f.io);
+  assert.equal(f.requests.length, 0);
+  assert.equal(f.logs[0].event, 'dispatch_inactive');
 });
 
 test('public HTML and JSON endpoints expose only sanitized read-only data', async () => {

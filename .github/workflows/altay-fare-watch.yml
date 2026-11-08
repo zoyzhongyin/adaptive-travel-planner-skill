@@ -82,7 +82,7 @@ jobs:
           path: fare-results/
           if-no-files-found: ignore
           retention-days: 5
-      - name: Prepare public fare snapshot (skip when less than 45 minutes old)
+      - name: Prepare public fare snapshot (publish when the quote status changes)
         id: dashboard
         if: steps.due.outputs.due == 'true' && steps.price_watch.outcome == 'success'
         continue-on-error: true

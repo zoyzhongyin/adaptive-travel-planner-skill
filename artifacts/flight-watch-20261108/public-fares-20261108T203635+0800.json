@@ -1,0 +1,65 @@
+{
+  "fetched_at_bjt": "2026-11-08T20:36:35+08:00",
+  "http_status": 200,
+  "generated_at_bjt": "2026-11-08T19:53:00+08:00",
+  "most_recent_check_bjt": "2026-11-08T19:52:56+08:00",
+  "priced_reference_count": 1,
+  "itinerary_count": 6,
+  "itineraries": [
+    {
+      "departure": "2026-12-08",
+      "return_date": "2026-12-13",
+      "status": "incomplete",
+      "checked_at_bjt": "2026-11-08T19:52:56+08:00",
+      "total_cny": null,
+      "last_valid_checked_at_bjt": "2026-11-08T01:07:42+08:00",
+      "last_valid_total_cny": "1809.00"
+    },
+    {
+      "departure": "2026-12-09",
+      "return_date": "2026-12-14",
+      "status": "incomplete",
+      "checked_at_bjt": "2026-11-08T18:52:51+08:00",
+      "total_cny": null,
+      "last_valid_checked_at_bjt": "2026-11-08T13:52:48+08:00",
+      "last_valid_total_cny": "1769.00"
+    },
+    {
+      "departure": "2026-12-17",
+      "return_date": "2026-12-22",
+      "status": "incomplete",
+      "checked_at_bjt": "2026-11-08T19:52:35+08:00",
+      "total_cny": null,
+      "last_valid_checked_at_bjt": "2026-11-07T12:52:39+08:00",
+      "last_valid_total_cny": "2139.00"
+    },
+    {
+      "departure": "2026-12-18",
+      "return_date": "2026-12-23",
+      "status": "priced_reference",
+      "checked_at_bjt": "2026-11-08T18:52:48+08:00",
+      "total_cny": "2337.00",
+      "last_valid_checked_at_bjt": "2026-11-08T18:52:48+08:00",
+      "last_valid_total_cny": "2337.00"
+    },
+    {
+      "departure": "2026-12-26",
+      "return_date": "2026-12-31",
+      "status": "incomplete",
+      "checked_at_bjt": "2026-11-08T18:52:44+08:00",
+      "total_cny": null,
+      "last_valid_checked_at_bjt": "2026-11-08T03:52:42+08:00",
+      "last_valid_total_cny": "2776.00"
+    },
+    {
+      "departure": "2026-12-27",
+      "return_date": "2027-01-01",
+      "status": "incomplete",
+      "checked_at_bjt": "2026-11-08T19:52:53+08:00",
+      "total_cny": null,
+      "last_valid_checked_at_bjt": "2026-11-07T21:22:38+08:00",
+      "last_valid_total_cny": "2578.00"
+    }
+  ],
+  "note": "Public snapshot only. 12-18 total 2337 is the 18:52 reference still marked current because the 20:07 incomplete scan was not published. Not a new quote and not a bookable total."
+}

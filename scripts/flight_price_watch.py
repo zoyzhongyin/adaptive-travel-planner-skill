@@ -20,7 +20,7 @@ import urllib.error
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from scripts.flight_fare_query import query, OUT_DIR  # noqa: E402
+from scripts.flight_fare_query import query, OUT_DIR, sanitize_diagnostic  # noqa: E402
 from scripts.serverchan_push import send_wechat, DeliveryError  # noqa: E402
 
 CONFIG_PATH = ROOT / "flight-watch/config.json"
@@ -113,11 +113,18 @@ def nonstop_label(offer):
 
 def leg_diag(leg):
     attempts = leg.get("attempts") or []
-    diag = {key: leg.get(key) for key in ("cli_exit", "api_status", "raw_offer_count", "error", "api_message", "platform_message")}
+    diag = {key: leg.get(key) for key in (
+        "cli_exit", "api_status", "raw_offer_count", "error", "api_message", "platform_message",
+        "failure_layer", "http_status", "stdout_kind", "error_detail",
+    )}
+    for key in ("api_message", "platform_message", "error_detail"):
+        if diag.get(key) is not None:
+            diag[key] = sanitize_diagnostic(diag[key])
     diag["query_strategy"] = leg.get("query_strategy")
     diag["attempt_count"] = len(attempts)
     diag["attempt_statuses"] = [item.get("api_status") for item in attempts]
     diag["attempt_labels"] = [item.get("label") for item in attempts]
+    diag["attempt_layers"] = [item.get("failure_layer") for item in attempts]
     return diag
 
 

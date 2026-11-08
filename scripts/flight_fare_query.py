@@ -19,6 +19,14 @@ PAIR_LIMIT = 7
 # attempts change sort, then city name, still on the same official API.
 RETRY_PAUSES_SECONDS = (2, 4)
 AIRPORT_CITY_NAMES = {"TFU": "成都", "AAT": "阿勒泰"}
+DIAG_TEXT_LIMIT = 120
+_SECRET_TEXT = re.compile(
+    r"(?i)\b(?:sct|sctp)[a-z0-9]{8,}\b|github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9]+|"
+    r"bearer\s+[A-Za-z0-9._\-]+|(?:api[_-]?key|sendkey|token)\s*[=:]\s*\S+"
+)
+_HTTP_STATUS = re.compile(
+    r"(?i)(?:\bHTTP/\d(?:\.\d)?\s+(\d{3})\b|\bHTTP\s+(\d{3})\b|\bstatus(?:\s+code)?\s*[:= ]\s*(\d{3})\b)"
+)
 
 
 def checked_request(path: Path) -> dict:
@@ -205,13 +213,97 @@ def route_option(item: dict, origin: str, destination: str, expected_date: dt.da
     }
 
 
+def sanitize_diagnostic(text, limit: int = DIAG_TEXT_LIMIT):
+    """Short, secret-free diagnostic text. Never a fare and never a raw payload."""
+    if text is None:
+        return None
+    cleaned = _SECRET_TEXT.sub("[redacted]", str(text))
+    cleaned = re.sub(r"https?://\S+", "[url]", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    if not cleaned:
+        return None
+    if len(cleaned) > limit:
+        return cleaned[: limit - 1] + "…"
+    return cleaned
+
+
+def stdout_kind(stdout: str) -> str:
+    head = (stdout or "").lstrip()
+    if not head:
+        return "empty"
+    low = head[:200].lower()
+    if low.startswith("<!doctype") or low.startswith("<html") or head.startswith("<"):
+        return "html"
+    if head[0] in "{[":
+        return "json_like"
+    return "text"
+
+
+def http_status_from(*parts) -> int | None:
+    blob = "\n".join(part for part in parts if part)
+    match = _HTTP_STATUS.search(blob[:2000])
+    if not match:
+        return None
+    raw = next(group for group in match.groups() if group)
+    code = int(raw)
+    if 100 <= code <= 599:
+        return code
+    return None
+
+
+def classify_attempt(*, cli_exit, stdout, stderr, parsed) -> dict:
+    """Separate HTTP, CLI, API, empty-result, and JSON-parse failures.
+
+    None of these layers means the route has no flights.
+    """
+    kind = stdout_kind(stdout or "")
+    http = http_status_from(stdout, stderr)
+    error = parsed.get("error")
+    api_status = parsed.get("api_status")
+    offers = parsed.get("offers") or []
+    if error in ("JSONDecodeError", "ResponseNotObject"):
+        layer = "http" if http is not None else ("cli" if not (stdout or "").strip() else "parse")
+        detail = stderr or stdout
+    elif error in ("TimeoutExpired", "FileNotFoundError", "NoAttempt"):
+        layer = "cli"
+        detail = error
+    elif http is not None and api_status is None:
+        layer = "http"
+        detail = stderr or stdout
+    elif api_status not in (0, None):
+        layer = "api"
+        detail = parsed.get("api_message")
+    elif api_status == 0 and not offers:
+        layer = "empty"
+        detail = "status 0 with no usable offers"
+    elif api_status == 0:
+        layer = "ok"
+        detail = None
+    elif cli_exit not in (0, None):
+        layer = "cli"
+        detail = stderr or error
+    else:
+        layer = "cli" if error else "ok"
+        detail = error
+    return {
+        "failure_layer": layer,
+        "http_status": http,
+        "stdout_kind": kind,
+        "error_detail": None if layer == "ok" else sanitize_diagnostic(detail),
+    }
+
+
 def interpret_response(stdout: str, origin: str, destination: str, expected_date: dt.date | None) -> dict:
     try:
         data = json.loads(stdout)
     except json.JSONDecodeError:
-        return {"offers": [], "raw_offer_count": 0, "error": "JSONDecodeError"}
+        parsed = {"offers": [], "raw_offer_count": 0, "error": "JSONDecodeError"}
+        parsed.update(classify_attempt(cli_exit=None, stdout=stdout, stderr="", parsed=parsed))
+        return parsed
     if not isinstance(data, dict):
-        return {"offers": [], "raw_offer_count": 0, "error": "ResponseNotObject"}
+        parsed = {"offers": [], "raw_offer_count": 0, "error": "ResponseNotObject"}
+        parsed.update(classify_attempt(cli_exit=None, stdout=stdout, stderr="", parsed=parsed))
+        return parsed
     result = {
         "api_status": data.get("status"),
         "api_message": data.get("message"),
@@ -231,6 +323,7 @@ def interpret_response(stdout: str, origin: str, destination: str, expected_date
                     options.append(parsed)
     result["offers"] = sorted(options, key=lambda x: Decimal(x["price_cny_reference"]))
     result["raw_offer_count"] = len(entries)
+    result.update(classify_attempt(cli_exit=None, stdout=stdout, stderr="", parsed=result))
     return result
 
 
@@ -305,6 +398,7 @@ def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direc
                 parsed["seat_class_filter"] = seat_class_name
         except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
             parsed = {"offers": [], "raw_offer_count": 0, "error": type(exc).__name__}
+        parsed.update(classify_attempt(cli_exit=cli_exit, stdout=stdout, stderr=stderr, parsed=parsed))
         label = spec["label"]
         (OUT_DIR / (file_stub + "_" + label + ".json")).write_text(stdout or "", encoding="utf-8")
         if stderr:
@@ -314,8 +408,12 @@ def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direc
             "cli_exit": cli_exit,
             "api_status": parsed.get("api_status"),
             "raw_offer_count": parsed.get("raw_offer_count", 0),
-            "api_message": parsed.get("api_message"),
+            "api_message": sanitize_diagnostic(parsed.get("api_message")),
             "error": parsed.get("error"),
+            "failure_layer": parsed.get("failure_layer"),
+            "http_status": parsed.get("http_status"),
+            "stdout_kind": parsed.get("stdout_kind"),
+            "error_detail": parsed.get("error_detail"),
         })
         candidate = {
             "date": date.isoformat(),
@@ -338,6 +436,7 @@ def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direc
             "date": date.isoformat(), "from": origin, "to": destination,
             "offers": [], "raw_offer_count": 0, "error": "NoAttempt",
         }
+        chosen.update(classify_attempt(cli_exit=None, stdout="", stderr="", parsed=chosen))
     chosen["attempts"] = history
     return chosen
 

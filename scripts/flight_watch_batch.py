@@ -141,7 +141,13 @@ def anomaly_episode_active(state: dict) -> bool:
 
 
 def should_notify_anomaly(state: dict, gaps: list[str], now: datetime) -> bool:
-    if not gaps or anomaly_episode_active(state):
+    """Rate-limit an open gap. The episode flag does not mute it forever.
+
+    A still-open gap can remind once the cooldown and same-day guard allow.
+    Full recovery clears the episode in the batch runner. This function does
+    not send anything.
+    """
+    if not gaps:
         return False
     # If a monitor recovers and fails again on the same calendar day, avoid
     # using a second free ServerChan slot even though the incident is new.
@@ -340,13 +346,14 @@ def main():
     gaps = monitor_gaps(state, active_dates, observed)
     anomaly_email = False
     if not gaps:
-        # Clear incident only on genuine complete recovery of all long gaps.
+        # Clear the incident only when every long gap has actually recovered.
         state["anomaly_episode_active"] = False
-    elif not anomaly_episode_active(state):
-        if should_notify_anomaly(state, gaps, observed):
-            anomaly_email = notify_anomaly(state, gaps, observed)
-        # Also suppress additional alerts if a new incident started within the
-        # daily quota guard. No repeat until full recovery is observed.
+    elif should_notify_anomaly(state, gaps, observed):
+        anomaly_email = notify_anomaly(state, gaps, observed)
+        state["anomaly_episode_active"] = True
+    else:
+        # Still failing, but inside the cooldown. Remember the episode without
+        # using that flag as a permanent mute.
         state["anomaly_episode_active"] = True
 
     if removed or any(b.get("status") != "runner_error" for b in batch):
