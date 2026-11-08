@@ -5,10 +5,10 @@
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
     "2026-12-08": "2026-11-08T22:22:41+08:00",
-    "2026-12-09": "2026-11-08T21:22:52+08:00",
+    "2026-12-09": "2026-11-08T22:37:39+08:00",
     "2026-12-17": "2026-11-08T22:22:36+08:00",
-    "2026-12-18": "2026-11-08T21:23:10+08:00",
-    "2026-12-26": "2026-11-08T21:22:35+08:00",
+    "2026-12-18": "2026-11-08T22:37:42+08:00",
+    "2026-12-26": "2026-11-08T22:37:36+08:00",
     "2026-12-27": "2026-11-08T22:22:39+08:00"
   },
   "last_scan_results": {
@@ -71,7 +71,7 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-11-08T21:22:52+08:00",
+      "checked_at_bjt": "2026-11-08T22:37:39+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -96,17 +96,13 @@
           "error": "JSONDecodeError",
           "api_message": null,
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            null,
-            null,
             null
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         },
         "inbound": {
@@ -116,17 +112,13 @@
           "error": "JSONDecodeError",
           "api_message": null,
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            null,
-            null,
             null
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         }
       },
@@ -195,7 +187,7 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-11-08T21:23:10+08:00",
+      "checked_at_bjt": "2026-11-08T22:37:42+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -220,17 +212,13 @@
           "error": "JSONDecodeError",
           "api_message": null,
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            null,
-            null,
             null
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         },
         "inbound": {
@@ -240,17 +228,13 @@
           "error": "JSONDecodeError",
           "api_message": null,
           "platform_message": null,
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            null,
-            null,
             null
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ]
         }
       },
@@ -261,7 +245,7 @@
       ]
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-11-08T21:22:35+08:00",
+      "checked_at_bjt": "2026-11-08T22:37:36+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -389,10 +373,10 @@
   },
   "consecutive_incomplete": {
     "2026-12-08": 18,
-    "2026-12-09": 7,
+    "2026-12-09": 8,
     "2026-12-17": 28,
-    "2026-12-18": 3,
-    "2026-12-26": 15,
+    "2026-12-18": 4,
+    "2026-12-26": 16,
     "2026-12-27": 21
   },
   "incomplete_since_bjt": {
