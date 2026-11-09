@@ -10,7 +10,10 @@ export async function dispatch(env, scheduledTime, io = {}) {
   const log = io.log || ((record) => console.log(JSON.stringify(record)));
   if (!env.GH_ACTIONS_TOKEN) throw new Error("GH_ACTIONS_TOKEN secret not configured");
   const timestamp = new Date(scheduledTime).toISOString();
-  if (scheduledTime >= Date.parse("2026-12-24T00:00:00+08:00")) {
+  // User stop_after is 2026-12-31. Keep dispatch through that Beijing day so
+  // 12-26 and 12-27 are not left to the best-effort GitHub backup. The backup
+  // cron stays in place. Roll back by restoring 2026-12-24T00:00:00+08:00.
+  if (scheduledTime >= Date.parse("2027-01-01T00:00:00+08:00")) {
     log({ event: "dispatch_inactive", scheduled_at: timestamp });
     return;
   }

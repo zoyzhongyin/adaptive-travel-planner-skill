@@ -193,14 +193,20 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
         valid = row.get("status") == "priced_reference" and clean_money(row.get("reference_total_cny")) is not None
         ret = (datetime.fromisoformat(dep).date() +
                timedelta(days=int(config["stay_nights"]))).isoformat()
+        historic_total = clean_money(prior.get("reference_total_cny"))
+        historic_at = clean_text(prior.get("checked_at_bjt"), 32) if historic_total else None
+        checked_at = clean_text(row.get("checked_at_bjt"), 32)
         result.append({
             "departure": dep,
             "return_date": clean_text(row.get("return_date"), 10) or (
                 datetime.fromisoformat(dep).date()+timedelta(days=int(config["stay_nights"]))
             ).isoformat(),
             "window_id": window,
-            "checked_at_bjt": clean_text(row.get("checked_at_bjt"), 32),
+            "checked_at_bjt": checked_at,
             "status": "priced_reference" if valid else "incomplete",
+            "quote_current": bool(valid),
+            "last_success_bjt": checked_at if valid else historic_at,
+            "last_failure_bjt": None if valid else checked_at,
             "total_cny": clean_money(row.get("reference_total_cny")) if valid else None,
             "outbound_price_cny": clean_money(row.get("outbound_price_cny")),
             "return_price_cny": clean_money(row.get("return_price_cny")),
@@ -209,9 +215,9 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
             "outbound_flight": clean_text(row.get("outbound_flight"), 20),
             "return_flight": clean_text(row.get("return_flight"), 20),
             "last_valid": {
-                "checked_at_bjt": clean_text(prior.get("checked_at_bjt"), 32),
-                "total_cny": clean_money(prior.get("reference_total_cny")),
-            } if prior and clean_money(prior.get("reference_total_cny")) else None,
+                "checked_at_bjt": historic_at,
+                "total_cny": historic_total,
+            } if historic_total else None,
             "alternate": public_alternate(by_dep.get(dep), dep, ret) if supplement_valid else None,
             "other_sources": ([public_alternate(ctrip_by_dep.get(dep),dep,ret,"携程公开页面")]
                               if public_alternate(ctrip_by_dep.get(dep),dep,ret,"携程公开页面")
@@ -241,11 +247,31 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
         "itineraries": result,
     }
 
+def material_quote_change(previous: dict, current: dict) -> bool:
+    """True when a published price would still be shown as current after it failed."""
+    def rows(snap):
+        found = []
+        for row in snap.get("itineraries") or []:
+            if not isinstance(row, dict):
+                continue
+            last = row.get("last_valid") if isinstance(row.get("last_valid"), dict) else {}
+            found.append((
+                row.get("departure"), row.get("status"), row.get("total_cny"),
+                row.get("quote_current"), last.get("total_cny"),
+            ))
+        return tuple(found)
+    if not isinstance(previous, dict) or not isinstance(current, dict):
+        return True
+    return rows(previous) != rows(current)
+
+
 def needs_deploy(current: dict, *, min_minutes: int=45) -> bool:
     try:
         with request.urlopen(request.Request(PUBLIC_URL, headers={"User-Agent":"AltayDashboardPublisher/1.0"}),
                              timeout=9) as response:
             previous = json.load(response)
+        if material_quote_change(previous, current):
+            return True
         latest_time = previous.get("generated_at_bjt")
         if not latest_time:
             return True
@@ -257,7 +283,7 @@ def needs_deploy(current: dict, *, min_minutes: int=45) -> bool:
                 or previous.get("ctrip_generated_at_bjt") != current.get("ctrip_generated_at_bjt")
                 or previous.get("fliggy_generated_at_bjt") != current.get("fliggy_generated_at_bjt")
                 or previous.get("google_generated_at_bjt") != current.get("google_generated_at_bjt"))
-    except (error.URLError, ValueError, TimeoutError):
+    except (error.URLError, ValueError, TimeoutError, json.JSONDecodeError):
         return True
 
 def build(*, github: bool, check_stale: bool) -> bool:
@@ -297,7 +323,7 @@ def build(*, github: bool, check_stale: bool) -> bool:
         with open(output,"a",encoding="utf-8") as stream:
             stream.write("publish="+("true" if deploy else "false")+"\n")
     if not deploy:
-        print("Dashboard skipped: public snapshot is recent or no newer completed scan.")
+        print("Dashboard skipped: quote status unchanged and the public snapshot is still inside the debounce window.")
         return False
     html = DASHBOARD.read_text(encoding="utf-8")
     (WORKER/"dashboard-page.mjs").write_text(
@@ -308,7 +334,8 @@ def build(*, github: bool, check_stale: bool) -> bool:
         encoding="utf-8"
     )
     print("Sanitized dashboard prepared: "+str(len(public["itineraries"]))+
-          " dates; most recent successful scan stamp: "+str(public["most_recent_check_bjt"]))
+          " dates; most recent check stamp: "+str(public["most_recent_check_bjt"])+
+          ". A published snapshot is not itself a successful fare.")
     return True
 
 def main():
