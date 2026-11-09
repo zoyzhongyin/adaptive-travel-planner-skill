@@ -112,6 +112,28 @@ class LayerTests(unittest.TestCase):
         self.assertNotIn("无航班", json.dumps(result, ensure_ascii=False))
         self.assertNotIn("jsonrpc", json.dumps(result))
 
+    def test_empty_stdout_with_trial_429_is_not_a_json_parse_failure(self):
+        calls = []
+        stderr = 'MCP HTTP 429: Body: {"jsonrpc":"2.0","id":"1","error":{"code":-32603,"message":"Trial limit reached. Please visit the console at flyai.open.fliggy.com to get a formal API Key"}}'
+
+        def runner(_cmd):
+            calls.append(1)
+            return 1, "", stderr
+
+        with tempfile.TemporaryDirectory() as temp:
+            fare.OUT_DIR = Path(temp)
+            result = fare.query(
+                "TFU", "AAT", datetime(2026, 12, 17).date(), "out",
+                direct_only=True, seat_class_name="经济舱",
+                runner=runner, sleeper=lambda _s: None,
+            )
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(result["error"], "trial_limit")
+        self.assertEqual(result["failure_layer"], "http")
+        self.assertEqual(result["http_status"], 429)
+        self.assertEqual(result["offers"], [])
+        self.assertNotIn("flyai.open.fliggy.com", json.dumps(result))
+
     def test_retry_backoff_is_the_configured_20_then_60_schedule(self):
         config = json.loads((ROOT / "flight-watch/config.json").read_text(encoding="utf-8"))
         self.assertEqual(config["failure_retry_minutes"], 20)

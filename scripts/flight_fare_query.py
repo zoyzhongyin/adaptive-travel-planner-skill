@@ -251,9 +251,14 @@ def http_status_from(*parts) -> int | None:
     return None
 
 
-def usage_limit(stdout: str, stderr: str) -> bool:
+def quota_block(stdout: str, stderr: str) -> str | None:
+    """Name a FlyAI quota response. Empty stdout plus this text is not a JSON parse failure."""
     text = ((stdout or "") + "\n" + (stderr or "")).lower()
-    return "usage limit reached" in text
+    if "trial limit reached" in text:
+        return "trial_limit"
+    if "usage limit reached" in text:
+        return "usage_limit"
+    return None
 
 
 def classify_attempt(*, cli_exit, stdout, stderr, parsed) -> dict:
@@ -263,14 +268,19 @@ def classify_attempt(*, cli_exit, stdout, stderr, parsed) -> dict:
     """
     kind = stdout_kind(stdout or "")
     http = http_status_from(stdout, stderr)
-    if usage_limit(stdout or "", stderr or ""):
+    quota = quota_block(stdout or "", stderr or "")
+    if quota == "usage_limit":
         http = http or 402
+    elif quota == "trial_limit":
+        http = http or 429
     error = parsed.get("error")
     api_status = parsed.get("api_status")
     offers = parsed.get("offers") or []
-    if error == "usage_limit" or (error in ("JSONDecodeError", "ResponseNotObject") and usage_limit(stdout or "", stderr or "")):
+    if error in ("usage_limit", "trial_limit") or (
+        error in ("JSONDecodeError", "ResponseNotObject") and quota
+    ):
         layer = "http"
-        detail = "Total usage limit reached"
+        detail = "Trial limit reached" if (error == "trial_limit" or quota == "trial_limit") else "Total usage limit reached"
     elif error in ("JSONDecodeError", "ResponseNotObject"):
         layer = "http" if http is not None else ("cli" if not (stdout or "").strip() else "parse")
         detail = stderr or stdout
@@ -399,12 +409,16 @@ def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direc
         stderr = ""
         try:
             cli_exit, stdout, stderr = run(cmd)
-            if not (stdout or "").strip() and usage_limit(stdout, stderr):
-                # The CLI wrote the quota error to stderr and left stdout empty.
-                # That is HTTP 402, not a fare payload that failed to parse.
+            quota = None if (stdout or "").strip() else quota_block(stdout, stderr)
+            http = None if (stdout or "").strip() else http_status_from(stdout, stderr)
+            if quota or (http in (402, 429) and not (stdout or "").strip()):
+                # Quota text is written to stderr and stdout is empty.
+                # That is an HTTP block, not a fare payload that failed to parse.
+                kind = quota or ("usage_limit" if http == 402 else "trial_limit")
                 parsed = {
-                    "offers": [], "raw_offer_count": 0, "error": "usage_limit",
-                    "api_status": None, "api_message": "Total usage limit reached",
+                    "offers": [], "raw_offer_count": 0, "error": kind,
+                    "api_status": None,
+                    "api_message": "Trial limit reached" if kind == "trial_limit" else "Total usage limit reached",
                 }
             else:
                 parsed = interpret_response(stdout, origin, destination, date)
@@ -447,7 +461,10 @@ def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direc
             (OUT_DIR / (file_stub + ".stderr")).write_text(stderr or "", encoding="utf-8")
         if chosen is not None and leg_ready(chosen, direct_only):
             break
-        if chosen is not None and chosen.get("error") == "usage_limit":
+        if chosen is not None and (
+            chosen.get("error") in ("usage_limit", "trial_limit")
+            or chosen.get("http_status") in (402, 429)
+        ):
             break
         if index < len(plan) - 1:
             pause(RETRY_PAUSES_SECONDS[min(index, len(RETRY_PAUSES_SECONDS) - 1)])
