@@ -251,6 +251,11 @@ def http_status_from(*parts) -> int | None:
     return None
 
 
+def usage_limit(stdout: str, stderr: str) -> bool:
+    text = ((stdout or "") + "\n" + (stderr or "")).lower()
+    return "usage limit reached" in text
+
+
 def classify_attempt(*, cli_exit, stdout, stderr, parsed) -> dict:
     """Separate HTTP, CLI, API, empty-result, and JSON-parse failures.
 
@@ -258,10 +263,15 @@ def classify_attempt(*, cli_exit, stdout, stderr, parsed) -> dict:
     """
     kind = stdout_kind(stdout or "")
     http = http_status_from(stdout, stderr)
+    if usage_limit(stdout or "", stderr or ""):
+        http = http or 402
     error = parsed.get("error")
     api_status = parsed.get("api_status")
     offers = parsed.get("offers") or []
-    if error in ("JSONDecodeError", "ResponseNotObject"):
+    if error == "usage_limit" or (error in ("JSONDecodeError", "ResponseNotObject") and usage_limit(stdout or "", stderr or "")):
+        layer = "http"
+        detail = "Total usage limit reached"
+    elif error in ("JSONDecodeError", "ResponseNotObject"):
         layer = "http" if http is not None else ("cli" if not (stdout or "").strip() else "parse")
         detail = stderr or stdout
     elif error in ("TimeoutExpired", "FileNotFoundError", "NoAttempt"):
@@ -389,7 +399,15 @@ def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direc
         stderr = ""
         try:
             cli_exit, stdout, stderr = run(cmd)
-            parsed = interpret_response(stdout, origin, destination, date)
+            if not (stdout or "").strip() and usage_limit(stdout, stderr):
+                # The CLI wrote the quota error to stderr and left stdout empty.
+                # That is HTTP 402, not a fare payload that failed to parse.
+                parsed = {
+                    "offers": [], "raw_offer_count": 0, "error": "usage_limit",
+                    "api_status": None, "api_message": "Total usage limit reached",
+                }
+            else:
+                parsed = interpret_response(stdout, origin, destination, date)
             if seat_class_name:
                 parsed["offers"] = [
                     offer for offer in (parsed.get("offers") or [])
@@ -428,6 +446,8 @@ def query(origin: str, destination: str, date: dt.date, file_stub: str, *, direc
             (OUT_DIR / (file_stub + ".json")).write_text(stdout or "", encoding="utf-8")
             (OUT_DIR / (file_stub + ".stderr")).write_text(stderr or "", encoding="utf-8")
         if chosen is not None and leg_ready(chosen, direct_only):
+            break
+        if chosen is not None and chosen.get("error") == "usage_limit":
             break
         if index < len(plan) - 1:
             pause(RETRY_PAUSES_SECONDS[min(index, len(RETRY_PAUSES_SECONDS) - 1)])

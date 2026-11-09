@@ -89,6 +89,41 @@ class LayerTests(unittest.TestCase):
         outbound = fare.interpret_response(load("flyai_direct_offer.json"), "TFU", "AAT", datetime(2026, 12, 5).date())
         self.assertIsNone(watch.best_direct_price(outbound, missed))
 
+    def test_empty_stdout_with_mcp_402_is_usage_limit_and_does_not_retry(self):
+        calls = []
+        stderr = 'MCP HTTP 402: Body: {"jsonrpc":"2.0","id":"1","error":{"code":-32603,"message":"Total usage limit reached"}}'
+
+        def runner(_cmd):
+            calls.append(1)
+            return 1, "", stderr
+
+        with tempfile.TemporaryDirectory() as temp:
+            fare.OUT_DIR = Path(temp)
+            result = fare.query(
+                "AAT", "TFU", datetime(2026, 12, 23).date(), "back",
+                direct_only=True, runner=runner, sleeper=lambda _s: None,
+            )
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(result["error"], "usage_limit")
+        self.assertEqual(result["failure_layer"], "http")
+        self.assertEqual(result["http_status"], 402)
+        self.assertNotEqual(result["error"], "JSONDecodeError")
+        self.assertEqual(result["offers"], [])
+        self.assertNotIn("无航班", json.dumps(result, ensure_ascii=False))
+        self.assertNotIn("jsonrpc", json.dumps(result))
+
+    def test_retry_backoff_is_the_configured_20_then_60_schedule(self):
+        config = json.loads((ROOT / "flight-watch/config.json").read_text(encoding="utf-8"))
+        self.assertEqual(config["failure_retry_minutes"], 20)
+        self.assertEqual(config["each_pair_interval_minutes"], 60)
+        state = {
+            "last_scan_results": {"2026-12-17": {"status": "incomplete_no_reliable_roundtrip_price"}},
+            "consecutive_incomplete": {},
+        }
+        for streak, expected in ((1, 20), (2, 40), (3, 60), (6, 60)):
+            state["consecutive_incomplete"]["2026-12-17"] = streak
+            self.assertEqual(batch.pair_interval_minutes(config, state, "2026-12-17"), expected)
+
 
 class ScheduleTests(unittest.TestCase):
     def setUp(self):
