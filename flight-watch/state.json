@@ -5,10 +5,10 @@
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
     "2026-12-08": "2026-11-09T15:52:40+08:00",
-    "2026-12-09": "2026-11-09T14:52:38+08:00",
+    "2026-12-09": "2026-11-09T16:07:53+08:00",
     "2026-12-17": "2026-11-09T15:52:35+08:00",
-    "2026-12-18": "2026-11-09T14:52:41+08:00",
-    "2026-12-26": "2026-11-09T14:52:35+08:00",
+    "2026-12-18": "2026-11-09T16:08:11+08:00",
+    "2026-12-26": "2026-11-09T16:07:35+08:00",
     "2026-12-27": "2026-11-09T15:52:37+08:00"
   },
   "last_scan_results": {
@@ -71,7 +71,7 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-11-09T14:52:38+08:00",
+      "checked_at_bjt": "2026-11-09T16:07:53+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -96,13 +96,17 @@
           "error": "JSONDecodeError",
           "api_message": null,
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
+            null,
+            null,
             null
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         },
         "inbound": {
@@ -112,13 +116,17 @@
           "error": "JSONDecodeError",
           "api_message": null,
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
+            null,
+            null,
             null
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         }
       },
@@ -187,7 +195,7 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-11-09T14:52:41+08:00",
+      "checked_at_bjt": "2026-11-09T16:08:11+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -212,13 +220,17 @@
           "error": "JSONDecodeError",
           "api_message": null,
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
+            null,
+            null,
             null
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         },
         "inbound": {
@@ -228,13 +240,17 @@
           "error": "JSONDecodeError",
           "api_message": null,
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
+            null,
+            null,
             null
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         }
       },
@@ -245,7 +261,7 @@
       ]
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-11-09T14:52:35+08:00",
+      "checked_at_bjt": "2026-11-09T16:07:35+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -373,10 +389,10 @@
   },
   "consecutive_incomplete": {
     "2026-12-08": 32,
-    "2026-12-09": 12,
+    "2026-12-09": 13,
     "2026-12-17": 42,
-    "2026-12-18": 12,
-    "2026-12-26": 29,
+    "2026-12-18": 13,
+    "2026-12-26": 30,
     "2026-12-27": 35
   },
   "incomplete_since_bjt": {
