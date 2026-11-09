@@ -4,16 +4,16 @@
   "window_alerts": {},
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
-    "2026-12-08": "2026-11-09T20:52:40+08:00",
+    "2026-12-08": "2026-11-09T22:07:56+08:00",
     "2026-12-09": "2026-11-09T21:07:39+08:00",
-    "2026-12-17": "2026-11-09T20:52:35+08:00",
+    "2026-12-17": "2026-11-09T22:07:36+08:00",
     "2026-12-18": "2026-11-09T21:07:42+08:00",
     "2026-12-26": "2026-11-09T21:07:36+08:00",
-    "2026-12-27": "2026-11-09T20:52:38+08:00"
+    "2026-12-27": "2026-11-09T22:07:38+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
-      "checked_at_bjt": "2026-11-09T20:52:40+08:00",
+      "checked_at_bjt": "2026-11-09T22:07:56+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -38,13 +38,17 @@
           "error": "JSONDecodeError",
           "api_message": null,
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
+            null,
+            null,
             null
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         },
         "inbound": {
@@ -54,13 +58,17 @@
           "error": "JSONDecodeError",
           "api_message": null,
           "platform_message": null,
-          "query_strategy": "iata_price_asc",
-          "attempt_count": 1,
+          "query_strategy": "city_direct_first",
+          "attempt_count": 3,
           "attempt_statuses": [
+            null,
+            null,
             null
           ],
           "attempt_labels": [
-            "iata_price_asc"
+            "iata_price_asc",
+            "iata_direct_first",
+            "city_direct_first"
           ]
         }
       },
@@ -129,7 +137,7 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-11-09T20:52:35+08:00",
+      "checked_at_bjt": "2026-11-09T22:07:36+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -304,7 +312,7 @@
       ]
     },
     "2026-12-27": {
-      "checked_at_bjt": "2026-11-09T20:52:38+08:00",
+      "checked_at_bjt": "2026-11-09T22:07:38+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -372,12 +380,12 @@
     "2026-12-17": "2026-11-07T12:52:39+08:00"
   },
   "consecutive_incomplete": {
-    "2026-12-08": 36,
+    "2026-12-08": 37,
     "2026-12-09": 17,
-    "2026-12-17": 46,
+    "2026-12-17": 47,
     "2026-12-18": 17,
     "2026-12-26": 34,
-    "2026-12-27": 39
+    "2026-12-27": 40
   },
   "incomplete_since_bjt": {
     "2026-12-17": "2026-11-07T14:07:56+08:00",
