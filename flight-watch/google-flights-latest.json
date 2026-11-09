@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "source": "google_flights_public_cny",
-  "generated_at_bjt": "2026-11-09T18:17:25+08:00",
+  "generated_at_bjt": "2026-11-10T07:33:31+08:00",
   "taxes_verified": false,
   "cabin_verified": false,
   "baggage_verified": false,
@@ -10,7 +10,7 @@
     {
       "departure": "2026-12-08",
       "return_date": "2026-12-13",
-      "checked_at_bjt": "2026-11-09T18:16:54+08:00",
+      "checked_at_bjt": "2026-11-10T07:33:17+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -27,7 +27,7 @@
     {
       "departure": "2026-12-09",
       "return_date": "2026-12-14",
-      "checked_at_bjt": "2026-11-09T18:16:59+08:00",
+      "checked_at_bjt": "2026-11-10T07:33:18+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -44,7 +44,7 @@
     {
       "departure": "2026-12-17",
       "return_date": "2026-12-22",
-      "checked_at_bjt": "2026-11-09T18:17:11+08:00",
+      "checked_at_bjt": "2026-11-10T07:33:26+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -61,7 +61,7 @@
     {
       "departure": "2026-12-18",
       "return_date": "2026-12-23",
-      "checked_at_bjt": "2026-11-09T18:17:13+08:00",
+      "checked_at_bjt": "2026-11-10T07:33:28+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -78,7 +78,7 @@
     {
       "departure": "2026-12-26",
       "return_date": "2026-12-31",
-      "checked_at_bjt": "2026-11-09T18:17:15+08:00",
+      "checked_at_bjt": "2026-11-10T07:33:30+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -95,7 +95,7 @@
     {
       "departure": "2026-12-27",
       "return_date": "2027-01-01",
-      "checked_at_bjt": "2026-11-09T18:17:19+08:00",
+      "checked_at_bjt": "2026-11-10T07:33:31+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
