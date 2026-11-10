@@ -5,9 +5,9 @@
   "last_heartbeat_bjt": "2026-11-10T19:37:31+08:00",
   "last_scan_bjt": {
     "2026-12-08": "2026-11-11T00:22:44+08:00",
-    "2026-12-09": "2026-11-10T23:37:35+08:00",
+    "2026-12-09": "2026-11-11T00:52:40+08:00",
     "2026-12-17": "2026-11-11T00:22:41+08:00",
-    "2026-12-18": "2026-11-10T23:37:38+08:00",
+    "2026-12-18": "2026-11-11T00:52:45+08:00",
     "2026-12-26": "2026-11-11T00:22:38+08:00",
     "2026-12-27": "2026-11-11T00:07:47+08:00"
   },
@@ -85,72 +85,72 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-11-10T23:37:35+08:00",
-      "status": "incomplete_no_reliable_roundtrip_price",
-      "outbound_api_status": null,
-      "inbound_api_status": null,
-      "reference_total_cny": null,
+      "checked_at_bjt": "2026-11-11T00:52:40+08:00",
+      "status": "priced_reference",
+      "outbound_api_status": 0,
+      "inbound_api_status": 0,
+      "reference_total_cny": "1559.00",
       "return_date": "2026-12-14",
-      "outbound_flight": null,
-      "return_flight": null,
-      "outbound_airline": null,
-      "return_airline": null,
-      "outbound_price_cny": null,
-      "return_price_cny": null,
-      "outbound_url": null,
-      "return_url": null,
+      "outbound_flight": "9C6685",
+      "return_flight": "9C6686",
+      "outbound_airline": "春秋",
+      "return_airline": "春秋",
+      "outbound_price_cny": "650.00",
+      "return_price_cny": "909.00",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2akGgd",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4ZmLVh",
       "taxes_verified": false,
       "baggage_verified": false,
-      "notification_channel": null,
+      "notification_channel": "deferred_to_window",
       "query_diagnostics": {
         "outbound": {
-          "cli_exit": 1,
-          "api_status": null,
-          "raw_offer_count": 0,
-          "error": "usage_limit",
-          "api_message": "Total usage limit reached",
+          "cli_exit": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
+          "error": null,
+          "api_message": "success",
           "platform_message": null,
-          "failure_layer": "http",
-          "http_status": 402,
-          "stdout_kind": "empty",
-          "error_detail": "Total usage limit reached",
+          "failure_layer": "ok",
+          "http_status": null,
+          "stdout_kind": "json_like",
+          "error_detail": null,
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
-            null
+            0
           ],
           "attempt_labels": [
             "iata_price_asc"
           ],
           "attempt_layers": [
-            "http"
+            "ok"
           ]
         },
         "inbound": {
-          "cli_exit": 1,
-          "api_status": null,
-          "raw_offer_count": 0,
-          "error": "usage_limit",
-          "api_message": "Total usage limit reached",
+          "cli_exit": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
+          "error": null,
+          "api_message": "success",
           "platform_message": null,
-          "failure_layer": "http",
-          "http_status": 402,
-          "stdout_kind": "empty",
-          "error_detail": "Total usage limit reached",
+          "failure_layer": "ok",
+          "http_status": null,
+          "stdout_kind": "json_like",
+          "error_detail": null,
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
-            null
+            0
           ],
           "attempt_labels": [
             "iata_price_asc"
           ],
           "attempt_layers": [
-            "http"
+            "ok"
           ]
         }
       },
-      "data_gap": true,
+      "data_gap": false,
       "annotations": [
         "日期按暂定排班推断（12月正式排班未出）",
         "乘客：1 成人，经济舱。"
@@ -229,72 +229,72 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-11-10T23:37:38+08:00",
-      "status": "incomplete_no_reliable_roundtrip_price",
-      "outbound_api_status": null,
-      "inbound_api_status": null,
-      "reference_total_cny": null,
+      "checked_at_bjt": "2026-11-11T00:52:45+08:00",
+      "status": "priced_reference",
+      "outbound_api_status": 0,
+      "inbound_api_status": 0,
+      "reference_total_cny": "2108.00",
       "return_date": "2026-12-23",
-      "outbound_flight": null,
-      "return_flight": null,
-      "outbound_airline": null,
-      "return_airline": null,
-      "outbound_price_cny": null,
-      "return_price_cny": null,
-      "outbound_url": null,
-      "return_url": null,
+      "outbound_flight": "9C6685",
+      "return_flight": "9C6686",
+      "outbound_airline": "春秋",
+      "return_airline": "春秋",
+      "outbound_price_cny": "1069.00",
+      "return_price_cny": "1039.00",
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4D9SRt",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4Jaxue",
       "taxes_verified": false,
       "baggage_verified": false,
-      "notification_channel": null,
+      "notification_channel": "deferred_to_window",
       "query_diagnostics": {
         "outbound": {
-          "cli_exit": 1,
-          "api_status": null,
-          "raw_offer_count": 0,
-          "error": "usage_limit",
-          "api_message": "Total usage limit reached",
+          "cli_exit": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
+          "error": null,
+          "api_message": "success",
           "platform_message": null,
-          "failure_layer": "http",
-          "http_status": 402,
-          "stdout_kind": "empty",
-          "error_detail": "Total usage limit reached",
+          "failure_layer": "ok",
+          "http_status": null,
+          "stdout_kind": "json_like",
+          "error_detail": null,
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
-            null
+            0
           ],
           "attempt_labels": [
             "iata_price_asc"
           ],
           "attempt_layers": [
-            "http"
+            "ok"
           ]
         },
         "inbound": {
-          "cli_exit": 1,
-          "api_status": null,
-          "raw_offer_count": 0,
-          "error": "usage_limit",
-          "api_message": "Total usage limit reached",
+          "cli_exit": 0,
+          "api_status": 0,
+          "raw_offer_count": 10,
+          "error": null,
+          "api_message": "success",
           "platform_message": null,
-          "failure_layer": "http",
-          "http_status": 402,
-          "stdout_kind": "empty",
-          "error_detail": "Total usage limit reached",
+          "failure_layer": "ok",
+          "http_status": null,
+          "stdout_kind": "json_like",
+          "error_detail": null,
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
-            null
+            0
           ],
           "attempt_labels": [
             "iata_price_asc"
           ],
           "attempt_layers": [
-            "http"
+            "ok"
           ]
         }
       },
-      "data_gap": true,
+      "data_gap": false,
       "annotations": [
         "日期按暂定排班推断（12月正式排班未出）",
         "乘客：1 成人，经济舱。"
@@ -455,17 +455,17 @@
   },
   "last_valid_quote_bjt": {
     "2026-12-08": "2026-11-10T00:37:45+08:00",
-    "2026-12-09": "2026-11-10T00:52:57+08:00",
+    "2026-12-09": "2026-11-11T00:52:40+08:00",
     "2026-12-27": "2026-11-07T21:22:38+08:00",
     "2026-12-26": "2026-11-08T03:52:42+08:00",
-    "2026-12-18": "2026-11-10T03:22:41+08:00",
+    "2026-12-18": "2026-11-11T00:52:45+08:00",
     "2026-12-17": "2026-11-10T00:37:38+08:00"
   },
   "consecutive_incomplete": {
     "2026-12-08": 20,
-    "2026-12-09": 19,
+    "2026-12-09": 0,
     "2026-12-17": 20,
-    "2026-12-18": 17,
+    "2026-12-18": 0,
     "2026-12-26": 56,
     "2026-12-27": 61
   },
@@ -473,9 +473,7 @@
     "2026-12-27": "2026-11-07T22:37:45+08:00",
     "2026-12-26": "2026-11-08T05:08:03+08:00",
     "2026-12-17": "2026-11-10T01:52:45+08:00",
-    "2026-12-08": "2026-11-10T01:53:09+08:00",
-    "2026-12-09": "2026-11-10T02:07:49+08:00",
-    "2026-12-18": "2026-11-10T04:37:57+08:00"
+    "2026-12-08": "2026-11-10T01:53:09+08:00"
   },
   "migration_note": "Removed the previous three December departure keys so the next run starts on the 12-08, 12-17 and 12-26 windows and their in-window +1 neighbors. Runtime prune also drops itinerary keys that are not in the active departure list.",
   "last_anomaly_alert_bjt": "2026-11-10T08:07:38+08:00",
@@ -486,17 +484,17 @@
   ],
   "last_valid_fares": {
     "2026-12-09": {
-      "checked_at_bjt": "2026-11-10T00:52:57+08:00",
+      "checked_at_bjt": "2026-11-11T00:52:40+08:00",
       "return_date": "2026-12-14",
-      "reference_total_cny": "1759.00",
-      "outbound_flight": "3U6573",
+      "reference_total_cny": "1559.00",
+      "outbound_flight": "9C6685",
       "return_flight": "9C6686",
-      "outbound_airline": "川航",
+      "outbound_airline": "春秋",
       "return_airline": "春秋",
-      "outbound_price_cny": "850.00",
+      "outbound_price_cny": "650.00",
       "return_price_cny": "909.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F0nHxbh",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1mToTC"
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2akGgd",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4ZmLVh"
     },
     "2026-12-08": {
       "checked_at_bjt": "2026-11-10T00:37:45+08:00",
@@ -525,7 +523,7 @@
       "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F2de0uk"
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-11-10T03:22:41+08:00",
+      "checked_at_bjt": "2026-11-11T00:52:45+08:00",
       "return_date": "2026-12-23",
       "reference_total_cny": "2108.00",
       "outbound_flight": "9C6685",
@@ -534,8 +532,8 @@
       "return_airline": "春秋",
       "outbound_price_cny": "1069.00",
       "return_price_cny": "1039.00",
-      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F37QILT",
-      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F1CsNXZ"
+      "outbound_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4D9SRt",
+      "return_url": "https://router.feizhu.com/multi/webview?url=https%3A%2F%2Frouter.feizhu.com%2Fws%2F4Jaxue"
     },
     "2026-12-17": {
       "checked_at_bjt": "2026-11-10T00:37:38+08:00",
