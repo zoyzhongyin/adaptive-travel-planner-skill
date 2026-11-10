@@ -4,16 +4,16 @@
   "window_alerts": {},
   "last_heartbeat_bjt": "2026-10-20T19:08:24+08:00",
   "last_scan_bjt": {
-    "2026-12-08": "2026-11-10T07:07:42+08:00",
+    "2026-12-08": "2026-11-10T08:22:41+08:00",
     "2026-12-09": "2026-11-10T07:22:36+08:00",
-    "2026-12-17": "2026-11-10T07:07:40+08:00",
+    "2026-12-17": "2026-11-10T08:22:38+08:00",
     "2026-12-18": "2026-11-10T07:22:39+08:00",
-    "2026-12-26": "2026-11-10T07:07:37+08:00",
+    "2026-12-26": "2026-11-10T08:22:35+08:00",
     "2026-12-27": "2026-11-10T08:07:38+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
-      "checked_at_bjt": "2026-11-10T07:07:42+08:00",
+      "checked_at_bjt": "2026-11-10T08:22:41+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -35,9 +35,13 @@
           "cli_exit": 1,
           "api_status": null,
           "raw_offer_count": 0,
-          "error": "JSONDecodeError",
-          "api_message": null,
+          "error": "usage_limit",
+          "api_message": "Total usage limit reached",
           "platform_message": null,
+          "failure_layer": "http",
+          "http_status": 402,
+          "stdout_kind": "empty",
+          "error_detail": "Total usage limit reached",
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
@@ -45,15 +49,22 @@
           ],
           "attempt_labels": [
             "iata_price_asc"
+          ],
+          "attempt_layers": [
+            "http"
           ]
         },
         "inbound": {
           "cli_exit": 1,
           "api_status": null,
           "raw_offer_count": 0,
-          "error": "JSONDecodeError",
-          "api_message": null,
+          "error": "usage_limit",
+          "api_message": "Total usage limit reached",
           "platform_message": null,
+          "failure_layer": "http",
+          "http_status": 402,
+          "stdout_kind": "empty",
+          "error_detail": "Total usage limit reached",
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
@@ -61,6 +72,9 @@
           ],
           "attempt_labels": [
             "iata_price_asc"
+          ],
+          "attempt_layers": [
+            "http"
           ]
         }
       },
@@ -129,7 +143,7 @@
       ]
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-11-10T07:07:40+08:00",
+      "checked_at_bjt": "2026-11-10T08:22:38+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -151,9 +165,13 @@
           "cli_exit": 1,
           "api_status": null,
           "raw_offer_count": 0,
-          "error": "JSONDecodeError",
-          "api_message": null,
+          "error": "usage_limit",
+          "api_message": "Total usage limit reached",
           "platform_message": null,
+          "failure_layer": "http",
+          "http_status": 402,
+          "stdout_kind": "empty",
+          "error_detail": "Total usage limit reached",
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
@@ -161,15 +179,22 @@
           ],
           "attempt_labels": [
             "iata_price_asc"
+          ],
+          "attempt_layers": [
+            "http"
           ]
         },
         "inbound": {
           "cli_exit": 1,
           "api_status": null,
           "raw_offer_count": 0,
-          "error": "JSONDecodeError",
-          "api_message": null,
+          "error": "usage_limit",
+          "api_message": "Total usage limit reached",
           "platform_message": null,
+          "failure_layer": "http",
+          "http_status": 402,
+          "stdout_kind": "empty",
+          "error_detail": "Total usage limit reached",
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
@@ -177,6 +202,9 @@
           ],
           "attempt_labels": [
             "iata_price_asc"
+          ],
+          "attempt_layers": [
+            "http"
           ]
         }
       },
@@ -245,7 +273,7 @@
       ]
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-11-10T07:07:37+08:00",
+      "checked_at_bjt": "2026-11-10T08:22:35+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -267,9 +295,13 @@
           "cli_exit": 1,
           "api_status": null,
           "raw_offer_count": 0,
-          "error": "JSONDecodeError",
-          "api_message": null,
+          "error": "usage_limit",
+          "api_message": "Total usage limit reached",
           "platform_message": null,
+          "failure_layer": "http",
+          "http_status": 402,
+          "stdout_kind": "empty",
+          "error_detail": "Total usage limit reached",
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
@@ -277,15 +309,22 @@
           ],
           "attempt_labels": [
             "iata_price_asc"
+          ],
+          "attempt_layers": [
+            "http"
           ]
         },
         "inbound": {
           "cli_exit": 1,
           "api_status": null,
           "raw_offer_count": 0,
-          "error": "JSONDecodeError",
-          "api_message": null,
+          "error": "usage_limit",
+          "api_message": "Total usage limit reached",
           "platform_message": null,
+          "failure_layer": "http",
+          "http_status": 402,
+          "stdout_kind": "empty",
+          "error_detail": "Total usage limit reached",
           "query_strategy": "iata_price_asc",
           "attempt_count": 1,
           "attempt_statuses": [
@@ -293,6 +332,9 @@
           ],
           "attempt_labels": [
             "iata_price_asc"
+          ],
+          "attempt_layers": [
+            "http"
           ]
         }
       },
@@ -386,11 +428,11 @@
     "2026-12-17": "2026-11-10T00:37:38+08:00"
   },
   "consecutive_incomplete": {
-    "2026-12-08": 6,
+    "2026-12-08": 7,
     "2026-12-09": 6,
-    "2026-12-17": 6,
+    "2026-12-17": 7,
     "2026-12-18": 4,
-    "2026-12-26": 42,
+    "2026-12-26": 43,
     "2026-12-27": 48
   },
   "incomplete_since_bjt": {
