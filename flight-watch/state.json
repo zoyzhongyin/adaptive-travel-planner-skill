@@ -7,7 +7,7 @@
     "2026-12-08": "2026-11-11T05:07:52+08:00",
     "2026-12-09": "2026-11-11T05:22:46+08:00",
     "2026-12-17": "2026-11-11T05:07:48+08:00",
-    "2026-12-18": "2026-11-11T04:38:04+08:00",
+    "2026-12-18": "2026-11-11T05:52:36+08:00",
     "2026-12-26": "2026-11-11T05:07:45+08:00",
     "2026-12-27": "2026-11-11T04:52:37+08:00"
   },
@@ -235,7 +235,7 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-11-11T04:38:04+08:00",
+      "checked_at_bjt": "2026-11-11T05:52:36+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": 1,
       "inbound_api_status": 1,
@@ -264,21 +264,15 @@
           "http_status": null,
           "stdout_kind": "json_like",
           "error_detail": "搜索机票低价行业失败",
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ],
           "attempt_layers": [
-            "api",
-            "api",
             "api"
           ]
         },
@@ -293,21 +287,15 @@
           "http_status": null,
           "stdout_kind": "json_like",
           "error_detail": "搜索机票低价行业失败",
-          "query_strategy": "city_direct_first",
-          "attempt_count": 3,
+          "query_strategy": "iata_price_asc",
+          "attempt_count": 1,
           "attempt_statuses": [
-            1,
-            1,
             1
           ],
           "attempt_labels": [
-            "iata_price_asc",
-            "iata_direct_first",
-            "city_direct_first"
+            "iata_price_asc"
           ],
           "attempt_layers": [
-            "api",
-            "api",
             "api"
           ]
         }
@@ -477,7 +465,7 @@
     "2026-12-08": 24,
     "2026-12-09": 2,
     "2026-12-17": 24,
-    "2026-12-18": 3,
+    "2026-12-18": 4,
     "2026-12-26": 60,
     "2026-12-27": 65
   },
