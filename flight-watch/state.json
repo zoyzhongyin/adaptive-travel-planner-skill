@@ -5,10 +5,10 @@
   "last_heartbeat_bjt": "2026-11-10T19:37:31+08:00",
   "last_scan_bjt": {
     "2026-12-08": "2026-11-12T07:37:35+08:00",
-    "2026-12-09": "2026-11-12T07:22:42+08:00",
+    "2026-12-09": "2026-11-12T08:37:40+08:00",
     "2026-12-17": "2026-11-12T07:37:41+08:00",
-    "2026-12-18": "2026-11-12T07:22:39+08:00",
-    "2026-12-26": "2026-11-12T07:22:36+08:00",
+    "2026-12-18": "2026-11-12T08:37:38+08:00",
+    "2026-12-26": "2026-11-12T08:37:35+08:00",
     "2026-12-27": "2026-11-12T07:37:38+08:00"
   },
   "last_scan_results": {
@@ -85,7 +85,7 @@
       ]
     },
     "2026-12-09": {
-      "checked_at_bjt": "2026-11-12T07:22:42+08:00",
+      "checked_at_bjt": "2026-11-12T08:37:40+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -229,7 +229,7 @@
       ]
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-11-12T07:22:39+08:00",
+      "checked_at_bjt": "2026-11-12T08:37:38+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -301,7 +301,7 @@
       ]
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-11-12T07:22:36+08:00",
+      "checked_at_bjt": "2026-11-12T08:37:35+08:00",
       "status": "incomplete_no_reliable_roundtrip_price",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -457,10 +457,10 @@
   },
   "consecutive_incomplete": {
     "2026-12-08": 6,
-    "2026-12-09": 4,
+    "2026-12-09": 5,
     "2026-12-17": 5,
-    "2026-12-18": 4,
-    "2026-12-26": 81,
+    "2026-12-18": 5,
+    "2026-12-26": 82,
     "2026-12-27": 5
   },
   "incomplete_since_bjt": {
@@ -472,13 +472,10 @@
     "2026-12-09": "2026-11-12T04:57:58+08:00"
   },
   "migration_note": "Removed the previous three December departure keys so the next run starts on the 12-08, 12-17 and 12-26 windows and their in-window +1 neighbors. Runtime prune also drops itinerary keys that are not in the active departure list.",
-  "last_anomaly_alert_bjt": "2026-11-11T08:22:35+08:00",
+  "last_anomaly_alert_bjt": "2026-11-12T08:37:40+08:00",
   "last_anomaly_channel": "wechat",
   "last_anomaly_gaps": [
-    "2026-12-08",
-    "2026-12-17",
-    "2026-12-26",
-    "2026-12-27"
+    "2026-12-26"
   ],
   "last_valid_fares": {
     "2026-12-09": {
