@@ -20,20 +20,20 @@
   },
   "last_heartbeat_bjt": "2026-11-10T19:37:31+08:00",
   "last_scan_bjt": {
-    "2026-12-08": "2026-11-14T03:22:32+08:00",
+    "2026-12-08": "2026-11-14T04:37:33+08:00",
     "2026-12-09": "2026-11-14T03:52:31+08:00",
-    "2026-12-17": "2026-11-14T03:22:32+08:00",
+    "2026-12-17": "2026-11-14T04:37:33+08:00",
     "2026-12-18": "2026-11-14T03:52:31+08:00",
     "2026-12-26": "2026-11-14T03:52:31+08:00",
-    "2026-12-27": "2026-11-14T03:22:32+08:00"
+    "2026-12-27": "2026-11-14T04:37:33+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
-      "checked_at_bjt": "2026-11-14T03:22:32+08:00",
+      "checked_at_bjt": "2026-11-14T04:37:33+08:00",
       "data_source": "ctrip_public_reference",
       "data_source_label": "携程公开页面参考价",
-      "source_generated_at_bjt": "2026-11-13T15:59:55+08:00",
-      "source_checked_at_bjt": "2026-11-13T15:59:18+08:00",
+      "source_generated_at_bjt": "2026-11-14T04:30:28+08:00",
+      "source_checked_at_bjt": "2026-11-14T04:29:50+08:00",
       "return_date": "2026-12-13",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -42,13 +42,13 @@
       "notification_channel": null,
       "annotations": null,
       "status": "priced_reference",
-      "reference_total_cny": "1670.00",
+      "reference_total_cny": "1440.00",
       "outbound_flight": "9C6685",
       "return_flight": "9C6686",
       "outbound_airline": "春秋",
       "return_airline": "春秋",
       "outbound_price_cny": "660.00",
-      "return_price_cny": "1010.00",
+      "return_price_cny": "780.00",
       "outbound_url": "https://flights.ctrip.com/online/list/oneway-ctu-aat?depdate=2026-12-08&cabin=y_s&adult=1",
       "return_url": "https://flights.ctrip.com/online/list/oneway-aat-ctu?depdate=2026-12-13&cabin=y_s&adult=1",
       "data_gap": null,
@@ -85,11 +85,11 @@
       }
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-11-14T03:22:32+08:00",
+      "checked_at_bjt": "2026-11-14T04:37:33+08:00",
       "data_source": "ctrip_public_reference",
       "data_source_label": "携程公开页面参考价",
-      "source_generated_at_bjt": "2026-11-13T15:59:55+08:00",
-      "source_checked_at_bjt": "2026-11-13T15:59:34+08:00",
+      "source_generated_at_bjt": "2026-11-14T04:30:28+08:00",
+      "source_checked_at_bjt": "2026-11-14T04:30:06+08:00",
       "return_date": "2026-12-22",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -98,12 +98,12 @@
       "notification_channel": null,
       "annotations": null,
       "status": "priced_reference",
-      "reference_total_cny": "1880.00",
+      "reference_total_cny": "2010.00",
       "outbound_flight": "9C6685",
       "return_flight": "9C6686",
       "outbound_airline": "春秋",
       "return_airline": "春秋",
-      "outbound_price_cny": "780.00",
+      "outbound_price_cny": "910.00",
       "return_price_cny": "1100.00",
       "outbound_url": "https://flights.ctrip.com/online/list/oneway-ctu-aat?depdate=2026-12-17&cabin=y_s&adult=1",
       "return_url": "https://flights.ctrip.com/online/list/oneway-aat-ctu?depdate=2026-12-22&cabin=y_s&adult=1",
@@ -169,11 +169,11 @@
       }
     },
     "2026-12-27": {
-      "checked_at_bjt": "2026-11-14T03:22:32+08:00",
+      "checked_at_bjt": "2026-11-14T04:37:33+08:00",
       "data_source": "ctrip_public_reference",
       "data_source_label": "携程公开页面参考价",
-      "source_generated_at_bjt": "2026-11-13T15:59:55+08:00",
-      "source_checked_at_bjt": "2026-11-13T15:59:50+08:00",
+      "source_generated_at_bjt": "2026-11-14T04:30:28+08:00",
+      "source_checked_at_bjt": "2026-11-14T04:30:22+08:00",
       "return_date": "2027-01-01",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -182,13 +182,13 @@
       "notification_channel": null,
       "annotations": null,
       "status": "priced_reference",
-      "reference_total_cny": "2650.00",
+      "reference_total_cny": "2500.00",
       "outbound_flight": "CA2505",
       "return_flight": "9C6686",
       "outbound_airline": "国航",
       "return_airline": "春秋",
-      "outbound_price_cny": "1230.00",
-      "return_price_cny": "1420.00",
+      "outbound_price_cny": "1210.00",
+      "return_price_cny": "1290.00",
       "outbound_url": "https://flights.ctrip.com/online/list/oneway-ctu-aat?depdate=2026-12-27&cabin=y_s&adult=1",
       "return_url": "https://flights.ctrip.com/online/list/oneway-aat-ctu?depdate=2027-01-01&cabin=y_s&adult=1",
       "data_gap": null,
@@ -198,12 +198,12 @@
     }
   },
   "last_valid_quote_bjt": {
-    "2026-12-08": "2026-11-14T03:22:32+08:00",
+    "2026-12-08": "2026-11-14T04:37:33+08:00",
     "2026-12-09": "2026-11-14T03:52:31+08:00",
-    "2026-12-27": "2026-11-14T03:22:32+08:00",
+    "2026-12-27": "2026-11-14T04:37:33+08:00",
     "2026-12-26": "2026-11-14T03:52:31+08:00",
     "2026-12-18": "2026-11-14T03:52:31+08:00",
-    "2026-12-17": "2026-11-14T03:22:32+08:00"
+    "2026-12-17": "2026-11-14T04:37:33+08:00"
   },
   "consecutive_incomplete": {
     "2026-12-09": 0,
@@ -237,19 +237,19 @@
       "source_checked_at_bjt": "2026-11-13T15:59:28+08:00"
     },
     "2026-12-08": {
-      "checked_at_bjt": "2026-11-14T03:22:32+08:00",
+      "checked_at_bjt": "2026-11-14T04:37:33+08:00",
       "return_date": "2026-12-13",
-      "reference_total_cny": "1670.00",
+      "reference_total_cny": "1440.00",
       "outbound_flight": "9C6685",
       "return_flight": "9C6686",
       "outbound_airline": "春秋",
       "return_airline": "春秋",
       "outbound_price_cny": "660.00",
-      "return_price_cny": "1010.00",
+      "return_price_cny": "780.00",
       "outbound_url": "https://flights.ctrip.com/online/list/oneway-ctu-aat?depdate=2026-12-08&cabin=y_s&adult=1",
       "return_url": "https://flights.ctrip.com/online/list/oneway-aat-ctu?depdate=2026-12-13&cabin=y_s&adult=1",
       "data_source": "ctrip_public_reference",
-      "source_checked_at_bjt": "2026-11-13T15:59:18+08:00"
+      "source_checked_at_bjt": "2026-11-14T04:29:50+08:00"
     },
     "2026-12-26": {
       "checked_at_bjt": "2026-11-14T03:52:31+08:00",
@@ -282,34 +282,34 @@
       "source_checked_at_bjt": "2026-11-13T15:59:39+08:00"
     },
     "2026-12-17": {
-      "checked_at_bjt": "2026-11-14T03:22:32+08:00",
+      "checked_at_bjt": "2026-11-14T04:37:33+08:00",
       "return_date": "2026-12-22",
-      "reference_total_cny": "1880.00",
+      "reference_total_cny": "2010.00",
       "outbound_flight": "9C6685",
       "return_flight": "9C6686",
       "outbound_airline": "春秋",
       "return_airline": "春秋",
-      "outbound_price_cny": "780.00",
+      "outbound_price_cny": "910.00",
       "return_price_cny": "1100.00",
       "outbound_url": "https://flights.ctrip.com/online/list/oneway-ctu-aat?depdate=2026-12-17&cabin=y_s&adult=1",
       "return_url": "https://flights.ctrip.com/online/list/oneway-aat-ctu?depdate=2026-12-22&cabin=y_s&adult=1",
       "data_source": "ctrip_public_reference",
-      "source_checked_at_bjt": "2026-11-13T15:59:34+08:00"
+      "source_checked_at_bjt": "2026-11-14T04:30:06+08:00"
     },
     "2026-12-27": {
-      "checked_at_bjt": "2026-11-14T03:22:32+08:00",
+      "checked_at_bjt": "2026-11-14T04:37:33+08:00",
       "return_date": "2027-01-01",
-      "reference_total_cny": "2650.00",
+      "reference_total_cny": "2500.00",
       "outbound_flight": "CA2505",
       "return_flight": "9C6686",
       "outbound_airline": "国航",
       "return_airline": "春秋",
-      "outbound_price_cny": "1230.00",
-      "return_price_cny": "1420.00",
+      "outbound_price_cny": "1210.00",
+      "return_price_cny": "1290.00",
       "outbound_url": "https://flights.ctrip.com/online/list/oneway-ctu-aat?depdate=2026-12-27&cabin=y_s&adult=1",
       "return_url": "https://flights.ctrip.com/online/list/oneway-aat-ctu?depdate=2027-01-01&cabin=y_s&adult=1",
       "data_source": "ctrip_public_reference",
-      "source_checked_at_bjt": "2026-11-13T15:59:50+08:00"
+      "source_checked_at_bjt": "2026-11-14T04:30:22+08:00"
     }
   },
   "anomaly_episode_active": false
