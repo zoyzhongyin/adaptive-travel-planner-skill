@@ -13,6 +13,10 @@ import os
 import re
 from pathlib import Path
 from urllib import request, error
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from scripts.ctrip_primary import flyai_enabled  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 DASHBOARD = ROOT / "flight-watch/dashboard/index.html"
@@ -214,6 +218,9 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
             "return_airline": clean_text(row.get("return_airline"), 40),
             "outbound_flight": clean_text(row.get("outbound_flight"), 20),
             "return_flight": clean_text(row.get("return_flight"), 20),
+            "source": ("ctrip_public_reference" if row.get("data_source") == "ctrip_public_reference"
+                       else ("flyai" if row else None)),
+            "source_checked_at_bjt": clean_text(row.get("source_checked_at_bjt"), 32),
             "last_valid": {
                 "checked_at_bjt": historic_at,
                 "total_cny": historic_total,
@@ -230,6 +237,10 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
                               else []),
         })
     scanned = [x["checked_at_bjt"] for x in result if x.get("checked_at_bjt")]
+    flyai_on = flyai_enabled(config)
+    ctrip_quotes = [x["source_checked_at_bjt"] for x in result
+                    if x.get("source") == "ctrip_public_reference" and x.get("quote_current")
+                    and x.get("source_checked_at_bjt")]
     return {
         "schema_version": 1,
         "generated_at_bjt": datetime.now(BJT).isoformat(timespec="seconds"),
@@ -238,6 +249,10 @@ def snapshot(config: dict, state: dict, supplement: dict | None = None,
         "ctrip_generated_at_bjt": clean_text(ctrip.get("generated_at_bjt"),32) if ctrip_valid else None,
         "fliggy_generated_at_bjt": clean_text(fliggy.get("generated_at_bjt"),32) if fliggy_valid else None,
         "google_generated_at_bjt": clean_text(google.get("generated_at_bjt"),32) if google_valid else None,
+        "flyai_enabled": flyai_on,
+        "primary_source": "flyai" if flyai_on else "ctrip_public_reference",
+        "primary_source_label": "FlyAI" if flyai_on else "携程公开页面参考价",
+        "primary_source_checked_at_bjt": (max(ctrip_quotes) if ctrip_quotes else None) if not flyai_on else None,
         "origin": "TFU", "destination": "AAT",
         "alert_price_cny": int(config["alert_price_cny"]),
         "ideal_price_cny": int(config["ideal_price_cny"]),
@@ -271,6 +286,8 @@ def needs_deploy(current: dict, *, min_minutes: int=45) -> bool:
                              timeout=9) as response:
             previous = json.load(response)
         if material_quote_change(previous, current):
+            return True
+        if previous.get("primary_source") != current.get("primary_source"):
             return True
         latest_time = previous.get("generated_at_bjt")
         if not latest_time:

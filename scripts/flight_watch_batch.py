@@ -16,6 +16,7 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from scripts import flight_price_watch as watch
+from scripts import ctrip_primary
 from scripts.serverchan_push import DeliveryError
 
 BJT = timezone(timedelta(hours=8))
@@ -237,6 +238,48 @@ def select_only(config, state, now):
     report_output(False, False, due=bool(dates))
 
 
+def flyai_record(config: dict, state: dict, index: int, dep: str) -> dict:
+    """Original FlyAI scan for one itinerary (kept intact; used when flyai_enabled)."""
+    watch.perform(config, state, index=index, live=True, notify=False)
+    result_path = watch.OUT_DIR / "watch-result.json"
+    if result_path.exists():
+        outcome = json.loads(result_path.read_text(encoding="utf-8"))
+        (watch.OUT_DIR / ("watch-" + dep + ".json")).write_text(
+            json.dumps(outcome, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        text_path = watch.OUT_DIR / "watch-result.md"
+        if text_path.exists():
+            (watch.OUT_DIR / ("watch-" + dep + ".md")).write_text(
+                text_path.read_text(encoding="utf-8"), encoding="utf-8")
+    else:
+        outcome = {"status": "missing_output", "alert": False}
+    channel = outcome.get("notification_channel")
+    outbound_leg = outcome.get("outbound") if isinstance(outcome.get("outbound"), dict) else {}
+    return_leg = outcome.get("return") if isinstance(outcome.get("return"), dict) else {}
+    record = {
+        "checked_at_bjt": datetime.now(BJT).isoformat(timespec="seconds"),
+        "status": outcome.get("status"),
+        "outbound_api_status": outcome.get("outbound_status"),
+        "inbound_api_status": outcome.get("inbound_status"),
+        "reference_total_cny": outcome.get("reference_sum_cny"),
+        "return_date": outcome.get("return_date"),
+        "outbound_flight": outbound_leg.get("flight"),
+        "return_flight": return_leg.get("flight"),
+        "outbound_airline": outbound_leg.get("airline"),
+        "return_airline": return_leg.get("airline"),
+        "outbound_price_cny": outbound_leg.get("price_cny_reference"),
+        "return_price_cny": return_leg.get("price_cny_reference"),
+        "outbound_url": outbound_leg.get("booking_url"),
+        "return_url": return_leg.get("booking_url"),
+        "taxes_verified": False,
+        "baggage_verified": False,
+        "notification_channel": channel,
+        "query_diagnostics": outcome.get("query_diagnostics"),
+        "data_gap": outcome.get("data_gap"),
+        "annotations": outcome.get("annotations"),
+    }
+    return record
+
+
 def main():
     config = watch.json_read(watch.CONFIG_PATH)
     state = watch.json_read(watch.STATE_PATH)
@@ -262,6 +305,10 @@ def main():
     batch = []
     scanned_prices = set()
     fallback_needed = False
+    use_flyai = ctrip_primary.flyai_enabled(config)
+    ctrip = None if use_flyai else ctrip_primary.load_snapshot()
+    print("Primary fare source: " + ("FlyAI" if use_flyai else
+          "Ctrip public reference (FlyAI paused: flyai_enabled=false)"), flush=True)
     watch.OUT_DIR.mkdir(exist_ok=True)
     if not due:
         if removed:
@@ -273,43 +320,12 @@ def main():
     for i, dep in due:
         print("Checking overdue itinerary: " + dep, flush=True)
         try:
-            watch.perform(config, state, index=i, live=True, notify=False)
-            result_path = watch.OUT_DIR / "watch-result.json"
-            if result_path.exists():
-                outcome = json.loads(result_path.read_text(encoding="utf-8"))
-                (watch.OUT_DIR / ("watch-" + dep + ".json")).write_text(
-                    json.dumps(outcome, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-                text_path = watch.OUT_DIR / "watch-result.md"
-                if text_path.exists():
-                    (watch.OUT_DIR / ("watch-" + dep + ".md")).write_text(
-                        text_path.read_text(encoding="utf-8"), encoding="utf-8")
+            if use_flyai:
+                record = flyai_record(config, state, i, dep)
             else:
-                outcome = {"status": "missing_output", "alert": False}
-            channel = outcome.get("notification_channel")
-            outbound_leg = outcome.get("outbound") if isinstance(outcome.get("outbound"), dict) else {}
-            return_leg = outcome.get("return") if isinstance(outcome.get("return"), dict) else {}
-            record = {
-                "checked_at_bjt": datetime.now(BJT).isoformat(timespec="seconds"),
-                "status": outcome.get("status"),
-                "outbound_api_status": outcome.get("outbound_status"),
-                "inbound_api_status": outcome.get("inbound_status"),
-                "reference_total_cny": outcome.get("reference_sum_cny"),
-                "return_date": outcome.get("return_date"),
-                "outbound_flight": outbound_leg.get("flight"),
-                "return_flight": return_leg.get("flight"),
-                "outbound_airline": outbound_leg.get("airline"),
-                "return_airline": return_leg.get("airline"),
-                "outbound_price_cny": outbound_leg.get("price_cny_reference"),
-                "return_price_cny": return_leg.get("price_cny_reference"),
-                "outbound_url": outbound_leg.get("booking_url"),
-                "return_url": return_leg.get("booking_url"),
-                "taxes_verified": False,
-                "baggage_verified": False,
-                "notification_channel": channel,
-                "query_diagnostics": outcome.get("query_diagnostics"),
-                "data_gap": outcome.get("data_gap"),
-                "annotations": outcome.get("annotations"),
-            }
+                # FlyAI paused (quota exhausted, not topped up): read the public
+                # Ctrip reference. No CLI call; alerts use the same rules below.
+                record = ctrip_primary.ctrip_record(config, ctrip, dep, datetime.now(BJT))
             if record["status"] == "priced_reference":
                 # Preserve the last actual successful reference quote separately.
                 # A later API failure does NOT erase it, but this historical
@@ -321,9 +337,16 @@ def main():
                         "outbound_airline", "return_airline",
                         "outbound_price_cny", "return_price_cny",
                         "outbound_url", "return_url",
-                    )
+                        "data_source", "source_checked_at_bjt",
+                    ) if key in record
                 }
                 scanned_prices.add(dep)
+            previous = (state.get("last_scan_results") or {}).get(dep)
+            if not use_flyai and ctrip_primary.is_quota_record(previous):
+                # Source switched away from a quota-blocked FlyAI: restart the
+                # gap clock so the old 402 episode cannot fire an anomaly push.
+                (state.get("incomplete_since_bjt") or {}).pop(dep, None)
+                (state.get("consecutive_incomplete") or {}).pop(dep, None)
             state.setdefault("last_scan_bjt", {})[dep] = record["checked_at_bjt"]
             state.setdefault("last_scan_results", {})[dep] = record
             note_quote_health(state, dep, record.get("status"), record["checked_at_bjt"])
@@ -344,12 +367,22 @@ def main():
             if payload.get("departure") == item.get("departure") and payload.get("last_alert_at_bjt") == alert_stamp:
                 item["notification_channel"] = payload.get("delivery_channel")
     gaps = monitor_gaps(state, active_dates, observed)
+    # 402/429/usage_limit gaps are a known provider quota state, not a new
+    # outage: log them silently (state + Actions summary), never push WeChat
+    # anomaly notices or fail the job for them.
+    quota_gaps, alert_gaps = ctrip_primary.split_quota_gaps(state, gaps)
+    if quota_gaps:
+        state.setdefault("quota_blocked_since_bjt", observed.isoformat(timespec="seconds"))
+        state["quota_blocked_dates"] = list(quota_gaps)
+    else:
+        state.pop("quota_blocked_since_bjt", None)
+        state.pop("quota_blocked_dates", None)
     anomaly_email = False
-    if not gaps:
+    if not alert_gaps:
         # Clear the incident only when every long gap has actually recovered.
         state["anomaly_episode_active"] = False
-    elif should_notify_anomaly(state, gaps, observed):
-        anomaly_email = notify_anomaly(state, gaps, observed)
+    elif should_notify_anomaly(state, alert_gaps, observed):
+        anomaly_email = notify_anomaly(state, alert_gaps, observed)
         state["anomaly_episode_active"] = True
     else:
         # Still failing, but inside the cooldown. Remember the episode without
@@ -395,6 +428,11 @@ def main():
                      "；返程接口=" + str(record.get("inbound_api_status")) + flights + price)
     lines.append("status=1、缺返程或无法相加时，记为监控数据缺口。这不能说明没有航班，也不能说明价格高于预算。")
     lines.append(watch.threshold_note(config, taxes_verified=False))
+    if not use_flyai:
+        lines.append("数据来源：" + ctrip_primary.SOURCE_LABEL + "（FlyAI 已暂停）；携程快照生成时间："
+                     + str((ctrip or {}).get("generated_at_bjt") or "未取得"))
+    if quota_gaps:
+        lines.append("接口额度受限（402/429），仅记录、不发异常提醒：" + "、".join(quota_gaps))
     lines.append("参考价来自不含税费的票面 ticketPrice。估计的机建燃油不并入该参考价，也不触发提醒。托运行李和雪具费用未核实。")
     digest = watch.format_window_digest(config, state)
     if digest:

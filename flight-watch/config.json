@@ -62,5 +62,9 @@
   "each_pair_interval_minutes": 60,
   "failure_retry_minutes": 20,
   "max_leg_attempts": 3,
-  "max_pairs_per_run": 3
+  "max_pairs_per_run": 3,
+  "flyai_enabled": false,
+  "primary_source": "ctrip_public_reference",
+  "ctrip_max_age_hours": 18,
+  "source_switch_note": "2026-11-13 FlyAI 额度用完（07:07 起 HTTP 402 usage_limit），决定不充值：flyai_enabled=false，暂停 FlyAI 调用，改用携程公开页面参考价（flight-watch/ctrip-latest.json）为主数据源。提醒线、理想价和重复提醒规则不变。恢复：把 flyai_enabled 改回 true（或单次运行设 FLYAI_ENABLED=true）。携程快照超过 ctrip_max_age_hours 视为数据缺口，不触发低价提醒。"
 }

@@ -50,13 +50,27 @@ jobs:
         env:
           FORCE_SCAN: ${{ inputs.force_scan }}
         run: python3 scripts/flight_watch_batch.py --select-only
+      - name: Read primary fare source switch
+        id: source
+        env:
+          FLYAI_ENABLED: ${{ vars.FLYAI_ENABLED }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          sys.path.insert(0, ".")
+          from scripts.ctrip_primary import flyai_enabled
+          on = flyai_enabled(json.load(open("flight-watch/config.json", encoding="utf-8")))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+              f.write("flyai=" + ("true" if on else "false") + "\n")
+          print("Primary fare source:", "FlyAI" if on else "Ctrip public reference (FlyAI paused)")
+          PY
       - name: Set up Node.js 22
         if: steps.due.outputs.due == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Install FlyAI CLI
-        if: steps.due.outputs.due == 'true'
+      - name: Install FlyAI CLI (only when flyai_enabled)
+        if: steps.due.outputs.due == 'true' && steps.source.outputs.flyai == 'true'
         run: npm install -g @fly-ai/flyai-cli@1.0.16 --no-audit --no-fund
       - name: Check overdue itineraries (oldest first, max 3 per run)
         id: price_watch
@@ -64,6 +78,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FLYAI_API_KEY: ${{ secrets.FLYAI_API_KEY }}
+          FLYAI_ENABLED: ${{ vars.FLYAI_ENABLED }}
           FORCE_SCAN: ${{ inputs.force_scan }}
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
         shell: bash
