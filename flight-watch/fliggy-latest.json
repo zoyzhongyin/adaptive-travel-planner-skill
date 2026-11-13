@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "source": "fliggy_pc_public_listing",
-  "generated_at_bjt": "2026-11-13T05:11:22+08:00",
+  "generated_at_bjt": "2026-11-13T16:50:51+08:00",
   "taxes_verified": false,
   "cabin_verified": false,
   "baggage_verified": false,
@@ -10,7 +10,7 @@
     {
       "departure": "2026-12-08",
       "return_date": "2026-12-13",
-      "checked_at_bjt": "2026-11-13T05:09:58+08:00",
+      "checked_at_bjt": "2026-11-13T16:49:26+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -27,7 +27,7 @@
     {
       "departure": "2026-12-09",
       "return_date": "2026-12-14",
-      "checked_at_bjt": "2026-11-13T05:10:17+08:00",
+      "checked_at_bjt": "2026-11-13T16:49:45+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -44,7 +44,7 @@
     {
       "departure": "2026-12-17",
       "return_date": "2026-12-22",
-      "checked_at_bjt": "2026-11-13T05:10:30+08:00",
+      "checked_at_bjt": "2026-11-13T16:49:58+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -61,7 +61,7 @@
     {
       "departure": "2026-12-18",
       "return_date": "2026-12-23",
-      "checked_at_bjt": "2026-11-13T05:10:43+08:00",
+      "checked_at_bjt": "2026-11-13T16:50:11+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -78,7 +78,7 @@
     {
       "departure": "2026-12-26",
       "return_date": "2026-12-31",
-      "checked_at_bjt": "2026-11-13T05:10:56+08:00",
+      "checked_at_bjt": "2026-11-13T16:50:25+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
@@ -95,7 +95,7 @@
     {
       "departure": "2026-12-27",
       "return_date": "2027-01-01",
-      "checked_at_bjt": "2026-11-13T05:11:09+08:00",
+      "checked_at_bjt": "2026-11-13T16:50:38+08:00",
       "status": "incomplete",
       "total_cny": null,
       "outbound": null,
