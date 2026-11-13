@@ -72,3 +72,14 @@ GitHub Secrets 不可读取；不得把 `GH_ACTIONS_TOKEN` 放入普通变量。
 - [FlyAI 对照诊断](https://github.com/zoyzhongyin/adaptive-travel-planner-skill/actions/runs/39697724754)：成都→北京和 12-08 TFU→AAT 各返回 10 条；API 明示体验模式限制，其他日期/返程未获报价。证明服务可达，不证明当前监控行程可获得有效双程价。
 - [部署预检](https://github.com/zoyzhongyin/adaptive-travel-planner-skill/actions/runs/39697622685)：缺少 CLOUDFLARE_ACCOUNT_ID 与 CLOUDFLARE_API_TOKEN，部署前即停止；现有 Worker 未被此流程修改，Cloudflare 实际定时触发尚未验证。
 - [GitHub CI](https://github.com/zoyzhongyin/adaptive-travel-planner-skill/actions/runs/39697598419)：全部离线 Python 测试和 release checks 通过。Worker 9 项离线测试也通过。
+
+## 2026-11-13 FlyAI 暂停，携程公开参考价为主数据源
+
+- 原因：FlyAI 额度用完（2026-11-13 07:07 北京时间起全部 HTTP 402 `usage_limit`），决定不充值。
+- 开关：`flight-watch/config.json` 中 `flyai_enabled: false`、`primary_source: "ctrip_public_reference"`。单次运行可用环境变量（或仓库变量）`FLYAI_ENABLED=true/false` 覆盖。FlyAI 相关代码全部保留。
+- 关闭 FlyAI 时：`altay-fare-watch.yml` 不安装 FlyAI CLI；`scripts/flight_watch_batch.py` 不调用 FlyAI，改读 `flight-watch/ctrip-latest.json`（由 `ctrip-supplement.yml` + `scripts/ctrip_snapshot.py` 用公开页面生成，调度频率不变），经 `scripts/ctrip_primary.py` 校验（schema/来源/返程日/航班号/金额/去返相加=合计/新鲜度）后转换成与原来相同的记录，走原有提醒流程。
+- 新鲜度：携程抓取时间超过 `ctrip_max_age_hours`（18 小时）视为数据缺口，不触发低价提醒。
+- 阈值与重复提醒不变：`alert_price_cny=1500`、`ideal_price_cny=1200`、`min_drop_cny=50`；每个休息窗只报最低一条；同窗已提醒后须再降 ≥50 或首次进入理想价才再提醒（测试 `tests/test_ctrip_primary_source.py` 锁定）。
+- 额度错误：402/429/`usage_limit`/`trial_limit` 造成的缺口只记录（state 中 `quota_blocked_dates`、`quota_blocked_since_bjt`，Actions Summary 中提示），不发微信异常提醒、不让任务失败。从 402 记录切换到携程时重置该日期的缺口计时，旧 402 事件不会触发异常推送。
+- `/api/fares`：新增 `flyai_enabled`、`primary_source`、`primary_source_label`、`primary_source_checked_at_bjt`；每条行程新增 `source`、`source_checked_at_bjt`。原字段保持。
+- 恢复 FlyAI：把 `flyai_enabled` 改回 `true`（充值后），其余无需改动。

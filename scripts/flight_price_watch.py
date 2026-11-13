@@ -554,8 +554,13 @@ def notify_window_winners(config, state, scanned_departures, now) -> bool:
         ret = record_return(config, best["departure"], record)
         ideal = best["price"] <= Decimal(str(config["ideal_price_cny"]))
         notes = annotation_lines(config, dep, ret)
+        if record.get("data_source") == "ctrip_public_reference":
+            # Same thresholds and repeat rules; only the source label differs.
+            notes = ["数据来源：携程公开页面参考价（FlyAI 已暂停），抓取时间 "
+                     + format_captured(record.get("source_checked_at_bjt") or record.get("checked_at_bjt"))] + notes
         channel = "github_email_fallback"
-        captured = record.get("checked_at_bjt") or now.isoformat(timespec="seconds")
+        captured = (record.get("source_checked_at_bjt") or record.get("checked_at_bjt")
+                    or now.isoformat(timespec="seconds"))
         if WECHAT_KEY:
             title, msg = build_wechat_message(
                 best["price"], dep, ret,
