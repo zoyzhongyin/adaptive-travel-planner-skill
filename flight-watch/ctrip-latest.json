@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "source": "ctrip_browser_public_listing",
-  "generated_at_bjt": "2026-11-18T16:33:50+08:00",
+  "generated_at_bjt": "2026-11-19T05:36:42+08:00",
   "taxes_verified": false,
   "cabin_verified": false,
   "baggage_verified": false,
@@ -10,20 +10,20 @@
     {
       "departure": "2026-12-08",
       "return_date": "2026-12-13",
-      "checked_at_bjt": "2026-11-18T16:33:08+08:00",
+      "checked_at_bjt": "2026-11-19T05:36:03+08:00",
       "status": "priced_reference",
-      "total_cny": "1430",
+      "total_cny": "1610",
       "outbound": {
-        "flight": "9C6685",
-        "carrier": "9C",
-        "airline": "春秋",
+        "flight": "CA2505",
+        "carrier": "CA",
+        "airline": "国航",
         "cabin": "Y",
-        "price_cny": "530",
-        "base_fare_cny": "530",
+        "price_cny": "710",
+        "base_fare_cny": "710",
         "tax_inclusive_cny": null,
         "price_basis": "adult_price_taxes_unverified",
-        "departure_time": "2026-12-08 09:15:00",
-        "operating_flight": "9C6685"
+        "departure_time": "2026-12-08 07:15:00",
+        "operating_flight": "CA2505"
       },
       "return": {
         "flight": "9C6686",
@@ -38,24 +38,24 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-18T16:33:08+08:00",
-        "total_cny": "1430"
+        "checked_at_bjt": "2026-11-19T05:36:03+08:00",
+        "total_cny": "1610"
       },
       "error_types": []
     },
     {
       "departure": "2026-12-09",
       "return_date": "2026-12-14",
-      "checked_at_bjt": "2026-11-18T16:33:18+08:00",
+      "checked_at_bjt": "2026-11-19T05:36:14+08:00",
       "status": "priced_reference",
-      "total_cny": "1510.0",
+      "total_cny": "1490.0",
       "outbound": {
         "flight": "CA2505",
         "carrier": "CA",
         "airline": "国航",
         "cabin": "Y",
-        "price_cny": "730.0",
-        "base_fare_cny": "730.0",
+        "price_cny": "710.0",
+        "base_fare_cny": "710.0",
         "tax_inclusive_cny": null,
         "price_basis": "adult_price_taxes_unverified",
         "departure_time": "2026-12-09 07:15:00",
@@ -74,15 +74,15 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-18T16:33:18+08:00",
-        "total_cny": "1510.0"
+        "checked_at_bjt": "2026-11-19T05:36:14+08:00",
+        "total_cny": "1490.0"
       },
       "error_types": []
     },
     {
       "departure": "2026-12-17",
       "return_date": "2026-12-22",
-      "checked_at_bjt": "2026-11-18T16:33:23+08:00",
+      "checked_at_bjt": "2026-11-19T05:36:20+08:00",
       "status": "priced_reference",
       "total_cny": "1780",
       "outbound": {
@@ -110,7 +110,7 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-18T16:33:23+08:00",
+        "checked_at_bjt": "2026-11-19T05:36:20+08:00",
         "total_cny": "1780"
       },
       "error_types": []
@@ -118,7 +118,7 @@
     {
       "departure": "2026-12-18",
       "return_date": "2026-12-23",
-      "checked_at_bjt": "2026-11-18T16:33:28+08:00",
+      "checked_at_bjt": "2026-11-19T05:36:24+08:00",
       "status": "priced_reference",
       "total_cny": "1940",
       "outbound": {
@@ -146,7 +146,7 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-18T16:33:28+08:00",
+        "checked_at_bjt": "2026-11-19T05:36:24+08:00",
         "total_cny": "1940"
       },
       "error_types": []
@@ -154,16 +154,16 @@
     {
       "departure": "2026-12-26",
       "return_date": "2026-12-31",
-      "checked_at_bjt": "2026-11-18T16:33:38+08:00",
+      "checked_at_bjt": "2026-11-19T05:36:31+08:00",
       "status": "priced_reference",
-      "total_cny": "2780.0",
+      "total_cny": "2760",
       "outbound": {
         "flight": "CA2505",
         "carrier": "CA",
         "airline": "国航",
         "cabin": "Y",
-        "price_cny": "1480.0",
-        "base_fare_cny": "1480.0",
+        "price_cny": "1460",
+        "base_fare_cny": "1460",
         "tax_inclusive_cny": null,
         "price_basis": "adult_price_taxes_unverified",
         "departure_time": "2026-12-26 07:15:00",
@@ -182,15 +182,15 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-18T16:33:38+08:00",
-        "total_cny": "2780.0"
+        "checked_at_bjt": "2026-11-19T05:36:31+08:00",
+        "total_cny": "2760"
       },
       "error_types": []
     },
     {
       "departure": "2026-12-27",
       "return_date": "2027-01-01",
-      "checked_at_bjt": "2026-11-18T16:33:44+08:00",
+      "checked_at_bjt": "2026-11-19T05:36:36+08:00",
       "status": "priced_reference",
       "total_cny": "2310",
       "outbound": {
@@ -218,7 +218,7 @@
         "operating_flight": "9C6686"
       },
       "last_valid": {
-        "checked_at_bjt": "2026-11-18T16:33:44+08:00",
+        "checked_at_bjt": "2026-11-19T05:36:36+08:00",
         "total_cny": "2310"
       },
       "error_types": []
