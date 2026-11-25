@@ -37,9 +37,9 @@
     "2026-12-08": "2026-11-25T17:22:31+08:00",
     "2026-12-09": "2026-11-25T17:22:31+08:00",
     "2026-12-17": "2026-11-25T17:22:31+08:00",
-    "2026-12-18": "2026-11-25T16:52:31+08:00",
-    "2026-12-26": "2026-11-25T16:52:31+08:00",
-    "2026-12-27": "2026-11-25T16:52:31+08:00"
+    "2026-12-18": "2026-11-25T18:07:34+08:00",
+    "2026-12-26": "2026-11-25T18:07:34+08:00",
+    "2026-12-27": "2026-11-25T18:07:34+08:00"
   },
   "last_scan_results": {
     "2026-12-08": {
@@ -106,11 +106,11 @@
       }
     },
     "2026-12-18": {
-      "checked_at_bjt": "2026-11-25T16:52:31+08:00",
+      "checked_at_bjt": "2026-11-25T18:07:34+08:00",
       "data_source": "ctrip_public_reference",
       "data_source_label": "携程公开页面参考价",
-      "source_generated_at_bjt": "2026-11-25T07:02:43+08:00",
-      "source_checked_at_bjt": "2026-11-25T07:02:22+08:00",
+      "source_generated_at_bjt": "2026-11-25T17:53:09+08:00",
+      "source_checked_at_bjt": "2026-11-25T17:52:54+08:00",
       "return_date": "2026-12-23",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -127,11 +127,11 @@
       }
     },
     "2026-12-26": {
-      "checked_at_bjt": "2026-11-25T16:52:31+08:00",
+      "checked_at_bjt": "2026-11-25T18:07:34+08:00",
       "data_source": "ctrip_public_reference",
       "data_source_label": "携程公开页面参考价",
-      "source_generated_at_bjt": "2026-11-25T07:02:43+08:00",
-      "source_checked_at_bjt": "2026-11-25T07:02:31+08:00",
+      "source_generated_at_bjt": "2026-11-25T17:53:09+08:00",
+      "source_checked_at_bjt": "2026-11-25T17:52:59+08:00",
       "return_date": "2026-12-31",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -148,11 +148,11 @@
       }
     },
     "2026-12-27": {
-      "checked_at_bjt": "2026-11-25T16:52:31+08:00",
+      "checked_at_bjt": "2026-11-25T18:07:34+08:00",
       "data_source": "ctrip_public_reference",
       "data_source_label": "携程公开页面参考价",
-      "source_generated_at_bjt": "2026-11-25T07:02:43+08:00",
-      "source_checked_at_bjt": "2026-11-25T07:02:36+08:00",
+      "source_generated_at_bjt": "2026-11-25T17:53:09+08:00",
+      "source_checked_at_bjt": "2026-11-25T17:53:04+08:00",
       "return_date": "2027-01-01",
       "outbound_api_status": null,
       "inbound_api_status": null,
@@ -179,9 +179,9 @@
   },
   "consecutive_incomplete": {
     "2026-12-09": 10,
-    "2026-12-26": 10,
-    "2026-12-18": 10,
-    "2026-12-27": 10,
+    "2026-12-26": 11,
+    "2026-12-18": 11,
+    "2026-12-27": 11,
     "2026-12-17": 10,
     "2026-12-08": 10
   },
